@@ -18,20 +18,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // Created on 20.11.2003 by RST
-// $Id: field_t.java,v 1.1 2004-07-07 19:59:25 hzi Exp $
+// $Id: field_t.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
 
 package jake2.game;
 
-public class field_t {
-
-	public field_t(String name, int type, int flags) {
-
+public class field_t
+{
+	public field_t(String name, int type, int flags)
+	{
 		this.name = name;
 		this.type = type;
 		this.flags = flags;
 	}
 
-	public field_t(String name, int type) {
+	public field_t(String name, int type)
+	{
 
 		this.name = name;
 		this.type = type;

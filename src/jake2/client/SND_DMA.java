@@ -2,7 +2,7 @@
  * S_DMA.java
  * Copyright (C) 2004
  * 
- * $Id: SND_DMA.java,v 1.1 2004-07-07 19:58:51 hzi Exp $
+ * $Id: SND_DMA.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -117,14 +117,12 @@ public class SND_DMA extends SND_MIX {
 //	   ====================================================================
 
 
-	static void SoundInfo_f()
-	{
-		if (!sound_started)
-		{
-			Com.Printf ("sound system not started\n");
+	static void SoundInfo_f() {
+		if (!sound_started) {
+			Com.Printf("sound system not started\n");
 			return;
 		}
-	
+
 		Com.Printf("%5d stereo\n", new Vargs(1).add(dma.channels - 1));
 		Com.Printf("%5d samples\n", new Vargs(1).add(dma.samples));
 		Com.Printf("%5d samplepos\n", new Vargs(1).add(dma.samplepos));
@@ -249,7 +247,7 @@ S.SoundInfo_f();
 		if (name.length() == 0)
 			Com.Error(ERR_FATAL, "S_FindName: empty name\n");
 
-		if (strlen(name) >= MAX_QPATH)
+		if (name.length() >= MAX_QPATH)
 			Com.Error(ERR_FATAL, "Sound name too long: " + name);
 
 		// see if already loaded

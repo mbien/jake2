@@ -2,7 +2,7 @@
  * Cmd.java
  * Copyright (C) 2003
  * 
- * $Id: Cmd.java,v 1.1 2004-07-07 19:58:52 hzi Exp $
+ * $Id: Cmd.java,v 1.2 2004-07-08 15:58:43 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -194,7 +194,7 @@ public final class Cmd extends PlayerView {
 
 			token = Cvar.VariableString(token);
 
-			j = strlen(token);
+			j = token.length();
 
 			len += j;
 
@@ -240,7 +240,6 @@ public final class Cmd extends PlayerView {
 	============
 	*/
 	public static void TokenizeString(char text[], boolean macroExpand) {
-		int i;
 		String com_token;
 
 		cmd_argc = 0;
@@ -394,7 +393,6 @@ public final class Cmd extends PlayerView {
 //
 //			Com.DPrintf("\n");
 //		}
-		//System.out.println("tokenized[" + Argv(0) + "]" + "[" + Argv(1) +  "]");
 		// execute the command line
 		if (Argc() == 0)
 			return; // no tokens
@@ -476,7 +474,7 @@ public final class Cmd extends PlayerView {
 		}
 
 		if (give_all || 0 == Lib.Q_stricmp(name, "weapons")) {
-			for (i = 0; i < GameBase.game.num_items; i++) {
+			for (i = 1; i < GameBase.game.num_items; i++) {
 				it = GameAI.itemlist[i];
 				if (null == it.pickup)
 					continue;
@@ -489,7 +487,7 @@ public final class Cmd extends PlayerView {
 		}
 
 		if (give_all || 0 == Lib.Q_stricmp(name, "ammo")) {
-			for (i = 0; i < GameBase.game.num_items; i++) {
+			for (i = 1; i < GameBase.game.num_items; i++) {
 				it = GameAI.itemlist[i];
 				if (null == it.pickup)
 					continue;
@@ -523,7 +521,7 @@ public final class Cmd extends PlayerView {
 			it_ent = GameUtil.G_Spawn();
 			it_ent.classname = it.classname;
 			GameAI.SpawnItem(it_ent, it);
-			GameAI.Touch_Item(it_ent, ent, null, null);
+			GameAI.Touch_Item(it_ent, ent, GameBase.dummyplane, null);
 			if (it_ent.inuse)
 				GameUtil.G_FreeEdict(it_ent);
 
@@ -532,7 +530,7 @@ public final class Cmd extends PlayerView {
 		}
 
 		if (give_all) {
-			for (i = 0; i < GameBase.game.num_items; i++) {
+			for (i = 1; i < GameBase.game.num_items; i++) {
 				it = GameAI.itemlist[i];
 				if (it.pickup != null)
 					continue;
@@ -570,7 +568,7 @@ public final class Cmd extends PlayerView {
 			it_ent = GameUtil.G_Spawn();
 			it_ent.classname = it.classname;
 			GameAI.SpawnItem(it_ent, it);
-			GameAI.Touch_Item(it_ent, ent, null, null);
+			GameAI.Touch_Item(it_ent, ent, GameBase.dummyplane, null);
 			if (it_ent.inuse)
 				GameUtil.G_FreeEdict(it_ent);
 		}
@@ -669,7 +667,7 @@ public final class Cmd extends PlayerView {
 
 		s = GameBase.gi.args();
 		it = GameUtil.FindItem(s);
-		if (it != null) {
+		if (it == null) {
 			GameBase.gi.cprintf(ent, Defines.PRINT_HIGH, "unknown item: " + s + "\n");
 			return;
 		}
@@ -825,6 +823,8 @@ public final class Cmd extends PlayerView {
 		// scan  for the next valid one
 		for (i = 1; i <= Defines.MAX_ITEMS; i++) {
 			index = (selected_weapon + Defines.MAX_ITEMS - i) % Defines.MAX_ITEMS;
+			//bugfix rst
+			if (index == 0) index++;
 			if (0 == cl.pers.inventory[index])
 				continue;
 			it = GameAI.itemlist[index];
@@ -950,7 +950,7 @@ public final class Cmd extends PlayerView {
 		ent.flags &= ~Defines.FL_GODMODE;
 		ent.health = 0;
 		GameBase.meansOfDeath = Defines.MOD_SUICIDE;
-		GameAI.player_die.die(ent, ent, ent, 100000, GameBase.vec3_origin);
+		GameAIAdapters.player_die.die(ent, ent, ent, 100000, GameBase.vec3_origin);
 	}
 
 	/*
@@ -989,7 +989,7 @@ public final class Cmd extends PlayerView {
 		// sort by frags
 		//qsort(index, count, sizeof(index[0]), PlayerSort);
 		//replaced by:
-		Arrays.sort(index, 0, count - 1, GameAI.PlayerSort);
+		Arrays.sort(index, 0, count - 1, GameAIAdapters.PlayerSort);
 
 		// print information
 		large = "";
@@ -1001,7 +1001,7 @@ public final class Cmd extends PlayerView {
 					+ GameBase.game.clients[index[i].intValue()].pers.netname
 					+ "\n";
 
-			if (Lib.strlen(small) + Lib.strlen(large) > 1024 - 100) {
+			if (small.length() + large.length() > 1024 - 100) {
 				// can't print all of them in one packet
 				large += "...\n";
 				break;
@@ -1070,7 +1070,6 @@ public final class Cmd extends PlayerView {
 
 		int i, j;
 		edict_t other;
-		char p;
 		String text;
 		gclient_t cl;
 
@@ -1108,7 +1107,7 @@ public final class Cmd extends PlayerView {
 		}
 
 		// don't let text be too long for malicious reasons
-		if (strlen(text) > 150)
+		if (text.length() > 150)
 			//text[150] = 0;
 			text = text.substring(0, 150);
 
@@ -1186,7 +1185,7 @@ public final class Cmd extends PlayerView {
 					+ (e2.client.resp.spectator ? " (spectator)" : "")
 					+ "\n";
 
-			if (Lib.strlen(text) + Lib.strlen(st) > 1024 - 50) {
+			if (text.length() + st.length() > 1024 - 50) {
 				text += "And more...\n";
 				GameBase.gi.cprintf(ent, Defines.PRINT_HIGH, "" + text + "");
 				return;

@@ -2,7 +2,7 @@
  * Qcommon.java
  * Copyright 2003
  * 
- * $Id: Qcommon.java,v 1.1 2004-07-07 19:59:33 hzi Exp $
+ * $Id: Qcommon.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -28,6 +28,8 @@ package jake2.qcommon;
 import jake2.Globals;
 import jake2.client.*;
 import jake2.game.Cmd;
+import jake2.game.EntThinkAdapter;
+import jake2.game.GamePWeapon;
 import jake2.game.Swap;
 import jake2.server.SV_MAIN;
 import jake2.sys.NET;
@@ -43,6 +45,9 @@ import java.io.IOException;
  */
 public final class Qcommon extends Globals {
 
+	public static final String BUILDSTRING = "Java";
+	public static final String CPUSTRING = "jvm";
+	
 	/**
 	 * This function initializes the different subsystems of
 		 * the game engine. The setjmp/longjmp mechanism of the original
@@ -51,7 +56,6 @@ public final class Qcommon extends Globals {
 	 */
 	public static void InitForTestMap(String[] args) {
 		try {
-			Z.chain.next= Z.chain.prev= Z.chain;
 
 			// prepare enough of the subsystems to handle
 			// cvar and command buffer management
@@ -83,7 +87,6 @@ public final class Qcommon extends Globals {
 			//
 			// init commands and vars
 			//
-			Cmd.AddCommand("z_stats", Z.Stats_f);
 			Cmd.AddCommand("error", Com.Error_f);
 
 			Globals.host_speeds= Cvar.Get("host_speeds", "0", 0);
@@ -98,9 +101,9 @@ public final class Qcommon extends Globals {
 			String s = Com.sprintf("%4.2f %s %s %s",
 					new Vargs(4)
 						.add(Globals.VERSION)
-						.add(Globals.CPUSTRING)
+						.add(CPUSTRING)
 						.add(Globals.__DATE__)
-						.add(Globals.BUILDSTRING));
+						.add(BUILDSTRING));
 
 			Cvar.Get("version", s, CVAR_SERVERINFO | CVAR_NOSET);
 
@@ -144,7 +147,9 @@ public final class Qcommon extends Globals {
 
 			Swap.Init();
 			Cbuf.Init();
-
+			//rst bugfix
+			//GamePWeapon xxx = new GamePWeapon();
+			
 			Cmd.Init();
 			Cvar.Init();
 
@@ -168,7 +173,6 @@ public final class Qcommon extends Globals {
 			//
 			// init commands and vars
 			//
-			Cmd.AddCommand("z_stats", Z.Stats_f);
 			Cmd.AddCommand("error", Com.Error_f);
 
 			Globals.host_speeds= Cvar.Get("host_speeds", "0", 0);
@@ -179,13 +183,13 @@ public final class Qcommon extends Globals {
 			Globals.logfile_active= Cvar.Get("logfile", "0", 0);
 			Globals.showtrace= Cvar.Get("showtrace", "0", 0);
 			Globals.dedicated= Cvar.Get("dedicated", "0", CVAR_NOSET);
-
+			Globals.slomo= Cvar.Get("slomo", "1", 0);
 			String s = Com.sprintf("%4.2f %s %s %s",
 					new Vargs(4)
 						.add(Globals.VERSION)
-						.add(Globals.CPUSTRING)
+						.add(CPUSTRING)
 						.add(Globals.__DATE__)
-						.add(Globals.BUILDSTRING));
+						.add(BUILDSTRING));
 
 			Cvar.Get("version", s, CVAR_SERVERINFO | CVAR_NOSET);
 
@@ -198,7 +202,7 @@ public final class Qcommon extends Globals {
 			// add + commands from command line
 			if (!Cbuf.AddLateCommands()) {
 				// if the user didn't give any commands, run default action
-//				Cbuf.AddText("d1\n");
+				Cbuf.AddText("d1\n");
 				Cbuf.Execute();
 			} else {
 				// the user asked for something explicit
@@ -277,7 +281,7 @@ public final class Qcommon extends Globals {
 				Globals.c_pointcontents= 0;
 			}
 
-			Cbuf.Execute ();
+			Cbuf.Execute();
 
 			int time_before= 0;
 			int time_between= 0;
@@ -311,5 +315,6 @@ public final class Qcommon extends Globals {
 		} catch (longjmpException e) {
 		}
 	}
+
 
 }

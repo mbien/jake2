@@ -2,77 +2,7 @@
  * Globals.java
  * Copyright (C) 2003
  * 
- * $Id: Globals.java,v 1.1 2004-07-07 19:58:32 hzi Exp $
- * $Log: Globals.java,v $
- * Revision 1.1  2004-07-07 19:58:32  hzi
- * Initial revision
- *
- * Revision 1.1.1.1  2004/07/07 18:35:04  holger
- * import of Jake2 version sunrise
- *
- * Revision 1.46  2004/02/11 19:56:28  cwei
- * monster debug.
- *
- * Revision 1.45  2004/02/11 05:12:47  cwei
- * scr_rect wird gesetzt
- *
- * Revision 1.44  2004/02/08 13:26:13  hoz
- * - aufr?umen
- *
- * Revision 1.43  2004/02/04 11:24:15  hoz
- * - some fx functions
- * - long -> int for time variables
- *
- * Revision 1.42  2004/02/02 22:06:54  hoz
- * - some client effects
- *
- * Revision 1.41  2004/02/02 21:15:40  hoz
- * input kram
- *
- * Revision 1.40  2004/02/02 19:25:23  hoz
- * *** empty log message ***
- *
- * Revision 1.39  2004/02/02 19:13:26  rst
- * cosmetic
- *
- * Revision 1.38  2004/01/30 18:44:32  cwei
- * logfile
- *
- * Revision 1.37  2004/01/30 13:34:31  hoz
- * - client code
- *
- * Revision 1.36  2004/01/30 09:24:20  hoz
- * - client code
- *
- * Revision 1.35  2004/01/28 21:04:10  hoz
- * - client code
- *
- * Revision 1.34  2004/01/28 14:42:58  hoz
- * - client code
- *
- * Revision 1.33  2004/01/28 10:03:06  hoz
- * - client code
- *
- * Revision 1.32  2004/01/27 20:10:29  rst
- * now has a quake menu
- *
- * Revision 1.31  2004/01/18 12:36:02  hoz
- * Key.*
- *
- * Revision 1.30  2004/01/18 10:39:34  rst
- * M O N S T E R - C O M M I T
- * (network and server code)
- *
- * Revision 1.29  2004/01/18 09:41:57  hoz
- * Key.Message()
- *
- * Revision 1.28  2004/01/11 14:38:47  cwei
- * Aenderungen fuer VID impl
- *
- * Revision 1.27  2004/01/09 22:25:09  rst
- * cosmetic
- *
- * 
+ * $Id: Globals.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -103,6 +33,7 @@ import jake2.render.model_t;
 
 import java.io.FileWriter;
 import java.io.RandomAccessFile;
+import java.util.Random;
 
 /**
  * Globals ist the collection of global variables and constants.
@@ -113,12 +44,6 @@ import java.io.RandomAccessFile;
  */
 public class Globals extends Defines {
 
-	/*
-	 * global constants
-	 */
-
-	public static final String BUILDSTRING = "Java";
-	public static final String CPUSTRING = "jvm";
 	public static final String __DATE__ = "2003";
 
 	public static final float VERSION = 3.21f;
@@ -132,23 +57,11 @@ public class Globals extends Defines {
 	public static boolean cmd_wait;
 
 	public static int alias_count;
-	public static int com_argc;
 	public static int c_traces;
 	public static int c_brush_traces;
 	public static int c_pointcontents;
 	public static int server_state;
 
-	public static String[] com_argv = new String[MAX_NUM_ARGVS];
-
-	public static cvar_t adr0;
-	public static cvar_t adr1;
-	public static cvar_t adr2;
-	public static cvar_t adr3;
-	public static cvar_t adr4;
-	public static cvar_t adr5;
-	public static cvar_t adr6;
-	public static cvar_t adr7;
-	public static cvar_t adr8;
 	public static cvar_t cl_add_blend;
 	public static cvar_t cl_add_entities;
 	public static cvar_t cl_add_lights;
@@ -171,6 +84,7 @@ public class Globals extends Defines {
 	public static cvar_t cl_upspeed;
 	public static cvar_t cl_yawspeed;
 	public static cvar_t dedicated;
+	public static cvar_t slomo;
 	public static cvar_t developer;
 	public static cvar_t fixedtime;
 	public static cvar_t freelook;
@@ -446,7 +360,6 @@ public class Globals extends Defines {
 
 	public static String[] keybindings = new String[256];
 	public static boolean[] keydown = new boolean[256];
-	public static int anykeydown = 0;
 	public static boolean chat_team = false;
 	public static String chat_buffer = "";
 	public static byte[][] key_lines = new byte[32][];
@@ -459,7 +372,7 @@ public class Globals extends Defines {
 
 	public static cvar_t crosshair;
 	public static vrect_t scr_vrect = new vrect_t();
-	public static long sys_frame_time;
+	public static int sys_frame_time;
 	public static int chat_bufferlen = 0;
 	public static int gun_frame;
 	public static model_t gun_model;
@@ -472,4 +385,6 @@ public class Globals extends Defines {
 
 	public static cvar_t m_filter;
 	public static int vidref_val = VIDREF_GL;
+	
+	public static Random rnd = new Random();
 }

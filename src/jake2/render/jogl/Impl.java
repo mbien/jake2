@@ -2,7 +2,7 @@
  * Impl.java
  * Copyright (C) 2003
  *
- * $Id: Impl.java,v 1.1 2004-07-07 19:59:38 hzi Exp $
+ * $Id: Impl.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,12 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.jogl;
 
-import jake2.*;
+import jake2.Defines;
+import jake2.Globals;
 import jake2.qcommon.xcommand_t;
 import jake2.sys.KBD;
 
 import java.awt.Dimension;
-import java.awt.event.FocusAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -55,6 +55,7 @@ public class Impl extends Misc implements GLEventListener {
 	// switch to updateScreen callback
 	private boolean switchToCallback = false;
 	private xcommand_t callback = null;
+	protected boolean contextInUse = false;
 
 	GLCanvas canvas;
 	JFrame window;
@@ -94,7 +95,7 @@ public class Impl extends Misc implements GLEventListener {
 
 		if (!ri.Vid_GetModeInfo(newDim, mode)) {
 			ri.Con_Printf(Defines.PRINT_ALL, " invalid mode\n");
-			return Enum.rserr_invalid_mode;
+			return rserr_invalid_mode;
 		}
 
 		ri.Con_Printf(Defines.PRINT_ALL, " " + newDim.width + " " + newDim.height + '\n');
@@ -149,7 +150,7 @@ public class Impl extends Misc implements GLEventListener {
 		// let the sound and input subsystems know about the new window
 		ri.Vid_NewWindow(vid.width, vid.height);
 
-		return Enum.rserr_ok;
+		return rserr_ok;
 	}
 
 	void GLimp_BeginFrame(float camera_separation) {
@@ -217,6 +218,8 @@ public class Impl extends Misc implements GLEventListener {
 	public void display(GLDrawable drawable) {
 		this.gl = drawable.getGL();
 		this.glu = drawable.getGLU();
+		
+		this.contextInUse = true;
 
 		if (switchToCallback) {
 			if (callback == null)
@@ -242,6 +245,8 @@ public class Impl extends Misc implements GLEventListener {
 
 			GLimp_EndFrame();
 		}
+		
+		contextInUse = false;
 	}
 
 	/* 

@@ -19,25 +19,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 09.12.2003 by RST.
-// $Id: Lib.java,v 1.1 2004-07-07 19:59:52 hzi Exp $
+// $Id: Lib.java,v 1.2 2004-07-08 15:58:48 hzi Exp $
 
 package jake2.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import jake2.Globals;
+import jake2.qcommon.Com;
+import jake2.qcommon.FS;
+
+import java.io.*;
 import java.nio.ByteBuffer;
-import java.text.BreakIterator;
 import java.util.Arrays;
 import java.util.StringTokenizer;
-import java.util.Vector;
-
-import jake2.*;
-import jake2.client.*;
-import jake2.game.*;
-import jake2.qcommon.*;
-import jake2.render.*;
-import jake2.server.*;
 
 public class Lib {
 
@@ -86,19 +79,21 @@ public class Lib {
 		return Com.sprintf("%8.2f %8.2f %8.2f", new Vargs().add(v[0]).add(v[1]).add(v[2]));
 	}
 	public static short rand() {
-		return (short) (Math.random() * 0x8000);
+		//return (short) (Math.random() * 0x8000);
+		return (short)Globals.rnd.nextInt(Short.MAX_VALUE+1);
 	}
 	public static float crandom() {
-		return (float) (Math.random() - 0.5) * 2.0f;
+		return (Globals.rnd.nextFloat() - 0.5f) * 2.0f;
+		//return (float) (Math.random() - 0.5) * 2.0f;
 	}
 	public static float random() {
-		return (float) Math.random();
+		return Globals.rnd.nextFloat();
 	}
 	public static float crand() {
-		return (float) (Math.random() - 0.5) * 2.0f;
+		return (Globals.rnd.nextFloat() - 0.5f) * 2.0f;
 	}
 	public static float frand() {
-		return (float) Math.random();
+		return Globals.rnd.nextFloat();
 	}
 
 	public static int strcmp(String in1, String in2) {
@@ -172,9 +167,9 @@ public class Lib {
 		return res;
 	}
 
-	public static int strlen(String in) {
-		return in.length();
-	}
+//	public static int strlen(String in) {
+//		return in.length();
+//	}
 
 	public static int strlen(char in[]) {
 		for (int i = 0; i < in.length; i++)
@@ -427,7 +422,6 @@ public class Lib {
 		catch (Exception e) {
 			return 1;
 		}
-		return 0;
 	}
 
 	public static byte[] getIntBytes(int c) {

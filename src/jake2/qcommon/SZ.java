@@ -2,7 +2,7 @@
  * SZ.java
  * Copyright (C) 2003
  * 
- * $Id: SZ.java,v 1.1 2004-07-07 19:59:33 hzi Exp $
+ * $Id: SZ.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.qcommon;
 
-import java.util.Arrays;
-
 import jake2.Defines;
 
 /**
@@ -42,10 +40,10 @@ public final class SZ {
 	
 	public static void Init(sizebuf_t buf, byte data[], int length) {
 		//memset (buf, 0, sizeof(*buf));
-		//TODO: slow but safe;
-		Arrays.fill(data,(byte)0);
 		buf.data = data;
 		buf.maxsize = length;
+		buf.cursize = 0;
+		buf.allowoverflow = buf.overflowed = false;
 	}
 
 

@@ -18,15 +18,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // Created by HOZ.
-// $Id: cmdalias_t.java,v 1.1 2004-07-07 19:59:24 hzi Exp $
+// $Id: cmdalias_t.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
 
 package jake2.game;
 
-/**
- * cmdalias_t
- */
-public final class cmdalias_t {
+public final class cmdalias_t
+{
 	public cmdalias_t next;
-	public String name="";
+	public String name = "";
 	public String value;
 }

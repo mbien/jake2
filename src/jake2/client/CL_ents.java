@@ -2,7 +2,7 @@
  * CL_ents.java
  * Copyright (C) 2004
  * 
- * $Id: CL_ents.java,v 1.1 2004-07-07 19:58:35 hzi Exp $
+ * $Id: CL_ents.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -36,9 +36,6 @@ import jake2.render.model_t;
 //	   cl_ents.c -- entity parsing and management
 public class CL_ents extends CL_inv {
 
-	//	  PGM
-	static int vidref_val;
-	//	  PGM
 
 	/*
 	=========================================================================
@@ -591,7 +588,6 @@ public class CL_ents extends CL_inv {
 
 	public static model_t S_RegisterSexedModel(entity_state_t  ent, String base) {
 		int n;
-		String p;
 		model_t mdl;
 		String model;
 		String buffer;
@@ -734,7 +730,8 @@ public class CL_ents extends CL_inv {
 			// tweak the color of beams
 			if ((renderfx & RF_BEAM)!=0) { // the four beam colors are encoded in 32 bits of skinnum (hack)
 				ent.alpha = 0.30f;
-				ent.skinnum = (s1.skinnum >> ((rand() % 4) * 8)) & 0xff;
+				ent.skinnum = (s1.skinnum >> ((rnd.nextInt(4)) * 8)) & 0xff;
+				Math.random();
 				ent.model = null;
 			}
 			else {
@@ -1012,7 +1009,7 @@ public class CL_ents extends CL_inv {
 				else if ((effects & EF_TRAP)!=0) {
 					ent.origin[2] += 32;
 					TrapParticles( ent);
-					i = (rand() % 100) + 100;
+					i = (rnd.nextInt(100)) + 100;
 					V.AddLight(ent.origin, i, 1, 0.8f, 0.1f);
 				}
 				else if ((effects & EF_FLAG1)!=0) {
@@ -1143,7 +1140,6 @@ public class CL_ents extends CL_inv {
 	static void CalcViewValues() {
 		int i;
 		float lerp, backlerp;
-		centity_t   ent;
 		frame_t   oldframe;
 		player_state_t   ps,   ops;
 
@@ -1163,7 +1159,6 @@ public class CL_ents extends CL_inv {
 			|| Math.abs(ops.pmove.origin[2] - ps.pmove.origin[2]) > 256 * 8)
 			ops = ps; // don't interpolate
 
-		ent =  cl_entities[cl.playernum + 1];
 		lerp = cl.lerpfrac;
 
 		// calculate the origin

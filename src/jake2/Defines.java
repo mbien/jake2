@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 31.10.2003 by RST.
-// $Id: Defines.java,v 1.1 2004-07-07 19:58:31 hzi Exp $
+// $Id: Defines.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
 
 /** Contains the definitions for the game engine. */
 
@@ -1367,5 +1367,14 @@ public class Defines extends Math3D {
 	public final static int MAX_LOCAL_SERVERS = 8;
 	public final static String NO_SERVER_STRING = "<no server>";
 	public final static int NUM_ADDRESSBOOK_ENTRIES = 9;
+
+	//	// rserr_t
+		static final int rserr_ok = 0;
+
+	static final int rserr_invalid_fullscreen = 1;
+
+	static final int rserr_invalid_mode = 2;
+
+	static final int rserr_unknown = 3;
 
 }

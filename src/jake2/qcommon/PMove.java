@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 25.01.2004 by RST.
-// $Id: PMove.java,v 1.1 2004-07-07 19:59:33 hzi Exp $
+// $Id: PMove.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
 
 package jake2.qcommon;
 
@@ -160,8 +160,8 @@ public class PMove extends Game
 			// save entity for contact
 			if (pm.numtouch < MAXTOUCH && trace.ent != null)
 			{
-				if (trace.ent.index != -1) 
-					Com.p("touch: " + trace.ent.classname + " (" + trace.ent.index + ")" );
+				//if (trace.ent.index != -1 && trace.ent.index != 0) 
+					//Com.p("touch: " + trace.ent.classname + " (" + trace.ent.index + ")" );
 					
 				pm.touchents[pm.numtouch] = trace.ent;
 				pm.numtouch++;
@@ -646,7 +646,6 @@ public class PMove extends Game
 			else
 			{
 				pm.groundentity = trace.ent;
-
 				// hitting solid ground will end a waterjump
 				if ((pm.s.pm_flags & PMF_TIME_WATERJUMP) != 0)
 				{
@@ -655,7 +654,7 @@ public class PMove extends Game
 				}
 
 				if (0 == (pm.s.pm_flags & PMF_ON_GROUND))
-				{ // just hit the ground
+				{ 	// just hit the ground
 					pm.s.pm_flags |= PMF_ON_GROUND;
 					// don't do landing time if we were just going down a slope
 					if (pml.velocity[2] < -200)

@@ -2,7 +2,7 @@
  * Mesh.java
  * Copyright (C) 2003
  *
- * $Id: Mesh.java,v 1.1 2004-07-07 19:59:41 hzi Exp $
+ * $Id: Mesh.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -237,7 +237,7 @@ public abstract class Mesh extends Light {
 				for ( i = 0; i < paliashdr.num_xyz; i++ )
 				{
 					l = shadedots[verts[i].lightnormalindex];
-					colorArrayBuf.put(l * shadelight[0]).put(l * shadelight[2]).put(l * shadelight[2]);
+					colorArrayBuf.put(l * shadelight[0]).put(l * shadelight[1]).put(l * shadelight[2]);
 				}
 			}
 

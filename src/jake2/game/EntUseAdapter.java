@@ -19,12 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 08.11.2003 by RST.
-// $Id: EntUseAdapter.java,v 1.1 2004-07-07 19:58:52 hzi Exp $
+// $Id: EntUseAdapter.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
 
 package jake2.game;
 
-public class EntUseAdapter   extends SuperAdapter {
-
-	public void use(edict_t self, edict_t other, edict_t activator) {
-	}
+public abstract class EntUseAdapter extends SuperAdapter
+{
+	public abstract void use(edict_t self, edict_t other, edict_t activator);
 }

@@ -19,21 +19,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 13.01.2004 by RST.
-// $Id: SV_MAIN.java,v 1.1 2004-07-07 19:59:49 hzi Exp $
+// $Id: SV_MAIN.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
 
 package jake2.server;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import jake2.*;
-import jake2.client.*;
+import jake2.Defines;
+import jake2.Globals;
 import jake2.game.*;
 import jake2.qcommon.*;
-import jake2.render.*;
 import jake2.sys.NET;
 import jake2.sys.Sys;
 import jake2.util.Lib;
+
+import java.io.IOException;
 
 public class SV_MAIN extends SV_GAME {
 
@@ -401,7 +399,7 @@ public class SV_MAIN extends SV_GAME {
 	}
 
 	public static int Rcon_Validate() {
-		if (0 == strlen(rcon_password.string))
+		if (0 == rcon_password.string.length())
 			return 0;
 
 		if (0 != strcmp(Cmd.Argv(1), rcon_password.string))
@@ -702,7 +700,7 @@ public class SV_MAIN extends SV_GAME {
 
 			// never get more than one tic behind
 			if (sv.time < svs.realtime) {
-				//if (sv_showclamp.value != 0)
+				if (sv_showclamp.value != 0)
 					Com.Printf("sv highclamp\n");
 				svs.realtime = sv.time;
 			}
@@ -744,7 +742,7 @@ public class SV_MAIN extends SV_GAME {
 		if (0== sv_timedemo.value && svs.realtime < sv.time) {
 			// never let the time get too far off
 			if (sv.time - svs.realtime > 100) {
-				//if (sv_showclamp.value != 0)
+				if (sv_showclamp.value != 0)
 					Com.Printf("sv lowclamp\n");
 				svs.realtime = sv.time - 100;
 			}
@@ -889,7 +887,7 @@ public class SV_MAIN extends SV_GAME {
 
 		// msg command
 		val = Info.Info_ValueForKey(cl.userinfo, "msg");
-		if (strlen(val) > 0) {
+		if (val.length() > 0) {
 			cl.messagelevel = atoi(val);
 		}
 
@@ -914,7 +912,8 @@ public class SV_MAIN extends SV_GAME {
 		Cvar.Get("dmflags", "" + DF_INSTANT_ITEMS, CVAR_SERVERINFO);
 		Cvar.Get("fraglimit", "0", CVAR_SERVERINFO);
 		Cvar.Get("timelimit", "0", CVAR_SERVERINFO);
-		Cvar.Get("cheats", "0", CVAR_SERVERINFO | CVAR_LATCH);
+		//TODO: set cheats 0
+		Cvar.Get("cheats", "1", CVAR_SERVERINFO | CVAR_LATCH);
 		Cvar.Get("protocol", "" + PROTOCOL_VERSION, CVAR_SERVERINFO | CVAR_NOSET);
 	 
 		SV_MAIN.maxclients = Cvar.Get("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 28.12.2003 by RST.
-// $Id: PlayerHud.java,v 1.1 2004-07-07 19:59:23 hzi Exp $
+// $Id: PlayerHud.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
 
 package jake2.game;
 
@@ -98,7 +98,14 @@ public class PlayerHud extends GameTarget {
 		}
 
 		level.intermissiontime = level.time;
-		level.changemap = targ.map;
+		
+		// TODO: BIG HACK TO IGNORE CINEMATIC
+		String xxx = targ.map;
+		int pos = xxx.indexOf(".cin");
+		if (pos != -1)
+			level.changemap = xxx.substring(pos + 5); // including "+" 
+		else
+			level.changemap = xxx;
 
 		if (level.changemap.indexOf('*') > -1) {
 			if (coop.value != 0) {
@@ -107,8 +114,8 @@ public class PlayerHud extends GameTarget {
 					if (!client.inuse)
 						continue;
 					// strip players of all keys between units
-					for (n = 0; n < MAX_ITEMS; n++) {
-						if ((itemlist[n].flags & IT_KEY) != 0)
+					for (n = 1; n < MAX_ITEMS; n++) {
+						if ((GameAI.itemlist[n].flags & IT_KEY) != 0)
 							client.client.pers.inventory[n] = 0;
 					}
 				}
@@ -410,7 +417,7 @@ public class PlayerHud extends GameTarget {
 			ent.client.ps.stats[STAT_AMMO] = 0;
 		}
 		else {
-			item = itemlist[ent.client.ammo_index];
+			item = GameAI.itemlist[ent.client.ammo_index];
 			ent.client.ps.stats[STAT_AMMO_ICON] = (short) gi.imageindex(item.icon);
 			ent.client.ps.stats[STAT_AMMO] = (short) ent.client.pers.inventory[ent.client.ammo_index];
 		}
@@ -483,7 +490,7 @@ public class PlayerHud extends GameTarget {
 		if (ent.client.pers.selected_item <= 0)
 			ent.client.ps.stats[STAT_SELECTED_ICON] = 0;
 		else
-			ent.client.ps.stats[STAT_SELECTED_ICON] = (short) gi.imageindex(itemlist[ent.client.pers.selected_item].icon);
+			ent.client.ps.stats[STAT_SELECTED_ICON] = (short) gi.imageindex(GameAI.itemlist[ent.client.pers.selected_item].icon);
 
 		ent.client.ps.stats[STAT_SELECTED_ITEM] = (short) ent.client.pers.selected_item;
 

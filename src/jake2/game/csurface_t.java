@@ -19,10 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 31.10.2003 by RST.
-// $Id: csurface_t.java,v 1.1 2004-07-07 19:59:24 hzi Exp $
+// $Id: csurface_t.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
 
 package jake2.game;
-public class csurface_t {
+public class csurface_t
+{
 	public String name = "";
 	public int flags;
 	public int value;

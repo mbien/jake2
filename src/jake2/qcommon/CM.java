@@ -19,17 +19,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 02.01.2004 by RST.
-// $Id: CM.java,v 1.1 2004-07-07 19:59:29 hzi Exp $
+// $Id: CM.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
 
 package jake2.qcommon;
 
 import jake2.Defines;
 import jake2.game.*;
-import jake2.util.Lib;
-import jake2.util.Math3D;
-import jake2.util.Vargs;
+import jake2.util.*;
 
-import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.nio.*;
 import java.util.Arrays;
@@ -171,9 +168,6 @@ public class CM extends Game {
 
 	public static cvar_t map_noareas;
 
-	public static int c_pointcontents;
-	public static int c_traces, c_brush_traces;
-
 	/*
 	===============================================================================
 	
@@ -282,15 +276,15 @@ public class CM extends Game {
 
 		map_name = name;
 
-		// debug (rst)		
+		// debug (rst)
+		/*		
 		Com.p("Testing pointleafes:");
 		for (int n = 0; n < 20; n++) {
 			float pos[] = new float[] {(float) (Math.random() * 1000), (float) (Math.random() * 1000), 0 };
 			int x = CM_PointLeafnum(pos);
-
 			Com.p(Lib.vtofsbeaty(pos) + " ---> leaf=" + x + " area = " +map_leafs[x].area);
 		}
-
+		*/
 		return map_cmodels[0];
 	}
 
@@ -785,6 +779,7 @@ public class CM extends Game {
 		}
 	}
 
+
 	/*
 	=================
 	CMod_LoadVisibility
@@ -1052,7 +1047,8 @@ public class CM extends Game {
 		while (true) {
 			if (nodenum < 0) {
 				if (leaf_count >= leaf_maxcount) {
-					Com.DPrintf("CM_BoxLeafnums_r: overflow\n");
+					//TODO: here is still an error.
+					//Com.DPrintf("CM_BoxLeafnums_r: overflow\n");
 					return;
 				}
 				leaf_list[leaf_count++] = -1 - nodenum;
@@ -1728,7 +1724,7 @@ public class CM extends Game {
 	*/
 
 	public static void FloodArea_r(carea_t area, int floodnum) {
-		Com.DPrintf("FloodArea_r(" + floodnum + ")...\n");
+		//Com.Printf("FloodArea_r(" + floodnum + ")...\n");
 		int i;
 		qfiles.dareaportal_t p;
 
@@ -1880,16 +1876,12 @@ public class CM extends Game {
 
 		byte buf[] = new byte[len];
 
-		try {
-			FS.Read(buf, len, f);
-		}
-		catch (FileNotFoundException e) {
-			Com.Printf("ERROR:" + e);
-		}
+
+		FS.Read(buf, len, f);
+
 		ByteBuffer bb = ByteBuffer.wrap(buf);
 		IntBuffer ib = bb.asIntBuffer();
 
-		//TODO: i assume upward counting (rst)
 		for (int n = 0; n < portalopen.length; n++)
 			portalopen[n] = ib.get() != 0;
 

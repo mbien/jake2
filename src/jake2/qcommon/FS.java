@@ -2,7 +2,7 @@
  * FS.java
  * Copyright (C) 2003
  * 
- * $Id: FS.java,v 1.1 2004-07-07 19:59:31 hzi Exp $
+ * $Id: FS.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -376,7 +376,7 @@ public final class FS extends Globals {
 	=============
 	*/
 	public static void FreeFile(byte[] buffer) {
-		Z.Free(buffer);
+		buffer = null;
 	}
 
 	static final int IDPAKHEADER = (('K' << 24) + ('C' << 16) + ('A' << 8) + 'P');

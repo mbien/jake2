@@ -2,7 +2,7 @@
  * Key.java
  * Copyright (C) 2003
  * 
- * $Id: Key.java,v 1.1 2004-07-07 19:58:42 hzi Exp $
+ * $Id: Key.java,v 1.2 2004-07-08 15:58:43 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -114,6 +114,7 @@ public class Key extends Globals {
 	public static final int K_MWHEELDOWN = 239;
 	public static final int K_MWHEELUP = 240;
 
+	static int anykeydown = 0;
 	static int key_waiting;
 	static int history_line = 0;
 	static boolean shift_down = false;
@@ -369,12 +370,12 @@ public class Key extends Globals {
 		Globals.keydown[key] = down;
 		if (down) {
 			if (key_repeats[key] == 1)
-				Globals.anykeydown++;
+				Key.anykeydown++;
 		}
 		else {
-			Globals.anykeydown--;
-			if (Globals.anykeydown < 0)
-				Globals.anykeydown = 0;
+			Key.anykeydown--;
+			if (Key.anykeydown < 0)
+				Key.anykeydown = 0;
 		}
 
 		//
@@ -586,15 +587,17 @@ public class Key extends Globals {
 				Cbuf.AddText(
 					new String(Globals.key_lines[Globals.edit_line], 1, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 1));
 
+			
 			Cbuf.AddText("\n");
-			Com.Printf(new String(Globals.key_lines[Globals.edit_line], 0, Lib.strlen(Globals.key_lines[Globals.edit_line])));
+		
+			Com.Printf(new String(Globals.key_lines[Globals.edit_line], 0, Lib.strlen(Globals.key_lines[Globals.edit_line])) + "\n");
 			Globals.edit_line = (Globals.edit_line + 1) & 31;
 			history_line = Globals.edit_line;
+		
 			Globals.key_lines[Globals.edit_line][0] = ']';
 			Globals.key_linepos = 1;
 			if (Globals.cls.state == Defines.ca_disconnected)
-				SCR.UpdateScreen(); // force an update, because the command
-			// may take some time
+				SCR.UpdateScreen(); // force an update, because the command may take some time
 			return;
 		}
 
@@ -791,7 +794,7 @@ public class Key extends Globals {
 	static void ClearStates() {
 		int i;
 
-		anykeydown = 0;
+		Key.anykeydown = 0;
 
 		for (i = 0; i < 256; i++) {
 			if (keydown[i] || key_repeats[i]!=0)

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 14.01.2004 by RST.
-// $Id: SV_INIT.java,v 1.1 2004-07-07 19:59:47 hzi Exp $
+// $Id: SV_INIT.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
 
 package jake2.server;
 
@@ -469,7 +469,7 @@ public class SV_INIT extends Globals  {
 		if (level.charAt(0) == '*')
 			level = level.substring(1);
 
-		l = strlen(level);
+		l = level.length();
 		if (l > 4 && level.endsWith(".cin")) {
 			SCR.BeginLoadingPlaque(); // for local system
 			SV_SEND.SV_BroadcastCommand("changing\n");

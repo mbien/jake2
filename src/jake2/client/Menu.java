@@ -2,7 +2,7 @@
  * Menu.java
  * Copyright (C) 2004
  * 
- * $Id: Menu.java,v 1.1 2004-07-07 19:58:51 hzi Exp $
+ * $Id: Menu.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -90,9 +90,8 @@ public final class Menu extends Key {
 
 	}
 
-	static class mcallback {
-		public void execute(Object self) {
-		}
+	abstract static class mcallback {
+		abstract public void execute(Object self);
 	}
 
 	static class menucommon_s {
@@ -149,8 +148,6 @@ public final class Menu extends Key {
 	public static int m_menudepth;
 
 	static void Banner(String name) {
-		int w, h;
-
 		Dimension dim = new Dimension();
 		Globals.re.DrawGetPicSize(dim, name);
 
@@ -723,7 +720,6 @@ public final class Menu extends Key {
 
 	static void UnbindCommand(String command) {
 		int j;
-		int l;
 		String b;
 
 		for (j = 0; j < 256; j++) {
@@ -738,7 +734,6 @@ public final class Menu extends Key {
 	static void FindKeysForCommand(String command, int twokeys[]) {
 		int count;
 		int j;
-		int l;
 		String b;
 
 		twokeys[0] = twokeys[1] = -1;
@@ -782,7 +777,7 @@ public final class Menu extends Key {
 
 			Menu_DrawString(a.x + a.parent.x + 16, a.y + a.parent.y, name);
 
-			x = strlen(name) * 8;
+			x = name.length() * 8;
 
 			if (keys[1] != -1) {
 				Menu_DrawString(a.x + a.parent.x + 24 + x, a.y + a.parent.y, "or");
@@ -2023,7 +2018,7 @@ public final class Menu extends Key {
 			for (j = 0; j + stringoffset < credits[i].length(); j++) {
 				int x;
 
-				x = (viddef.width - strlen(credits[i]) * 8 - stringoffset * 8) / 2 + (j + stringoffset) * 8;
+				x = (viddef.width - credits[i].length() * 8 - stringoffset * 8) / 2 + (j + stringoffset) * 8;
 
 				if (bold)
 					re.DrawChar(x, y, credits[i].charAt(j + stringoffset) + 128);
@@ -2057,8 +2052,6 @@ public final class Menu extends Key {
 	};
 	static void Menu_Credits_f() {
 		int n;
-		int count;
-		String p;
 		int isdeveloper = 0;
 
 		byte b[] = FS.LoadFile("credits");
@@ -2811,10 +2804,8 @@ public final class Menu extends Key {
 		//	  =======
 		
 		byte[] buffer = null;
-		//char mapsname[1024];
 		String mapsname;
 		String s;
-		int length;
 		int i;
 		RandomAccessFile fp;
 
@@ -4061,7 +4052,7 @@ public final class Menu extends Key {
 		s_player_name_field.length = 20;
 		s_player_name_field.visible_length = 20;
 		s_player_name_field.buffer = new StringBuffer(name.string);
-		s_player_name_field.cursor = strlen(name.string);
+		s_player_name_field.cursor = name.string.length();
 
 		s_player_model_title.type = MTYPE_SEPARATOR;
 		s_player_model_title.name = "model";
@@ -4747,7 +4738,7 @@ public final class Menu extends Key {
 
 	public static void Menu_DrawStatusBar(String string) {
 		if (string != null) {
-			int l = strlen(string);
+			int l = string.length();
 			int maxrow = viddef.height / 8;
 			int maxcol = viddef.width / 8;
 			int col = maxcol / 2 - l / 2;
@@ -4763,7 +4754,7 @@ public final class Menu extends Key {
 	public static void Menu_DrawString(int x, int y, String string) {
 		int i;
 
-		for (i = 0; i < strlen(string); i++) {
+		for (i = 0; i < string.length(); i++) {
 			re.DrawChar((x + i * 8), y, string.charAt(i));
 		}
 	}
@@ -4771,7 +4762,7 @@ public final class Menu extends Key {
 	public static void Menu_DrawStringDark(int x, int y, String string) {
 		int i;
 
-		for (i = 0; i < strlen(string); i++) {
+		for (i = 0; i < string.length(); i++) {
 			re.DrawChar((x + i * 8), y, string.charAt(i) + 128);
 		}
 	}
@@ -4779,16 +4770,18 @@ public final class Menu extends Key {
 	public static void Menu_DrawStringR2L(int x, int y, String string) {
 		int i;
 
-		for (i = 0; i < strlen(string); i++) {
-			re.DrawChar((x - i * 8), y, string.charAt(strlen(string) - i - 1));
+		int l = string.length();
+		for (i = 0; i < l; i++) {
+			re.DrawChar((x - i * 8), y, string.charAt(l - i - 1));
 		}
 	}
 
 	public static void Menu_DrawStringR2LDark(int x, int y, String string) {
 		int i;
 
-		for (i = 0; i < strlen(string); i++) {
-			re.DrawChar((x - i * 8), y, string.charAt(strlen(string) - i - 1) + 128);
+		int l = string.length();
+		for (i = 0; i < l; i++) {
+			re.DrawChar((x - i * 8), y, string.charAt(l - i - 1) + 128);
 		}
 	}
 

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 20.11.2003 by RST.
-// $Id: gitem_t.java,v 1.1 2004-07-07 19:59:25 hzi Exp $
+// $Id: gitem_t.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
 
 package jake2.game;
 
@@ -28,6 +28,7 @@ import jake2.*;
 
 public class gitem_t
 {
+	private static int id=0;	
 	public gitem_t(int xxx)
 	{
 		index = xxx;
@@ -82,6 +83,8 @@ public class gitem_t
 		this.info = info;
 		this.tag = tag;
 		this.precaches = precaches;
+		
+		this.index = id++;
 	}
 
 	String classname; // spawning name
@@ -120,7 +123,7 @@ public class gitem_t
 		gitem_t i2 = 
 		new gitem_t(
 			"item_armor_combat",
-			GameAI.Pickup_Armor,
+			GameAIAdapters.Pickup_Armor,
 			null,
 			null,
 			null,
@@ -133,7 +136,7 @@ public class gitem_t
 		/* pickup */
 		"Combat Armor",
 		/* width */
-		3, 0, null, Defines.IT_ARMOR, 0, GameAI.combatarmor_info, Defines.ARMOR_COMBAT,
+		3, 0, null, Defines.IT_ARMOR, 0, GameAIAdapters.combatarmor_info, Defines.ARMOR_COMBAT,
 		/* precache */
 		"");
 	}

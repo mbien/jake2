@@ -1,2 +1,4 @@
 build
 baseq2
+dist
+*.tar.gz

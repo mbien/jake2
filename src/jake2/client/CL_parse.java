@@ -2,7 +2,7 @@
  * CL_parse.java
  * Copyright (C) 2004
  * 
- * $Id: CL_parse.java,v 1.1 2004-07-07 19:58:38 hzi Exp $
+ * $Id: CL_parse.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -135,8 +135,7 @@ public class CL_parse extends CL_view {
 			MSG.WriteString(cls.netchan.message, "download " + cls.downloadname + " " + len);
 		}
 		else {
-			// TODO bugfix cwei
-			cls.downloadname = cls.downloadname.toLowerCase();
+			cls.downloadname = cls.downloadname;
 
 			Com.Printf("Downloading " + cls.downloadname + "\n");
 			MSG.WriteByte(cls.netchan.message, clc_stringcmd);
@@ -166,7 +165,7 @@ public class CL_parse extends CL_view {
 
 			filename = Cmd.Argv(1);
 
-			if (strstr(filename, "..")) {
+			if (filename.indexOf("..") != -1) {
 				Com.Printf("Refusing to download a path with ..\n");
 				return;
 			}
@@ -183,7 +182,7 @@ public class CL_parse extends CL_view {
 			// to the real name when done, so if interrupted
 			// a runt file wont be left
 			Com.StripExtension(cls.downloadname, cls.downloadtempname);
-			strcat(cls.downloadtempname, ".tmp");
+			cls.downloadtempname += ".tmp";
 
 			MSG.WriteByte(cls.netchan.message, clc_stringcmd);
 			MSG.WriteString(cls.netchan.message, "download " + cls.downloadname);
@@ -546,13 +545,8 @@ public class CL_parse extends CL_view {
 
 		// do something apropriate 
 
-		if (i >= CS_LIGHTS && i < CS_LIGHTS + MAX_LIGHTSTYLES)
-		{
+		if (i >= CS_LIGHTS && i < CS_LIGHTS + MAX_LIGHTSTYLES) {
 			SetLightstyle(i - CS_LIGHTS);
-		}
-		else if (i == CS_CDTRACK) {
-			if (cl.refresh_prepped)
-				CDAudio.CDAudio_Play(atoi(cl.configstrings[CS_CDTRACK]), true);
 		}
 		else if (i >= CS_MODELS && i < CS_MODELS + MAX_MODELS) {
 			if (cl.refresh_prepped) {
@@ -572,7 +566,7 @@ public class CL_parse extends CL_view {
 				cl.image_precache[i - CS_IMAGES] = re.RegisterPic(cl.configstrings[i]);
 		}
 		else if (i >= CS_PLAYERSKINS && i < CS_PLAYERSKINS + MAX_CLIENTS) {
-			if (cl.refresh_prepped && strcmp(olds, s)!=0)
+			if (cl.refresh_prepped && !olds.equals(s))
 				ParseClientinfo(i - CS_PLAYERSKINS);
 		}
 	}

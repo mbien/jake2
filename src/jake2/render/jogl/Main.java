@@ -2,7 +2,7 @@
  * Main.java
  * Copyright (C) 2003
  *
- * $Id: Main.java,v 1.1 2004-07-07 19:59:40 hzi Exp $
+ * $Id: Main.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -958,7 +958,7 @@ public abstract class Main extends Base {
 	protected void R_Register() {
 		r_lefthand = ri.Cvar_Get("hand", "0", Globals.CVAR_USERINFO | Globals.CVAR_ARCHIVE);
 		r_norefresh = ri.Cvar_Get("r_norefresh", "0", 0);
-		r_fullbright = ri.Cvar_Get("r_fullbright", "0", 0);
+		r_fullbright = ri.Cvar_Get("r_fullbright", "1", 0);
 		r_drawentities = ri.Cvar_Get("r_drawentities", "1", 0);
 		r_drawworld = ri.Cvar_Get("r_drawworld", "1", 0);
 		r_novis = ri.Cvar_Get("r_novis", "0", 0);
@@ -966,7 +966,7 @@ public abstract class Main extends Base {
 		r_lerpmodels = ri.Cvar_Get("r_lerpmodels", "1", 0);
 		r_speeds = ri.Cvar_Get("r_speeds", "0", 0);
 
-		r_lightlevel = ri.Cvar_Get("r_lightlevel", "0", 0);
+		r_lightlevel = ri.Cvar_Get("r_lightlevel", "1", 0);
 
 		gl_nosubimage = ri.Cvar_Get("gl_nosubimage", "0", 0);
 		gl_allow_software = ri.Cvar_Get("gl_allow_software", "0", 0);
@@ -1069,25 +1069,25 @@ public abstract class Main extends Base {
 
 		Dimension dim = new Dimension(vid.width, vid.height);
 
-		if ((err = GLimp_SetMode(dim, (int) gl_mode.value, fullscreen)) == Enum.rserr_ok) {
+		if ((err = GLimp_SetMode(dim, (int) gl_mode.value, fullscreen)) == rserr_ok) {
 			gl_state.prev_mode = (int) gl_mode.value;
 		}
 		else {
-			if (err == Enum.rserr_invalid_fullscreen) {
+			if (err == rserr_invalid_fullscreen) {
 				ri.Cvar_SetValue("vid_fullscreen", 0);
 				vid_fullscreen.modified = false;
 				ri.Con_Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
-				if ((err = GLimp_SetMode(dim, (int) gl_mode.value, false)) == Enum.rserr_ok)
+				if ((err = GLimp_SetMode(dim, (int) gl_mode.value, false)) == rserr_ok)
 					return true;
 			}
-			else if (err == Enum.rserr_invalid_mode) {
+			else if (err == rserr_invalid_mode) {
 				ri.Cvar_SetValue("gl_mode", gl_state.prev_mode);
 				gl_mode.modified = false;
 				ri.Con_Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
 			}
 
 			// try setting it back to something safe
-			if ((err = GLimp_SetMode(dim, gl_state.prev_mode, false)) != Enum.rserr_ok) {
+			if ((err = GLimp_SetMode(dim, gl_state.prev_mode, false)) != rserr_ok) {
 				ri.Con_Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
 				return false;
 			}

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 30.11.2003 by RST.
-// $Id: GameBase.java,v 1.1 2004-07-07 19:58:56 hzi Exp $
+// $Id: GameBase.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
 
 /** Father of all Objects. */
 
@@ -33,7 +33,9 @@ import jake2.qcommon.Com;
 import jake2.server.*;
 import jake2.util.*;
 
-public class GameBase extends Globals {
+public class GameBase extends Globals
+{
+	public static cplane_t dummyplane = new cplane_t(); 
 	public static game_locals_t game = new game_locals_t();
 	public static level_locals_t level = new level_locals_t();
 	public static game_import_t gi = new game_import_t();
@@ -186,7 +188,8 @@ public class GameBase extends Globals {
 	 * Slide off of the impacting object
 	 * returns the blocked flags (1 = floor, 2 = step / wall).
 	 */
-	public static int ClipVelocity(float[] in, float[] normal, float[] out, float overbounce) {
+	public static int ClipVelocity(float[] in, float[] normal, float[] out, float overbounce)
+	{
 		float backoff;
 		float change;
 		int i, blocked;
@@ -199,7 +202,8 @@ public class GameBase extends Globals {
 
 		backoff = Math3D.DotProduct(in, normal) * overbounce;
 
-		for (i = 0; i < 3; i++) {
+		for (i = 0; i < 3; i++)
+		{
 			change = normal[i] * backoff;
 			out[i] = in[i] - change;
 			if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
@@ -238,16 +242,19 @@ public class GameBase extends Globals {
 	 * Call with null as from parameter to search from array beginning.
 	 */
 
-	public static EdictIterator G_Find(EdictIterator from, EdictFindFilter eff, String s) {
+	public static EdictIterator G_Find(EdictIterator from, EdictFindFilter eff, String s)
+	{
 
 		if (from == null)
 			from = new EdictIterator(0);
 		else
 			from.i++;
 
-		for (; from.i < globals.num_edicts; from.i++) {
+		for (; from.i < globals.num_edicts; from.i++)
+		{
 			from.o = g_edicts[from.i];
-			if (from.o.classname == null) {
+			if (from.o.classname == null)
+			{
 				Com.Printf("edict with classname = null" + from.o.index);
 			}
 
@@ -262,7 +269,8 @@ public class GameBase extends Globals {
 	}
 
 	// comfort version (rst)
-	public static edict_t G_FindEdict(EdictIterator from, EdictFindFilter eff, String s) {
+	public static edict_t G_FindEdict(EdictIterator from, EdictFindFilter eff, String s)
+	{
 		EdictIterator ei = G_Find(from, eff, s);
 		if (ei == null)
 			return null;
@@ -273,7 +281,8 @@ public class GameBase extends Globals {
 	/** 
 	 * Returns entities that have origins within a spherical area.
 	*/
-	public static EdictIterator findradius(EdictIterator from, float[] org, float rad) {
+	public static EdictIterator findradius(EdictIterator from, float[] org, float rad)
+	{
 		float[] eorg = { 0, 0, 0 };
 		int j;
 
@@ -282,7 +291,8 @@ public class GameBase extends Globals {
 		else
 			from.i++;
 
-		for (; from.i < globals.num_edicts; from.i++) {
+		for (; from.i < globals.num_edicts; from.i++)
+		{
 			from.o = g_edicts[from.i];
 			if (!from.o.inuse)
 				continue;
@@ -311,24 +321,28 @@ public class GameBase extends Globals {
 
 	public static int MAXCHOICES = 8;
 
-	public static edict_t G_PickTarget(String targetname) {
+	public static edict_t G_PickTarget(String targetname)
+	{
 		int num_choices = 0;
 		edict_t choice[] = new edict_t[MAXCHOICES];
 
-		if (targetname == null) {
+		if (targetname == null)
+		{
 			gi.dprintf("G_PickTarget called with null targetname\n");
 			return null;
 		}
 
 		EdictIterator es = null;
 
-		while ((es = G_Find(es, findByTarget, targetname)) != null) {
+		while ((es = G_Find(es, findByTarget, targetname)) != null)
+		{
 			choice[num_choices++] = es.o;
 			if (num_choices == MAXCHOICES)
 				break;
 		}
 
-		if (num_choices == 0) {
+		if (num_choices == 0)
+		{
 			gi.dprintf("G_PickTarget: target " + targetname + " not found\n");
 			return null;
 		}
@@ -341,21 +355,26 @@ public class GameBase extends Globals {
 	public static float[] VEC_DOWN = { 0, -2, 0 };
 	public static float[] MOVEDIR_DOWN = { 0, 0, -1 };
 
-	public static void G_SetMovedir(float[] angles, float[] movedir) {
-		if (Math3D.VectorCompare(angles, VEC_UP) != 0) {
+	public static void G_SetMovedir(float[] angles, float[] movedir)
+	{
+		if (Math3D.VectorCompare(angles, VEC_UP) != 0)
+		{
 			Math3D.VectorCopy(MOVEDIR_UP, movedir);
 		}
-		else if (Math3D.VectorCompare(angles, VEC_DOWN) != 0) {
+		else if (Math3D.VectorCompare(angles, VEC_DOWN) != 0)
+		{
 			Math3D.VectorCopy(MOVEDIR_DOWN, movedir);
 		}
-		else {
+		else
+		{
 			Math3D.AngleVectors(angles, movedir, null, null);
 		}
 
 		Math3D.VectorClear(angles);
 	}
 
-	public static String G_CopyString(String in) {
+	public static String G_CopyString(String in)
+	{
 		return new String(in);
 	}
 
@@ -365,7 +384,8 @@ public class GameBase extends Globals {
 	
 	============
 	*/
-	public static void G_TouchTriggers(edict_t ent) {
+	public static void G_TouchTriggers(edict_t ent)
+	{
 		int i, num;
 		edict_t touch[] = new edict_t[MAX_EDICTS], hit;
 
@@ -377,19 +397,24 @@ public class GameBase extends Globals {
 
 		// be careful, it is possible to have an entity in this
 		// list removed before we get to it (killtriggered)
-		for (i = 0; i < num; i++) {
+		for (i = 0; i < num; i++)
+		{
 			hit = touch[i];
 			if (!hit.inuse)
 				continue;
 
 			if (hit.touch == null)
 				continue;
-
-			hit.touch.touch(hit, ent, null, null);
+			hit.touch.touch(hit, ent, GameBase.dummyplane, null);
 		}
 	}
 
 	public static pushed_t pushed[] = new pushed_t[MAX_EDICTS];
+	static {
+		for (int n = 0; n < MAX_EDICTS; n++)
+			pushed[n] = new pushed_t();
+	}
+
 	public static int pushed_p;
 
 	public static edict_t obstacle;
@@ -414,11 +439,13 @@ public class GameBase extends Globals {
 	
 	================
 	*/
-	public static void G_RunEntity(edict_t ent) {
+	public static void G_RunEntity(edict_t ent)
+	{
 		if (ent.prethink != null)
 			ent.prethink.think(ent);
 
-		switch ((int) ent.movetype) {
+		switch ((int) ent.movetype)
+		{
 			case MOVETYPE_PUSH :
 			case MOVETYPE_STOP :
 				SV.SV_Physics_Pusher(ent);
@@ -450,15 +477,19 @@ public class GameBase extends Globals {
 	================
 	*/
 	public static int DI_NODIR = -1;
-	public static void assert1(boolean cond) {
-		if (!cond) {
+	public static void assert1(boolean cond)
+	{
+		if (!cond)
+		{
 
-			try {
+			try
+			{
 
 				int a[] = null;
 				int b = a[0];
 			}
-			catch (Exception e) {
+			catch (Exception e)
+			{
 				System.err.println("assertion failed!");
 				e.printStackTrace();
 			}
@@ -466,16 +497,19 @@ public class GameBase extends Globals {
 		}
 	}
 
-	public static void ClearBounds(float[] mins, float[] maxs) {
+	public static void ClearBounds(float[] mins, float[] maxs)
+	{
 		mins[0] = mins[1] = mins[2] = 99999;
 		maxs[0] = maxs[1] = maxs[2] = -99999;
 	}
 
-	public static void AddPointToBounds(float[] v, float[] mins, float[] maxs) {
+	public static void AddPointToBounds(float[] v, float[] mins, float[] maxs)
+	{
 		int i;
 		float val;
 
-		for (i = 0; i < 3; i++) {
+		for (i = 0; i < 3; i++)
+		{
 			val = v[i];
 			if (val < mins[i])
 				mins[i] = val;
@@ -484,23 +518,28 @@ public class GameBase extends Globals {
 		}
 	}
 
-	public static EdictFindFilter findByTarget = new EdictFindFilter() {
-		public boolean matches(edict_t e, String s) {
+	public static EdictFindFilter findByTarget = new EdictFindFilter()
+	{
+		public boolean matches(edict_t e, String s)
+		{
 			if (e.targetname == null)
 				return false;
 			return e.targetname.equalsIgnoreCase(s);
 		}
 	};
 
-	public static EdictFindFilter findByClass = new EdictFindFilter() {
-		public boolean matches(edict_t e, String s) {
+	public static EdictFindFilter findByClass = new EdictFindFilter()
+	{
+		public boolean matches(edict_t e, String s)
+		{
 			return e.classname.equalsIgnoreCase(s);
 		}
 	};
 
 	//===================================================================
 
-	public static void ShutdownGame() {
+	public static void ShutdownGame()
+	{
 		gi.dprintf("==== ShutdownGame ====\n");
 
 		//gi.FreeTags (TAG_LEVEL);
@@ -514,13 +553,15 @@ public class GameBase extends Globals {
 	ClientEndServerFrames
 	=================
 	*/
-	public static void ClientEndServerFrames() {
+	public static void ClientEndServerFrames()
+	{
 		int i;
 		edict_t ent;
 
 		// calc the player views now that all pushing
 		// and damage has been added
-		for (i = 0; i < maxclients.value; i++) {
+		for (i = 0; i < maxclients.value; i++)
+		{
 			ent = g_edicts[1 + i];
 			if (!ent.inuse || null == ent.client)
 				continue;
@@ -536,7 +577,8 @@ public class GameBase extends Globals {
 	Returns the created target changelevel
 	=================
 	*/
-	public static edict_t CreateTargetChangeLevel(String map) {
+	public static edict_t CreateTargetChangeLevel(String map)
+	{
 		edict_t ent;
 
 		ent = Game.G_Spawn();
@@ -553,7 +595,8 @@ public class GameBase extends Globals {
 	The timelimit or fraglimit has been exceeded
 	=================
 	*/
-	public static void EndDMLevel() {
+	public static void EndDMLevel()
+	{
 		edict_t ent;
 		//char * s, * t, * f;
 		//static const char * seps = " ,\n\r";
@@ -561,23 +604,28 @@ public class GameBase extends Globals {
 		String seps = " ,\n\r";
 
 		// stay on same level flag
-		if (((int) dmflags.value & DF_SAME_LEVEL) != 0) {
+		if (((int) dmflags.value & DF_SAME_LEVEL) != 0)
+		{
 			Game.BeginIntermission(CreateTargetChangeLevel(level.mapname));
 			return;
 		}
 
 		// see if it's in the map list
-		if (sv_maplist.string.length() > 0) {
+		if (sv_maplist.string.length() > 0)
+		{
 			s = sv_maplist.string;
 			f = null;
 			StringTokenizer tk = new StringTokenizer(s, seps);
 			t = tk.nextToken();
 			//t = strtok(s, seps);
-			while (t != null) {
-				if (Q_stricmp(t, level.mapname) == 0) {
+			while (t != null)
+			{
+				if (Q_stricmp(t, level.mapname) == 0)
+				{
 					// it's in the list, go to the next one
 					t = tk.nextToken();
-					if (t == null) { // end of list, go to first one
+					if (t == null)
+					{ // end of list, go to first one
 						if (f == null) // there isn't a first one, same level
 							Game.BeginIntermission(CreateTargetChangeLevel(level.mapname));
 						else
@@ -596,10 +644,12 @@ public class GameBase extends Globals {
 
 		if (level.nextmap.length() > 0) // go to a specific map
 			Game.BeginIntermission(CreateTargetChangeLevel(level.nextmap));
-		else { // search for a changelevel
+		else
+		{ // search for a changelevel
 			EdictIterator edit = null;
 			edit = G_Find(edit, findByClass, "target_changelevel");
-			if (edit == null) { // the map designer didn't include a changelevel,
+			if (edit == null)
+			{ // the map designer didn't include a changelevel,
 				// so create a fake ent that goes back to the same level
 				Game.BeginIntermission(CreateTargetChangeLevel(level.mapname));
 				return;
@@ -614,12 +664,14 @@ public class GameBase extends Globals {
 	CheckNeedPass
 	=================
 	*/
-	public static void CheckNeedPass() {
+	public static void CheckNeedPass()
+	{
 		int need;
 
 		// if password or spectator_password has changed, update needpass
 		// as needed
-		if (password.modified || spectator_password.modified) {
+		if (password.modified || spectator_password.modified)
+		{
 			password.modified = spectator_password.modified = false;
 
 			need = 0;
@@ -638,7 +690,8 @@ public class GameBase extends Globals {
 	CheckDMRules
 	=================
 	*/
-	public static void CheckDMRules() {
+	public static void CheckDMRules()
+	{
 		int i;
 		gclient_t cl;
 
@@ -648,21 +701,26 @@ public class GameBase extends Globals {
 		if (0 == deathmatch.value)
 			return;
 
-		if (timelimit.value != 0) {
-			if (level.time >= timelimit.value * 60) {
+		if (timelimit.value != 0)
+		{
+			if (level.time >= timelimit.value * 60)
+			{
 				gi.bprintf(PRINT_HIGH, "Timelimit hit.\n");
 				EndDMLevel();
 				return;
 			}
 		}
 
-		if (fraglimit.value != 0) {
-			for (i = 0; i < maxclients.value; i++) {
+		if (fraglimit.value != 0)
+		{
+			for (i = 0; i < maxclients.value; i++)
+			{
 				cl = game.clients[i];
 				if (!g_edicts[i + 1].inuse)
 					continue;
 
-				if (cl.resp.score >= fraglimit.value) {
+				if (cl.resp.score >= fraglimit.value)
+				{
 					gi.bprintf(PRINT_HIGH, "Fraglimit hit.\n");
 					EndDMLevel();
 					return;
@@ -676,7 +734,8 @@ public class GameBase extends Globals {
 	ExitLevel
 	=============
 	*/
-	public static void ExitLevel() {
+	public static void ExitLevel()
+	{
 		int i;
 		edict_t ent;
 		//char command[256];
@@ -690,7 +749,8 @@ public class GameBase extends Globals {
 		ClientEndServerFrames();
 
 		// clear some things before going to next level
-		for (i = 0; i < maxclients.value; i++) {
+		for (i = 0; i < maxclients.value; i++)
+		{
 			ent = g_edicts[1 + i];
 			if (!ent.inuse)
 				continue;
@@ -707,7 +767,8 @@ public class GameBase extends Globals {
 	Advances the world by 0.1 seconds
 	================
 	*/
-	public static void G_RunFrame() {
+	public static void G_RunFrame()
+	{
 		int i;
 		edict_t ent;
 
@@ -719,7 +780,8 @@ public class GameBase extends Globals {
 
 		// exit intermissions
 
-		if (level.exitintermission) {
+		if (level.exitintermission)
+		{
 			ExitLevel();
 			return;
 		}
@@ -729,7 +791,8 @@ public class GameBase extends Globals {
 		// even the world gets a chance to think
 		//
 
-		for (i = 0; i < globals.num_edicts; i++) {
+		for (i = 0; i < globals.num_edicts; i++)
+		{
 			ent = g_edicts[i];
 			if (!ent.inuse)
 				continue;
@@ -739,34 +802,38 @@ public class GameBase extends Globals {
 			VectorCopy(ent.s.origin, ent.s.old_origin);
 
 			// if the ground entity moved, make sure we are still on it
-			if ((ent.groundentity != null) && (ent.groundentity.linkcount != ent.groundentity_linkcount)) {
+			if ((ent.groundentity != null) && (ent.groundentity.linkcount != ent.groundentity_linkcount))
+			{
 				ent.groundentity = null;
-				if (0 == (ent.flags & (FL_SWIM | FL_FLY)) && (ent.svflags & SVF_MONSTER) != 0) {
+				if (0 == (ent.flags & (FL_SWIM | FL_FLY)) && (ent.svflags & SVF_MONSTER) != 0)
+				{
 					M.M_CheckGround(ent);
 				}
 			}
 
-			if (i > 0 && i <= maxclients.value) {
+			if (i > 0 && i <= maxclients.value)
+			{
 				Game.ClientBeginServerFrame(ent);
 				continue;
 			}
 
-			//TODO: RST: disabled for debugging
-			//if (ent.classname.startsWith("trigger") )//|| ent.classname.startsWith("monster"))
-			//G_RunEntity(ent);
+			//TODO: RST: disabled for debugging;
+			//if (!ent.classname.startsWith("monster") || ent.index == 312)
+				G_RunEntity(ent);
 
-			if (ent == g_edicts[307])
-				G_RunEntity(ent);
-			else if (ent == g_edicts[1])
-				G_RunEntity(ent);
-				
-			else if (true)
-				if (ent.classname.startsWith("monster_soldier")
-					|| ent.classname.startsWith("target")
-					|| ent.classname.startsWith(
-						"misc_explo") //ent.classname.startsWith("func_door")
-				) //|| ent.classname.startsWith("monster"))
-					G_RunEntity(ent);
+			//			if (ent == g_edicts[307])
+			//				G_RunEntity(ent);
+			//			else if (ent == g_edicts[1])
+			//				G_RunEntity(ent);
+			//				
+			//			else if (true)
+			//				if (ent.classname.startsWith("monster")
+			//					|| ent.classname.startsWith("trigger") 
+			//					|| ent.classname.startsWith("target")
+			//					|| ent.classname.startsWith(
+			//						"misc_explo") //ent.classname.startsWith("func_door")
+			//				) //|| ent.classname.startsWith("monster"))
+			//					G_RunEntity(ent);
 
 		}
 
@@ -789,11 +856,14 @@ public class GameBase extends Globals {
 	=================
 	*/
 
-	public static game_export_t GetGameApi(game_import_t imp) {
+	public static game_export_t GetGameApi(game_import_t imp)
+	{
 		gi = imp;
 
-		gi.pointcontents = new pmove_t.PointContentsAdapter() {
-			public int pointcontents(float[] o) {
+		gi.pointcontents = new pmove_t.PointContentsAdapter()
+		{
+			public int pointcontents(float[] o)
+			{
 				return SV_WORLD.SV_PointContents(o);
 			}
 		};

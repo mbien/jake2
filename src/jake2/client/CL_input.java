@@ -2,7 +2,7 @@
  * CL_input.java
  * Copyright (C) 2004
  * 
- * $Id: CL_input.java,v 1.1 2004-07-07 19:58:37 hzi Exp $
+ * $Id: CL_input.java,v 1.2 2004-07-08 15:58:43 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -341,7 +341,7 @@ public class CL_input extends CL_ents {
 			cmd.buttons |= BUTTON_USE;
 		in_use.state &= ~2;
 
-		if (anykeydown != 0 && cls.key_dest == key_game)
+		if (Key.anykeydown != 0 && cls.key_dest == key_game)
 			cmd.buttons |= BUTTON_ANY;
 
 		// send milliseconds of time to apply the move
@@ -460,8 +460,7 @@ public class CL_input extends CL_ents {
 		Cmd.AddCommand("-klook", new xcommand_t() {
 			public void execute() {IN_KLookUp();}});
 
-		// TODO nodelta
-		cl_nodelta = Cvar.Get("cl_nodelta", "1",0);
+		cl_nodelta = Cvar.Get("cl_nodelta", "0",0);
 	}
 
 	/*
