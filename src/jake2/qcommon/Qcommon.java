@@ -2,7 +2,7 @@
  * Qcommon.java
  * Copyright 2003
  * 
- * $Id: Qcommon.java,v 1.3.2.3 2004-09-06 19:39:18 hzi Exp $
+ * $Id: Qcommon.java,v 1.3.2.4 2004-09-08 09:45:46 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -75,6 +75,8 @@ public final class Qcommon extends Globals {
 			FS.InitFilesystem();
 
 			Cbuf.AddText("exec default.cfg\n");
+			Cbuf.Execute();
+			Cvar.Set("vid_fullscreen", "0");
 			Cbuf.AddText("exec config.cfg\n");
 
 			Cbuf.AddEarlyCommands(true);
