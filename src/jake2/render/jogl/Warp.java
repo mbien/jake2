@@ -2,7 +2,7 @@
  * Warp.java
  * Copyright (C) 2003
  *
- * $Id: Warp.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
+ * $Id: Warp.java,v 1.3 2004-07-08 20:24:30 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -698,8 +698,7 @@ public abstract class Warp extends Model {
 				pathname = "env/" + skyname + suf[i] + ".pcx";
 			} else {
 				// Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
-				// TODO impl: LoadTGA
-				pathname = "env/" + skyname + suf[i] + ".pcx";
+				pathname = "env/" + skyname + suf[i] + ".tga";
 			}
 
 			sky_images[i] = GL_FindImage(pathname, it_sky);

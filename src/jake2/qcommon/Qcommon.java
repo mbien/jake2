@@ -2,7 +2,7 @@
  * Qcommon.java
  * Copyright 2003
  * 
- * $Id: Qcommon.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
+ * $Id: Qcommon.java,v 1.3 2004-07-08 20:24:48 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -110,13 +110,13 @@ public final class Qcommon extends Globals {
 			NET.NET_Init();
 			Netchan.Netchan_Init();
 
-			//SV_MAIN.SV_Init();
+			SV_MAIN.SV_Init();
 			CL.Init();
 
 			// add + commands from command line
 			if (!Cbuf.AddLateCommands()) {
 				// if the user didn't give any commands, run default action
-				Cbuf.AddText("d1\n");
+				//Cbuf.AddText("d1\n");
 				Cbuf.Execute();
 			} else {
 				// the user asked for something explicit
@@ -183,7 +183,6 @@ public final class Qcommon extends Globals {
 			Globals.logfile_active= Cvar.Get("logfile", "0", 0);
 			Globals.showtrace= Cvar.Get("showtrace", "0", 0);
 			Globals.dedicated= Cvar.Get("dedicated", "0", CVAR_NOSET);
-			Globals.slomo= Cvar.Get("slomo", "1", 0);
 			String s = Com.sprintf("%4.2f %s %s %s",
 					new Vargs(4)
 						.add(Globals.VERSION)

@@ -2,7 +2,7 @@
  * Sys.java
  * Copyright (C) 2003
  * 
- * $Id: Sys.java,v 1.2 2004-07-08 15:58:47 hzi Exp $
+ * $Id: Sys.java,v 1.3 2004-07-08 20:24:30 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -202,7 +202,7 @@ public final class Sys extends Defines {
 			return 0;
 		}
 		
-		return Globals.curtime = (int) (Globals.slomo.value * (System.currentTimeMillis() - secbase));
+		return Globals.curtime = (int) (System.currentTimeMillis() - secbase);
 			 
 	}
 

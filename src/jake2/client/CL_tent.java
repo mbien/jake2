@@ -2,7 +2,7 @@
  * CL_tent.java
  * Copyright (C) 2004
  * 
- * $Id: CL_tent.java,v 1.1 2004-07-07 19:58:40 hzi Exp $
+ * $Id: CL_tent.java,v 1.2 2004-07-08 20:24:29 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -906,7 +906,7 @@ public class CL_tent extends Globals {
 				ex.lightcolor[2] = 0.5f;
 				ex.ent.angles[1] = rand() % 360;
 				ex.ent.model = cl_mod_explo4;
-				if (frand() < 0.5)
+				if (Globals.rnd.nextFloat() < 0.5)
 					ex.baseframe = 15;
 				ex.frames = 15;
 				CL.ExplosionParticles(pos);
@@ -934,7 +934,7 @@ public class CL_tent extends Globals {
 					ex.ent.model = cl_mod_explo4; // PMM
 				else
 					ex.ent.model = cl_mod_explo4_big;
-				if (frand() < 0.5)
+				if (Globals.rnd.nextFloat() < 0.5)
 					ex.baseframe = 15;
 				ex.frames = 15;
 				if ((type != TE_EXPLOSION1_BIG) && (type != TE_EXPLOSION1_NP)) // PMM
@@ -1107,7 +1107,7 @@ public class CL_tent extends Globals {
 				ex.lightcolor[2] = 0.5f;
 				ex.ent.angles[1] = rand() % 360;
 				ex.ent.model = cl_mod_explo4;
-				if (frand() < 0.5)
+				if (Globals.rnd.nextFloat() < 0.5)
 					ex.baseframe = 15;
 				ex.frames = 15;
 				if (type == TE_ROCKET_EXPLOSION_WATER)

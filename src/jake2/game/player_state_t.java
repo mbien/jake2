@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 31.10.2003 by RST.
-// $Id: player_state_t.java,v 1.1 2004-07-07 19:59:26 hzi Exp $
+// $Id: player_state_t.java,v 1.2 2004-07-08 20:24:29 hzi Exp $
 
 package jake2.game;
 
@@ -95,7 +95,7 @@ public class player_state_t {
 		fov = from.fov;
 		rdflags = from.rdflags;
 		
-		stats = new short[Defines.MAX_STATS];
+		//stats = new short[Defines.MAX_STATS];
 		System.arraycopy(from.stats, 0, stats,0, Defines.MAX_STATS);
 		
 		return this;

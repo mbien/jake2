@@ -2,7 +2,7 @@
  * SND_JAVA.java
  * Copyright (C) 2004
  * 
- * $Id: SND_JAVA.java,v 1.1 2004-07-07 19:58:51 hzi Exp $
+ * $Id: SND_JAVA.java,v 1.2 2004-07-08 20:24:29 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -146,7 +146,7 @@ public class SND_JAVA extends Globals {
 		runLine();
 	}
 
-	void SNDDMA_BeginPainting() {}
+	static void SNDDMA_BeginPainting() {}
 
 	private static int pos = 0;
 	static void runLine() {

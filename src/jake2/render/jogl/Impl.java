@@ -2,7 +2,7 @@
  * Impl.java
  * Copyright (C) 2003
  *
- * $Id: Impl.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
+ * $Id: Impl.java,v 1.3 2004-07-08 20:24:30 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -137,11 +137,12 @@ public class Impl extends Misc implements GLEventListener {
 		canvas.addMouseListener(KBD.listener);
 		canvas.addMouseMotionListener(KBD.listener);
 		window.addComponentListener(KBD.listener);
-
+		canvas.requestFocus();
+		
 		window.pack();
 		window.show();
 		canvas.requestFocus();
-
+		
 		this.canvas = canvas;
 
 		vid.width = newDim.width;
@@ -222,12 +223,10 @@ public class Impl extends Misc implements GLEventListener {
 		this.contextInUse = true;
 
 		if (switchToCallback) {
-			if (callback == null)
-				ri.updateScreenCallback();
-			else
-				callback.execute();
+			callback.execute();
 		}
-		else {
+		else
+		{
 
 			// after the first run (initialization) switch to callback
 			switchToCallback = true;
@@ -271,9 +270,9 @@ public class Impl extends Misc implements GLEventListener {
 	 * @see jake2.client.refexport_t#updateScreen()
 	 */
 	public void updateScreen(xcommand_t callback) {
-		if (canvas == null) {
-			throw new IllegalStateException("Refresh modul \"" + DRIVER_NAME + "\" have to be initialized.");
-		}
+//		if (canvas == null) {
+//			throw new IllegalStateException("Refresh modul \"" + DRIVER_NAME + "\" have to be initialized.");
+//		}
 		this.callback = callback;
 		canvas.display();
 	}

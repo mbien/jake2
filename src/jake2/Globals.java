@@ -2,7 +2,7 @@
  * Globals.java
  * Copyright (C) 2003
  * 
- * $Id: Globals.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
+ * $Id: Globals.java,v 1.3 2004-07-08 20:24:48 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -84,7 +84,6 @@ public class Globals extends Defines {
 	public static cvar_t cl_upspeed;
 	public static cvar_t cl_yawspeed;
 	public static cvar_t dedicated;
-	public static cvar_t slomo;
 	public static cvar_t developer;
 	public static cvar_t fixedtime;
 	public static cvar_t freelook;

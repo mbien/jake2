@@ -2,7 +2,7 @@
  * SCR.java
  * Copyright (C) 2003
  * 
- * $Id: SCR.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
+ * $Id: SCR.java,v 1.3 2004-07-08 20:24:29 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -84,7 +84,6 @@ public final class SCR extends Globals
 	static cvar_t scr_graphshift;
 	static cvar_t scr_drawall;
 	static cvar_t fps;
-	static cvar_t fps_updates;
 
 	static dirty_t scr_dirty = new dirty_t();
 	static dirty_t[] scr_old_dirty = { new dirty_t(), new dirty_t()};
@@ -436,7 +435,6 @@ public final class SCR extends Globals
 		scr_graphshift = Cvar.Get("graphshift", "0", 0);
 		scr_drawall = Cvar.Get("scr_drawall", "1", 0);
 		fps = Cvar.Get("fps", "0", 0);
-		fps_updates = Cvar.Get("fps_updates", "1", 0);
 
 		//
 		// register our commands
@@ -1421,10 +1419,16 @@ public final class SCR extends Globals
 			crosshair_pic);
 	}
 
+	private static xcommand_t updateScreenCallback = new xcommand_t() {
+		public void execute() {
+			UpdateScreen2();
+		}
+	};	 
+
 	// wird anstelle von der richtigen UpdateScreen benoetigt
 	public static void UpdateScreen()
 	{
-		Globals.re.updateScreen(null);
+		Globals.re.updateScreen(updateScreenCallback);
 	}
 
 	/*
