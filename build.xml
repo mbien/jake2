@@ -1,6 +1,12 @@
 <!-- Buildfile -->
-<project name="jake2" default="jar" basedir=".">
+<project name="jake2" default="dist" basedir=".">
 
+	<taskdef name="proguard" classname="proguard.ant.ProGuardTask">
+		<classpath>
+    		<pathelement location="lib/proguard/proguard.jar"/>
+    	</classpath>
+	</taskdef>
+	
 	<!-- properties -->
 	<property name="src" location="src"/>
 	<property name="test" location="test"/>
@@ -9,28 +15,20 @@
 
 	<!-- different classpaths -->
 	<path id="build.class.path">
-		<pathelement location="lib/jogl/jogl.jar"/>
-	</path>
-	
-	<path id="test.class.path">
-		<pathelement path="${build}"/>
-	</path>
-	
-	<path id="source.path">
-		<pathelement location="src"/>
+		<pathelement location="lib/jogl/linux/jogl.jar"/>
+		<pathelement location="lib/joal/linux/joal.jar"/>
 	</path>
 	
 	<!-- initialize directories -->
 	<target name="init">
 		<mkdir dir="${build}"/>
-		<mkdir dir="${dist}"/>
+		<mkdir dir="${dist}/lib"/>
 	</target>
 
 	<!-- compile -->
 	<target name="compile" depends="init">
-		<javac destdir="${build}" optimize="on" debug="on" source="1.4">
+		<javac destdir="${build}" optimize="on" debug="off" source="1.4">
 			<src path="${src}"/>
-			<src path="${test}"/>
 			<include name="jake2/**"/>
 			<classpath refid="build.class.path"/>
 		</javac>
@@ -38,11 +36,32 @@
 		
 	<!-- copy libs -->
 	<target name="copylibs">
+		<copy todir="${dist}/lib/linux">
+			<fileset dir="lib/jogl/linux">
+				<include name="*"/>
+			</fileset>
+			<fileset dir="lib/joal/linux">
+				<include name="*"/>
+			</fileset>			
+		</copy>
+		<copy todir="${dist}/lib/windows">
+			<fileset dir="lib/jogl/windows">
+				<include name="*"/>
+			</fileset>
+			<fileset dir="lib/joal/windows">
+				<include name="*"/>
+			</fileset>			
+		</copy>		
 		<copy todir="${dist}">
-			<fileset dir="lib">
-				<include name="/jogl/jogl.jar"/>
+			<fileset dir="scripts">
+				<include name="Jake2.*"/>
 			</fileset>
 		</copy>
+		<chmod perm="755">
+			<fileset dir="${dist}">
+				<include name="*.sh"/>
+			</fileset>
+		</chmod>
 	</target>
 	
 	<!-- copy resources -->
@@ -56,11 +75,22 @@
 		
 	<!-- jar -->
 	<target name="jar" depends="compile,copyres">
-		<jar destfile="${dist}/jake2.jar" basedir="${build}">
+		<jar destfile="${dist}/lib/jake.jar" basedir="${build}">
 			<include name="jake2/**"/>
 		</jar>
+		<proguard printseeds="on" printusage="off" outjar="${dist}/lib/jake2.jar"
+			defaultpackage="" overloadaggressively="off">
+			<injar name="${dist}/lib/jake.jar"/>
+			<libraryjar name="lib/jogl/linux/jogl.jar"/>
+			<libraryjar name="lib/joal/linux/joal.jar"/>
+			<libraryjar name="${java.home}/lib/rt.jar"/>
+			<keep access="public" name="jake2.Jake2">
+				<method name="main(java.lang.String[])"/>
+			</keep>
+		</proguard>
+		<delete file="${dist}/lib/jake.jar"/>		
 	</target>
-			
+				
 	<!-- everything -->
 	<target name="all" depends="bindist,srcdist">
 	</target>
@@ -72,21 +102,45 @@
 	<!-- binary distribution -->
 	<target name="bindist" depends="dist">
 		<tar destfile="jake2.tar.gz" compression="gzip">
-			<tarfileset dir=".">
-				<include name="dist/**"/>
+			<tarfileset dir="${dist}" prefix="Jake2" mode="755">
+				<include name="*.sh"/>
+			</tarfileset>
+			<tarfileset dir="${dist}" prefix="Jake2">
+				<include name="**"/>
+				<exclude name="*.sh"/>
 			</tarfileset>
 		</tar>
+		<zip destfile="jake2.zip">
+			<zipfileset dir="${dist}" prefix="Jake2">
+				<include name="**"/>
+			</zipfileset>
+		</zip>
 	</target>
 	
 	<!-- source distribution -->
 	<target name="srcdist" >
 		<tar destfile="jake2-src.tar.gz" compression="gzip">
-			<tarfileset dir="." prefix="jake2">
-				<include name="src/**"/>
+			<tarfileset dir="." prefix="Jake2" mode="755">
+				<include name="scripts/*.*"/>
+				<include name="build.sh"/>
+			</tarfileset>
+			<tarfileset dir="." prefix="Jake2">
+				<include name="src/jake2/**"/>
 				<include name="lib/**"/>
 				<include name="build.xml"/>
+				<include name="build.bat"/>
 			</tarfileset>
 		</tar>
+		<zip destfile="jake2-src.zip">
+			<zipfileset dir="." prefix="Jake2">
+				<include name="src/jake2/**"/>
+				<include name="scripts/*.*"/>
+				<include name="lib/**"/>
+				<include name="build.xml"/>
+				<include name="build.sh"/>
+				<include name="build.bat"/>
+			</zipfileset>
+		</zip>
 	</target>
 	
 	<!-- clean -->
@@ -98,7 +152,11 @@
 	<!-- distclean -->
 	<target name="distclean" depends="clean">
 		<delete dir="${dist}"/>
-		<delete file="jake2.tar.gz"/>
-		<delete file="jake2-src.tar.gz"/>
+		<delete>
+			<fileset dir=".">
+				<include name="*.tar.gz"/>
+				<include name="*.zip"/>
+			</fileset>
+		</delete>
 	</target>
 </project>

@@ -2,7 +2,7 @@
  * SCR.java
  * Copyright (C) 2003
  * 
- * $Id: SCR.java,v 1.3 2004-07-08 20:24:29 hzi Exp $
+ * $Id: SCR.java,v 1.4 2004-07-08 20:56:49 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -30,6 +30,7 @@ import jake2.Globals;
 import jake2.game.Cmd;
 import jake2.game.cvar_t;
 import jake2.qcommon.*;
+import jake2.sound.*;
 import jake2.sys.Sys;
 import jake2.util.Vargs;
 
