@@ -2,7 +2,7 @@
  * JoglRenderer.java
  * Copyright (C) 2003
  *
- * $Id: JoglRenderer.java,v 1.2 2004-07-08 15:58:48 hzi Exp $
+ * $Id: JoglRenderer.java,v 1.3 2004-07-09 06:50:47 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,15 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render;
 
-import java.awt.Dimension;
-
 import jake2.Defines;
+import jake2.client.*;
 import jake2.qcommon.xcommand_t;
-import jake2.render.jogl.*;
+import jake2.render.jogl.Impl;
 
-import jake2.client.refdef_t;
-import jake2.client.refexport_t;
-import jake2.client.refimport_t;
+import java.awt.Dimension;
 
 /**
  * JoglRenderer
@@ -59,11 +56,10 @@ final class JoglRenderer extends Impl implements refexport_t, Ref {
 	 * @see jake2.client.refexport_t#Init()
 	 */
 	public boolean Init(int vid_xpos, int vid_ypos) {
-		
 		// pre init
 		if (!R_Init(vid_xpos, vid_ypos)) return false;
 		// calls the R_Init2() internally		
-		updateScreen(null);
+		updateScreen();
 		// the result from R_Init2()
 		return post_init;
 	}
@@ -79,7 +75,18 @@ final class JoglRenderer extends Impl implements refexport_t, Ref {
 	 * @see jake2.client.refexport_t#BeginRegistration(java.lang.String)
 	 */
 	public void BeginRegistration(String map) {
-		R_BeginRegistration(map);
+		if (contextInUse) {
+			R_BeginRegistration(map);
+			return;
+		}
+		
+		this.name = map;
+		
+		updateScreen(new xcommand_t() {
+			public void execute() {
+				R_BeginRegistration(JoglRenderer.this.name);
+			}
+		});
 	}
 
 	
@@ -143,18 +150,43 @@ final class JoglRenderer extends Impl implements refexport_t, Ref {
 		return image;
 	}
 
+	private float[] axis;
+	private float rotate;
+
 	/** 
 	 * @see jake2.client.refexport_t#SetSky(java.lang.String, float, float[])
 	 */
 	public void SetSky(String name, float rotate, float[] axis) {
-		R_SetSky(name, rotate, axis);
+		if (contextInUse) {
+			R_SetSky(name, rotate, axis);
+			return;
+		}
+
+		this.name = name;
+		this.rotate = rotate;
+		this.axis = axis;
+
+		updateScreen(new xcommand_t() {
+			public void execute() {
+				R_SetSky(JoglRenderer.this.name, JoglRenderer.this.rotate, JoglRenderer.this.axis);
+			}
+		});
 	}
 
 	/** 
 	 * @see jake2.client.refexport_t#EndRegistration()
 	 */
 	public void EndRegistration() {
-		R_EndRegistration();
+		if (contextInUse) {
+			R_EndRegistration();
+			return;
+		}
+
+		updateScreen(new xcommand_t() {
+			public void execute() {
+				R_EndRegistration();
+			}
+		});
 	}
 
 	/** 
@@ -268,5 +300,4 @@ final class JoglRenderer extends Impl implements refexport_t, Ref {
 		this.ri = rimp;
 		return this;
 	}
-
 }

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 02.02.2004 by RST.
-// $Id: TestMD4.java,v 1.1 2004-07-07 19:59:57 hzi Exp $
+// $Id: TestMD4.java,v 1.2 2004-07-09 06:50:51 hzi Exp $
 
 package jake2.qcommon;
 
@@ -1133,6 +1133,35 @@ public class TestMD4 {
 		test("abc");
 		test("abcdefghijklmnopqrstuvwxyz");
 		test("hi");
+		MD4 md4 = new MD4();
+		
+		byte data[]=
+			{
+				(byte) 0x71,
+				(byte) 0xa9,
+				(byte) 0x05,
+				(byte) 0xce,
+				(byte) 0x8d,
+				(byte) 0x75,
+				(byte) 0x28,
+				(byte) 0xc8,
+				(byte) 0xba,
+				(byte) 0x97,
+				
+				(byte) 0x45,
+				(byte) 0xe9,
+				(byte) 0x8a,
+				(byte) 0xe0,
+				(byte) 0x37,
+				(byte) 0xbd,
+				(byte) 0x6c,
+				(byte) 0x6d,
+				(byte) 0x67,
+				(byte) 0x4a, 
+				(byte) 0x21 };
+				
+		System.out.println("checksum=" + MD4.Com_BlockChecksum(data, 21));
+	
 	}
 
 	public static void test(String s) {

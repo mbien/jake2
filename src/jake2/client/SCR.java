@@ -2,7 +2,7 @@
  * SCR.java
  * Copyright (C) 2003
  * 
- * $Id: SCR.java,v 1.4 2004-07-08 20:56:49 hzi Exp $
+ * $Id: SCR.java,v 1.5 2004-07-09 06:50:50 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -84,7 +84,7 @@ public final class SCR extends Globals
 	static cvar_t scr_graphscale;
 	static cvar_t scr_graphshift;
 	static cvar_t scr_drawall;
-	static cvar_t fps;
+	public static cvar_t fps;
 
 	static dirty_t scr_dirty = new dirty_t();
 	static dirty_t[] scr_old_dirty = { new dirty_t(), new dirty_t()};
@@ -98,6 +98,17 @@ public final class SCR extends Globals
 		int x2;
 		int y1;
 		int y2;
+		
+		void set(dirty_t src) {
+			x1 = src.x1;
+			x2 = src.x2;
+			y1 = src.y1;
+			y2 = src.y2;
+		}
+		
+		void clear() {
+			x1 = x2 = y1 = y2 = 0;
+		}
 	}
 
 	/*
@@ -700,11 +711,14 @@ public final class SCR extends Globals
 	Clear any parts of the tiled background that were drawn on last frame
 	==============
 	*/
+
+	static dirty_t clear = new dirty_t();
+
 	static void TileClear()
 	{
 		int i;
 		int top, bottom, left, right;
-		dirty_t clear = new dirty_t();
+		clear.clear();
 
 		if (scr_drawall.value != 0)
 			DirtyScreen(); // for power vr or broken page flippers...
@@ -718,7 +732,7 @@ public final class SCR extends Globals
 
 		// erase rect will be the union of the past three frames
 		// so tripple buffering works properly
-		clear = scr_dirty;
+		clear.set(scr_dirty);
 		for (i = 0; i < 2; i++)
 		{
 			if (scr_old_dirty[i].x1 < clear.x1)
@@ -731,8 +745,8 @@ public final class SCR extends Globals
 				clear.y2 = scr_old_dirty[i].y2;
 		}
 
-		scr_old_dirty[1] = scr_old_dirty[0];
-		scr_old_dirty[0] = scr_dirty;
+		scr_old_dirty[1].set(scr_old_dirty[0]);
+		scr_old_dirty[0].set(scr_dirty);
 
 		scr_dirty.x1 = 9999;
 		scr_dirty.x2 = -9999;
@@ -1452,10 +1466,16 @@ public final class SCR extends Globals
 	private static int lastframes = 0;
 	private static int lasttime = 0;
 	private static String fpsvalue = "";
+	
 	static void DrawFPS()
 	{
 		if (fps.value > 0.0f)
 		{
+			if (fps.modified) {
+				fps.modified = false;
+				Cvar.SetValue("cl_maxfps", 1000);
+			}
+			
 			int diff = cls.realtime - lasttime;
 			if (diff > (int) (fps.value * 1000))
 			{
@@ -1469,6 +1489,9 @@ public final class SCR extends Globals
 				re.DrawChar(x, 2, fpsvalue.charAt(i));
 				x += 8;
 			}
+		} else if (fps.modified){
+				fps.modified = false;
+				Cvar.SetValue("cl_maxfps", 90);
 		}
 	}
 	

@@ -2,7 +2,7 @@
  * CL.java
  * Copyright (C) 2004
  * 
- * $Id: CL.java,v 1.4 2004-07-08 20:56:50 hzi Exp $
+ * $Id: CL.java,v 1.5 2004-07-09 06:50:50 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -42,17 +42,6 @@ import java.nio.ByteBuffer;
  * CL
  */
 public final class CL extends CL_pred {
-
-
-//	static cvar_t adr0;
-//	static cvar_t adr1;
-//	static cvar_t adr2;
-//	static cvar_t adr3;
-//	static cvar_t adr4;
-//	static cvar_t adr5;
-//	static cvar_t adr6;
-//	static cvar_t adr7;
-//	static cvar_t adr8;
 
 	/*
 	====================
@@ -713,7 +702,7 @@ public final class CL extends CL_pred {
 
 		c = Cmd.Argv(0);
 
-		Com.Printf(NET.AdrToString(net_from) + ": " + c + " \n");
+		Com.Printf(NET.AdrToString(net_from) + ": " + c + "\n");
 
 		// server connection
 		if (c.equals("client_connect")) {
@@ -1126,17 +1115,17 @@ public final class CL extends CL_pred {
 		if (precache_check == ENV_CNT) {
 			precache_check = ENV_CNT + 1;
 
-			CM.intwrap iw = new CM.intwrap(map_checksum);
+			int iw[] = {map_checksum};
 
 			CM.CM_LoadMap(cl.configstrings[CS_MODELS + 1], true, iw);
-			map_checksum = iw.i;
-// TODO MD4 check abgeklemmt 
-//			if ((map_checksum ^ atoi(cl.configstrings[CS_MAPCHECKSUM])) != 0) {
-//				Com.Error(
-//					ERR_DROP,
-//					"Local map version differs from server: " + map_checksum + " != '" + cl.configstrings[CS_MAPCHECKSUM] + "'\n");
-//				return;
-//			}
+			map_checksum = iw[0];
+ 
+			if ((map_checksum ^ atoi(cl.configstrings[CS_MAPCHECKSUM])) != 0) {
+				Com.Error(
+					ERR_DROP,
+					"Local map version differs from server: " + map_checksum + " != '" + cl.configstrings[CS_MAPCHECKSUM] + "'\n");
+				return;
+			}
 		}
 
 		if (precache_check > ENV_CNT && precache_check < TEXTURE_CNT) {
@@ -1201,10 +1190,11 @@ public final class CL extends CL_pred {
 			
 			if (Cmd.Argc() < 2) {
 				
-				CM.intwrap iw = new CM.intwrap(0); // for detecting cheater maps
+				int iw[] ={0};// for detecting cheater maps
+				
 
 				CM.CM_LoadMap(cl.configstrings[CS_MODELS + 1], true, iw);
-//				int mapchecksum = iw.i ;
+				int mapchecksum = iw[0] ;
 				CL.RegisterSounds();
 				CL.PrepRefresh();
 				return;
@@ -1540,8 +1530,7 @@ public final class CL extends CL_pred {
 		VID.CheckChanges();
 		if (!cl.refresh_prepped && cls.state == ca_active) {
 			CL.PrepRefresh();
-			// TODO force GC after level loading
-			System.gc();
+			// force GC after level loading
 			System.gc();
 		}
 

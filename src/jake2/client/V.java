@@ -2,7 +2,7 @@
  * V.java
  * Copyright (C) 2003
  * 
- * $Id: V.java,v 1.1 2004-07-07 19:58:52 hzi Exp $
+ * $Id: V.java,v 1.2 2004-07-09 06:50:50 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -34,6 +34,7 @@ import jake2.util.Math3D;
 import jake2.util.Vargs;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
 /**
  * V
@@ -53,7 +54,7 @@ public final class V extends Globals {
 	static entity_t[] r_entities = new entity_t[MAX_ENTITIES];
  
 	static int r_numparticles;
-	static particle_t[] r_particles = new particle_t[MAX_PARTICLES];
+	//static particle_t[] r_particles = new particle_t[MAX_PARTICLES];
 	
 	static lightstyle_t[] r_lightstyles = new lightstyle_t[MAX_LIGHTSTYLES];
 	static {
@@ -61,8 +62,6 @@ public final class V extends Globals {
 			r_dlights[i] = new dlight_t();
 		for (int i = 0; i < r_entities.length; i++)
 			r_entities[i] = new entity_t();
-		for (int i = 0; i < r_particles.length; i++)
-			r_particles[i] = new particle_t();
 		for (int i = 0; i < r_lightstyles.length; i++)
 			r_lightstyles[i] = new lightstyle_t();						
 	}
@@ -99,16 +98,20 @@ public final class V extends Globals {
 	=====================
 	*/
 	static void AddParticle(float[] org, int color, float alpha) {
-		particle_t p;
-
 		if (r_numparticles >= MAX_PARTICLES)
 			return;
 
-		p = r_particles[r_numparticles++];
+		int i = r_numparticles++;
 
-		VectorCopy(org, p.origin);
-		p.color = color;
-		p.alpha = alpha;
+		int c = particle_t.colorTable[color];
+		c |= (int)(alpha * 255) << 24;
+		particle_t.colorArray.put(i, c);
+		
+		i *= 3;
+		FloatBuffer vertexBuf = particle_t.vertexArray;
+		vertexBuf.put(i++, org[0]);
+		vertexBuf.put(i++, org[1]);
+		vertexBuf.put(i++, org[2]);
 	}
 
 	/*
@@ -158,26 +161,25 @@ public final class V extends Globals {
 	================
 	*/
 	static void TestParticles() {
-		particle_t p;
 		int i, j;
 		float d, r, u;
 
-		r_numparticles = MAX_PARTICLES;
-		for (i = 0; i < r_numparticles; i++) {
+		float[] origin = {0,0,0};
+
+		r_numparticles = 0;
+		for (i = 0; i < MAX_PARTICLES; i++) {
 			d = i * 0.25f;
 			r = 4 * ((i & 7) - 3.5f);
 			u = 4 * (((i >> 3) & 7) - 3.5f);
-			p = r_particles[i];
 
 			for (j = 0; j < 3; j++)
-				p.origin[j] =
+				origin[j] =
 					cl.refdef.vieworg[j]
 						+ cl.v_forward[j] * d
 						+ cl.v_right[j] * r
 						+ cl.v_up[j] * u;
 
-			p.color = 8;
-			p.alpha = cl_testparticles.value;
+			AddParticle(origin, 8, cl_testparticles.value);
 		}
 	}
 
@@ -356,7 +358,6 @@ public final class V extends Globals {
 			cl.refdef.num_entities = r_numentities;
 			cl.refdef.entities = r_entities;
 			cl.refdef.num_particles = r_numparticles;
-			cl.refdef.particles = r_particles;
 			cl.refdef.num_dlights = r_numdlights;
 			cl.refdef.dlights = r_dlights;
 			cl.refdef.lightstyles = r_lightstyles;

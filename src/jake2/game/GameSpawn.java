@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 18.11.2003 by RST.
-// $Id: GameSpawn.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
+// $Id: GameSpawn.java,v 1.3 2004-07-09 06:50:49 hzi Exp $
 
 package jake2.game;
 
@@ -305,7 +305,7 @@ public class GameSpawn extends GameSave {
 			e.teammaster = e;
 			c++;
 			c2++;
-			Com.Printf("Team:" + e.team+" entity: " + e.index + "\n");
+			//Com.Printf("Team:" + e.team+" entity: " + e.index + "\n");
 			for (j = i + 1; j < globals.num_edicts; j++) {
 				e2 = g_edicts[j];
 				if (!e2.inuse)
@@ -427,7 +427,7 @@ public class GameSpawn extends GameSave {
 				ED_CallSpawn(ent);
 			}
 			//gi.dprintf("player skill level:" +skill.value + "\n");
-			gi.dprintf(inhibit + " entities inhibited\n");
+			//gi.dprintf(inhibit + " entities inhibited\n");
 			i = 1;
 			G_FindTeams();
 			PlayerTrail.Init();

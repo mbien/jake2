@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 11.11.2003 by RST.
-// $Id: M_Actor.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
+// $Id: M_Actor.java,v 1.3 2004-07-09 06:50:49 hzi Exp $
 
 package jake2.game;
 
@@ -731,7 +731,7 @@ public class M_Actor extends GameAI {
 				return;
 
 			self.pain_debounce_time= level.time + 3;
-			//	 gi.sound (self, CHAN_VOICE, actor.sound_pain, 1, ATTN_NORM, 0);
+			//GameBase.gi.sound (self, CHAN_VOICE, actor.sound_pain, 1, ATTN_NORM, 0);
 
 			if ((other.client != null) && (Lib.random() < 0.4)) {
 				float v[]= { 0, 0, 0 };

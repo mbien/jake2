@@ -2,7 +2,7 @@
  * DancingQueens.java
  * Copyright (C) 2003
  *
- * $Id: DancingQueens.java,v 1.2 2004-07-08 20:24:31 hzi Exp $
+ * $Id: DancingQueens.java,v 1.3 2004-07-09 06:50:51 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -152,14 +152,14 @@ public class DancingQueens
 		};
 
 
-		Qcommon.InitForTestMap(new String[] {"DancingQueens"});
+		Qcommon.Init(new String[] {"DancingQueens"});
 		// sehr wichtig !!!
 		VID.Shutdown();
 
 		String[] names = Renderer.getDriverNames();
 		System.out.println("Registered Drivers: " + Arrays.asList(names));
 
-		this.re = Renderer.getDriver("jogl", ri);
+		this.re = Renderer.getDriver("fastjogl", ri);
 
 		System.out.println("Use driver: " + re);
 		System.out.println();

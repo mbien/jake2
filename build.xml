@@ -8,6 +8,7 @@
 	</taskdef>
 	
 	<!-- properties -->
+	<property name="version" value="cvs"/> 
 	<property name="src" location="src"/>
 	<property name="test" location="test"/>
 	<property name="build" location="build"/>
@@ -15,7 +16,7 @@
 
 	<!-- different classpaths -->
 	<path id="build.class.path">
-		<pathelement location="lib/jogl/linux/jogl.jar"/>
+		<pathelement location="lib/jogl/jogl.jar"/>
 		<pathelement location="lib/joal/linux/joal.jar"/>
 	</path>
 	
@@ -34,8 +35,13 @@
 		</javac>
 	</target>
 		
-	<!-- copy libs -->
-	<target name="copylibs">
+	<!-- copy files -->
+	<target name="copy">
+		<copy todir="${dist}/lib">
+			<fileset dir="lib/jogl">
+				<include name="*.jar"/>
+			</fileset>	
+		</copy>
 		<copy todir="${dist}/lib/linux">
 			<fileset dir="lib/jogl/linux">
 				<include name="*"/>
@@ -56,32 +62,37 @@
 			<fileset dir="scripts">
 				<include name="Jake2.*"/>
 			</fileset>
+			<fileset dir=".">
+				<include name="ChangeLog"/>
+				<include name="LICENSE"/>
+				<include name="README"/>
+				<include name="readme.id"/>			
+			</fileset>
 		</copy>
 		<chmod perm="755">
 			<fileset dir="${dist}">
 				<include name="*.sh"/>
 			</fileset>
 		</chmod>
-	</target>
-	
-	<!-- copy resources -->
-	<target name="copyres">
-		<copy todir="${build}">
-			<fileset dir="src">
-				<include name="jake2/*.properties"/>
-			</fileset>
-		</copy>
+		<fixcrlf srcdir="${dist}"
+			eol="crlf"
+			includes="*.bat"
+		/>
+		<fixcrlf srcdir="${dist}"
+			eol="lf"
+			includes="*.sh"
+		/> 		
 	</target>
 		
 	<!-- jar -->
-	<target name="jar" depends="compile,copyres">
+	<target name="jar" depends="compile">
 		<jar destfile="${dist}/lib/jake.jar" basedir="${build}">
 			<include name="jake2/**"/>
 		</jar>
 		<proguard printseeds="on" printusage="off" outjar="${dist}/lib/jake2.jar"
 			defaultpackage="" overloadaggressively="off">
 			<injar name="${dist}/lib/jake.jar"/>
-			<libraryjar name="lib/jogl/linux/jogl.jar"/>
+			<libraryjar name="lib/jogl/jogl.jar"/>
 			<libraryjar name="lib/joal/linux/joal.jar"/>
 			<libraryjar name="${java.home}/lib/rt.jar"/>
 			<keep access="public" name="jake2.Jake2">
@@ -96,12 +107,12 @@
 	</target>
 
 	<!-- dist -->
-	<target name="dist" depends="jar,copylibs">
+	<target name="dist" depends="jar,copy">
 	</target>
 		
 	<!-- binary distribution -->
 	<target name="bindist" depends="dist">
-		<tar destfile="jake2.tar.gz" compression="gzip">
+		<tar destfile="jake2-${version}.tar.gz" compression="gzip">
 			<tarfileset dir="${dist}" prefix="Jake2" mode="755">
 				<include name="*.sh"/>
 			</tarfileset>
@@ -110,7 +121,7 @@
 				<exclude name="*.sh"/>
 			</tarfileset>
 		</tar>
-		<zip destfile="jake2.zip">
+		<zip destfile="jake2-${version}.zip">
 			<zipfileset dir="${dist}" prefix="Jake2">
 				<include name="**"/>
 			</zipfileset>
@@ -118,8 +129,8 @@
 	</target>
 	
 	<!-- source distribution -->
-	<target name="srcdist" >
-		<tar destfile="jake2-src.tar.gz" compression="gzip">
+	<target name="srcdist">
+		<tar destfile="jake2src-${version}.tar.gz" compression="gzip">
 			<tarfileset dir="." prefix="Jake2" mode="755">
 				<include name="scripts/*.*"/>
 				<include name="build.sh"/>
@@ -129,9 +140,13 @@
 				<include name="lib/**"/>
 				<include name="build.xml"/>
 				<include name="build.bat"/>
+				<include name="ChangeLog"/>
+				<include name="LICENSE"/>
+				<include name="README"/>
+				<include name="readme.id"/>
 			</tarfileset>
 		</tar>
-		<zip destfile="jake2-src.zip">
+		<zip destfile="jake2src-${version}.zip">
 			<zipfileset dir="." prefix="Jake2">
 				<include name="src/jake2/**"/>
 				<include name="scripts/*.*"/>
@@ -139,6 +154,10 @@
 				<include name="build.xml"/>
 				<include name="build.sh"/>
 				<include name="build.bat"/>
+				<include name="ChangeLog"/>
+				<include name="LICENSE"/>
+				<include name="README"/>
+				<include name="readme.id"/>				
 			</zipfileset>
 		</zip>
 	</target>

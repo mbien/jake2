@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 18.11.2003 by RST.
-// $Id: GameFunc.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
+// $Id: GameFunc.java,v 1.3 2004-07-09 06:50:49 hzi Exp $
 
 package jake2.game;
 
@@ -38,9 +38,6 @@ public class GameFunc extends PlayerView
 		Math3D.VectorSubtract(dest, ent.s.origin, ent.moveinfo.dir);
 		ent.moveinfo.remaining_distance = Math3D.VectorNormalize(ent.moveinfo.dir);
 		
-		//TODO:  BIG HACK !!!
-		if (ent.moveinfo.remaining_distance == 2) 
-			ent.moveinfo.remaining_distance = 94;
 		ent.moveinfo.endfunc = func;
 
 		if (ent.moveinfo.speed == ent.moveinfo.accel && ent.moveinfo.speed == ent.moveinfo.decel)

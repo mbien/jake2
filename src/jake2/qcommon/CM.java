@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 02.01.2004 by RST.
-// $Id: CM.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
+// $Id: CM.java,v 1.3 2004-07-09 06:50:50 hzi Exp $
 
 package jake2.qcommon;
 
@@ -189,7 +189,7 @@ public class CM extends Game {
 	Loads in the map and all submodels
 	==================
 	*/
-	public static cmodel_t CM_LoadMap(String name, boolean clientload, intwrap checksum) {
+	public static cmodel_t CM_LoadMap(String name, boolean clientload, int checksum[]) {
 		Com.DPrintf("CM_LoadMap...\n");
 		byte buf[];
 		int i;
@@ -200,7 +200,7 @@ public class CM extends Game {
 
 		if (0 == strcmp(map_name, name) && (clientload || 0 == Cvar.VariableValue("flushmap"))) {
 
-			checksum.i = last_checksum;
+			checksum[0] = last_checksum;
 
 			if (!clientload) {
 				Arrays.fill(portalopen, false);
@@ -222,7 +222,7 @@ public class CM extends Game {
 			numleafs = 1;
 			numclusters = 1;
 			numareas = 1;
-			checksum.i = 0;
+			checksum[0] = 0;
 			return map_cmodels[0];
 			// cinematic servers won't have anything at all
 		}
@@ -240,7 +240,7 @@ public class CM extends Game {
 		ByteBuffer bbuf = ByteBuffer.wrap(buf);
 
 		last_checksum = MD4.Com_BlockChecksum(buf, length);
-		checksum.i = last_checksum;
+		checksum[0] = last_checksum;
 
 		header = new qfiles.dheader_t(bbuf.slice());
 
@@ -796,7 +796,6 @@ public class CM extends Game {
 		if (l.filelen > MAX_MAP_VISIBILITY)
 			Com.Error(ERR_DROP, "Map has too large visibility lump");
 
-		//was: memcpy(map_visibility, cmod_base + l.fileofs, l.filelen);
 		System.arraycopy(cmod_base, l.fileofs, map_visibility, 0, l.filelen);
 
 		ByteBuffer bb = ByteBuffer.wrap(map_visibility, 0, l.filelen);
@@ -1074,7 +1073,7 @@ public class CM extends Game {
 		}
 	}
 
-	public static int CM_BoxLeafnums_headnode(float[] mins, float[] maxs, int list[], int listsize, int headnode, intwrap topnode) {
+	public static int CM_BoxLeafnums_headnode(float[] mins, float[] maxs, int list[], int listsize, int headnode, int topnode[]) {
 		leaf_list = list;
 		leaf_count = 0;
 		leaf_maxcount = listsize;
@@ -1086,22 +1085,23 @@ public class CM extends Game {
 		CM_BoxLeafnums_r(headnode);
 
 		if (topnode != null)
-			topnode.i = leaf_topnode;
+			topnode[0] = leaf_topnode;
 
 		return leaf_count;
 	}
 
-	public static int CM_BoxLeafnums(float[] mins, float[] maxs, int list[], int listsize, intwrap topnode) {
+	public static int CM_BoxLeafnums(float[] mins, float[] maxs, int list[], int listsize, int topnode[]) {
 		return CM_BoxLeafnums_headnode(mins, maxs, list, listsize, map_cmodels[0].headnode, topnode);
 	}
 
-	public static class intwrap {
+	/*
+	public static class intwrap1 {
 		public intwrap(int i) {
 			this.i = i;
 		}
 		public int i;
 	}
-
+	*/
 	/*
 	==================
 	CM_PointContents
@@ -1539,10 +1539,10 @@ public class CM extends Game {
 				c2[i] += 1;
 			}
 
-			intwrap tn = new intwrap(topnode);
+			int tn[] = {topnode};
 
 			numleafs = CM_BoxLeafnums_headnode(c1, c2, leafs, 1024, headnode, tn);
-			topnode = tn.i;
+			topnode = tn[0];
 			for (i = 0; i < numleafs; i++) {
 				CM_TestInLeaf(leafs[i]);
 				if (trace_trace.allsolid)

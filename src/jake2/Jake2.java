@@ -2,7 +2,7 @@
  * Jake2.java
  * Copyright (C)  2003
  * 
- * $Id: Jake2.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
+ * $Id: Jake2.java,v 1.3 2004-07-09 06:50:51 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,10 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2;
 
-import java.io.IOException;
-import java.util.logging.*;
-
-import jake2.qcommon.*;
+import jake2.client.SCR;
+import jake2.qcommon.Cvar;
+import jake2.qcommon.Qcommon;
 import jake2.sys.Sys;
 
 /**
@@ -36,23 +35,6 @@ import jake2.sys.Sys;
  */
 public final class Jake2 {
 
-	// R I S K Y   C O D E   D A T A B A S E
-	// ------------------------------------- 
-	// (m?gliche Fehlerursachen f?r sp?teres Debuggen)
-	// - sicherstellen, dass svs.clients richtig durchnummeriert wird (client_t.serverindex) 
-	// - sicherstellen, dass SV_GAME.ge.edicts richtig durchnummeriert wird (ent.s.number der richtige index ?)
-	// - CM_DecompressVis() richtig portiert ?
-	// - NET.Net_Socket() sockarr_in.addr richtig ersetzt ? 
-	// 
-
-	/**
-		 * for all other classes it should be:
-		 * <code>
-		 *   private static Logger logger = Logger.getLogger(<CLASSNAME>.class.getName());
-		 * </code>
-		 * 
-		 */
-	private static Logger logger;
 
 	/**
 	 * main is used to start the game. Quake2 for Java supports the 
@@ -60,22 +42,6 @@ public final class Jake2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		// init the global LogManager with the logging.properties file
-		try {
-			LogManager.getLogManager().readConfiguration(Jake2.class.getResourceAsStream("/jake2/logging.properties"));
-		}
-		catch (SecurityException secEx) {
-			secEx.printStackTrace();
-		}
-		catch (IOException ioEx) {
-			System.err.println("FATAL Error: can't load /jake2/logging.properties (classpath)");
-			ioEx.printStackTrace();
-		}
-
-		logger = Logger.getLogger(Jake2.class.getName());
-
-		logger.log(Level.INFO, "Start Jake2 :-)");
 
 		// in C the first arg is the filename
 		int argc = (args == null) ? 1 : args.length + 1;
@@ -95,17 +61,16 @@ public final class Jake2 {
 			// find time spending rendering last frame
 			newtime = Sys.Milliseconds();
 			time = newtime - oldtime;
-
+			
+			// TODO this is a timer hack for Win2000
+			// System.currentTimeMillis() resolution bug 
+			if (time == 0 && (Globals.cl_timedemo.value != 0 || SCR.fps.value != 0)) {
+				time++;
+			} 
+			
 			if (time > 0)
 				Qcommon.Frame(time);
 			oldtime = newtime;
-
-			// save cpu resources
-//			try {
-//				Thread.sleep(1);
-//			}
-//			catch (InterruptedException e) {
-//			}
 		}
 	}
 }
