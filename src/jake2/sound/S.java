@@ -2,7 +2,7 @@
  * S.java
  * Copyright (C) 2003
  * 
- * $Id: S.java,v 1.1 2004-07-08 20:56:49 hzi Exp $
+ * $Id: S.java,v 1.1.2.1 2004-07-09 08:38:26 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -183,5 +183,9 @@ public class S {
 	*/
 	public static void StopAllSounds() {
 		impl.StopAllSounds();
+	}
+	
+	public static String getDriverName() {
+		return impl.getName();
 	}
 }

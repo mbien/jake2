@@ -2,7 +2,7 @@
  * CL_parse.java
  * Copyright (C) 2004
  * 
- * $Id: CL_parse.java,v 1.4 2004-07-08 20:56:49 hzi Exp $
+ * $Id: CL_parse.java,v 1.4.2.1 2004-07-09 08:38:23 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -360,10 +360,10 @@ public class CL_parse extends CL_view {
 		
 		entity_state_t nullstate = new entity_state_t(null);
 		//memset(nullstate, 0, sizeof(nullstate));
-		CM.intwrap bits = new CM.intwrap(0);
+		int bits[] = {0};
 		newnum = CL_ents.ParseEntityBits(bits);
 		es = cl_entities[newnum].baseline;
-		CL_ents.ParseDelta(nullstate, es, newnum, bits.i);
+		CL_ents.ParseDelta(nullstate, es, newnum, bits[0]);
 	}
 
 	/*

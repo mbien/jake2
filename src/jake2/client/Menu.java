@@ -2,7 +2,7 @@
  * Menu.java
  * Copyright (C) 2004
  * 
- * $Id: Menu.java,v 1.3 2004-07-08 20:56:49 hzi Exp $
+ * $Id: Menu.java,v 1.3.2.1 2004-07-09 08:38:24 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -1226,7 +1226,7 @@ public final class Menu extends Key {
 	static menulist_s s_options_joystick_box = new menulist_s();
 	static menulist_s s_options_cdvolume_box = new menulist_s();
 	static menulist_s s_options_quality_list = new menulist_s();
-	static menulist_s s_options_compatibility_list = new menulist_s();
+	//static menulist_s s_options_compatibility_list = new menulist_s();
 	static menuaction_s s_options_console_action = new menuaction_s();
 
 	static void CrosshairFunc(Object unused) {
@@ -1268,7 +1268,13 @@ public final class Menu extends Key {
 	static void ControlsSetMenuItemValues() {
 		s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10;
 		s_options_cdvolume_box.curvalue = 1 - ((int) Cvar.VariableValue("cd_nocd"));
-		s_options_quality_list.curvalue = 1 - ((int) Cvar.VariableValue("s_loadas8bit"));
+		//s_options_quality_list.curvalue = 1 - ((int) Cvar.VariableValue("s_loadas8bit"));
+		if ("joal".equals(Cvar.VariableString("s_impl"))) {
+			s_options_quality_list.curvalue = 0;
+		} else {
+			s_options_quality_list.curvalue = 1;
+		}
+				
 		s_options_sensitivity_slider.curvalue = (sensitivity.value) * 2;
 
 		Cvar.SetValue("cl_run", ClampCvar(0, 1, cl_run.value));
@@ -1339,30 +1345,41 @@ public final class Menu extends Key {
 	}
 
 	static void UpdateSoundQualityFunc(Object unused) {
+		boolean driverNotChanged = false;
 		if (s_options_quality_list.curvalue != 0) {
-			Cvar.SetValue("s_khz", 22);
-			Cvar.SetValue("s_loadas8bit", 0);
+//			Cvar.SetValue("s_khz", 22);
+//			Cvar.SetValue("s_loadas8bit", 0);
+			driverNotChanged = S.getDriverName().equals("dummy");
+			Cvar.Set("s_impl", "dummy");
 		}
 		else {
-			Cvar.SetValue("s_khz", 11);
-			Cvar.SetValue("s_loadas8bit", 1);
+//			Cvar.SetValue("s_khz", 11);
+//			Cvar.SetValue("s_loadas8bit", 1);
+			driverNotChanged = S.getDriverName().equals("joal");
+			Cvar.Set("s_impl", "joal");
 		}
 
-		Cvar.SetValue("s_primary", s_options_compatibility_list.curvalue);
+		//Cvar.SetValue("s_primary", s_options_compatibility_list.curvalue);
 
-		DrawTextBox(8, 120 - 48, 36, 3);
-		Print(16 + 16, 120 - 48 + 8, "Restarting the sound system. This");
-		Print(16 + 16, 120 - 48 + 16, "could take up to a minute, so");
-		Print(16 + 16, 120 - 48 + 24, "please be patient.");
+		if (driverNotChanged) {
+			re.EndFrame();
+			return;			
+		} else {
 
-		// the text box won't show up unless we do a buffer swap
-		re.EndFrame();
+			DrawTextBox(8, 120 - 48, 36, 3);
+			Print(16 + 16, 120 - 48 + 8, "Restarting the sound system. This");
+			Print(16 + 16, 120 - 48 + 16, "could take up to a minute, so");
+			Print(16 + 16, 120 - 48 + 24, "please be patient.");
 
-		CL.Snd_Restart_f.execute();
+			// the text box won't show up unless we do a buffer swap
+			re.EndFrame();
+		
+			CL.Snd_Restart_f.execute();
+		}
 	}
 
 	static String cd_music_items[] = { "disabled", "enabled", null };
-	static String quality_items[] = { "low", "high", null };
+	static String soundstate_items[] = { "on", "off", null };
 
 	static String compatibility_items[] = { "max compatibility", "max performance", null };
 
@@ -1410,26 +1427,27 @@ public final class Menu extends Key {
 		s_options_quality_list.x = 0;
 		s_options_quality_list.y = 20;
 		;
-		s_options_quality_list.name = "sound quality";
+		s_options_quality_list.name = "sound";
 		s_options_quality_list.callback = new mcallback() {
 			public void execute(Object o) {
 				UpdateSoundQualityFunc(o);
 			}
 		};
-		s_options_quality_list.itemnames = quality_items;
-		s_options_quality_list.curvalue = 1 - (int) Cvar.VariableValue("s_loadas8bit");
+		s_options_quality_list.itemnames = soundstate_items;
+		//s_options_quality_list.curvalue = 1 - (int) Cvar.VariableValue("s_loadas8bit");
 
-		s_options_compatibility_list.type = MTYPE_SPINCONTROL;
-		s_options_compatibility_list.x = 0;
-		s_options_compatibility_list.y = 30;
-		s_options_compatibility_list.name = "sound compatibility";
-		s_options_compatibility_list.callback = new mcallback() {
-			public void execute(Object o) {
-				UpdateSoundQualityFunc(o);
-			}
-		};
-		s_options_compatibility_list.itemnames = compatibility_items;
-		s_options_compatibility_list.curvalue = (int) Cvar.VariableValue("s_primary");
+		
+//		s_options_compatibility_list.type = MTYPE_SPINCONTROL;
+//		s_options_compatibility_list.x = 0;
+//		s_options_compatibility_list.y = 30;
+//		s_options_compatibility_list.name = "sound compatibility";
+//		s_options_compatibility_list.callback = new mcallback() {
+//			public void execute(Object o) {
+//				UpdateSoundQualityFunc(o);
+//			}
+//		};
+//		s_options_compatibility_list.itemnames = compatibility_items;
+//		s_options_compatibility_list.curvalue = (int) Cvar.VariableValue("s_primary");
 
 		s_options_sensitivity_slider.type = MTYPE_SLIDER;
 		s_options_sensitivity_slider.x = 0;
@@ -1563,7 +1581,7 @@ public final class Menu extends Key {
 
 		Menu_AddItem(s_options_menu, s_options_cdvolume_box);
 		Menu_AddItem(s_options_menu, s_options_quality_list);
-		Menu_AddItem(s_options_menu, s_options_compatibility_list);
+//		Menu_AddItem(s_options_menu, s_options_compatibility_list);
 		Menu_AddItem(s_options_menu, s_options_sensitivity_slider);
 		Menu_AddItem(s_options_menu, s_options_alwaysrun_box);
 		Menu_AddItem(s_options_menu, s_options_invertmouse_box);
@@ -1653,7 +1671,7 @@ public final class Menu extends Key {
 			"John Cash",
 			"Brian Hook",
 			"",
-			"+JAVA PORT BY JTEAM",
+			"+JAVA PORT BY BYTONIC",
 			"CWEI",
 			"HOZ",
 			"RST",
@@ -2945,6 +2963,7 @@ public final class Menu extends Key {
 		s_hostname_field.length = 12;
 		s_hostname_field.visible_length = 12;
 		s_hostname_field.buffer = new StringBuffer(Cvar.VariableString("hostname"));
+		s_hostname_field.cursor = s_hostname_field.buffer.length();
 
 		s_startserver_dmoptions_action.type = MTYPE_ACTION;
 		s_startserver_dmoptions_action.name = " deathmatch flags";
@@ -4464,7 +4483,7 @@ public final class Menu extends Key {
 		}
 
 		Menu_DrawString(f.x + f.parent.x + 24, f.y + f.parent.y, tempbuffer);
-
+		
 		if (Menu_ItemAtCursor(f.parent) == f) {
 			int offset;
 

@@ -2,7 +2,7 @@
  * Warp.java
  * Copyright (C) 2003
  *
- * $Id: Warp.java,v 1.3 2004-07-08 20:24:30 hzi Exp $
+ * $Id: Warp.java,v 1.3.2.1 2004-07-09 08:38:26 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -313,7 +313,7 @@ public abstract class Warp extends Model {
 				t *= (1.0f/64);
 
 				gl.glTexCoord2f (s, t);
-				gl.glVertex3fv( v );
+				gl.glVertex3f(v[0], v[1], v[2]);
 			}
 			gl.glEnd ();
 		}
@@ -612,7 +612,7 @@ public abstract class Warp extends Model {
 
 		t = 1.0f - t;
 		gl.glTexCoord2f (s, t);
-		gl.glVertex3fv( v );
+		gl.glVertex3f(v[0], v[1], v[2]);
 	}
 
 	/*

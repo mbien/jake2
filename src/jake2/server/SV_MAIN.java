@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 13.01.2004 by RST.
-// $Id: SV_MAIN.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
+// $Id: SV_MAIN.java,v 1.2.2.1 2004-07-09 08:38:25 hzi Exp $
 
 package jake2.server;
 
@@ -476,7 +476,7 @@ public class SV_MAIN extends SV_GAME {
 		Cmd.TokenizeString(s.toCharArray(), false);
 
 		c = Cmd.Argv(0);
-		Com.Printf("Packet " + NET.AdrToString(Netchan.net_from) + " : " + c + "\n");
+		//Com.Printf("Packet " + NET.AdrToString(Netchan.net_from) + " : " + c + "\n");
 		//Com.Printf(Lib.hexDump(net_message.data, 64, false) + "\n");
 
 		if (0 == strcmp(c, "ping"))

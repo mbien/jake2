@@ -2,7 +2,7 @@
  * qfiles.java
  * Copyright (C) 2003
  *
- * $Id: qfiles.java,v 1.3 2004-07-08 20:24:48 hzi Exp $
+ * $Id: qfiles.java,v 1.3.2.1 2004-07-09 08:38:29 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,14 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.qcommon;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import jake2.Defines;
 
-import jake2.*;
-import jake2.client.*;
-import jake2.game.*;
-import jake2.render.*;
-import jake2.server.*;
+import java.nio.*;
 
 /**
  * qfiles
@@ -292,6 +287,14 @@ public class qfiles {
 			ofs_glcmds = b.getInt();
 			ofs_end = b.getInt(); // end of file
 		}
+
+		/*
+		 * new members for vertex array handling
+		 */
+		public FloatBuffer textureCoordBuf = null;
+		public IntBuffer vertexIndexBuf = null;
+		public int[] counts = null;
+		public IntBuffer[] indexElements = null;
 	}
 	
 	/*

@@ -2,7 +2,7 @@
  * Renderer.java
  * Copyright (C) 2003
  *
- * $Id: Renderer.java,v 1.1.1.1.2.1 2004-07-09 08:08:44 hzi Exp $
+ * $Id: Renderer.java,v 1.1.1.1.2.2 2004-07-09 08:38:11 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -46,8 +46,8 @@ public class Renderer {
 	static {
 		try {
 			Class.forName("jake2.render.JoglRenderer");
+			Class.forName("jake2.render.FastJoglRenderer");
 		} catch (ClassNotFoundException e) {
-			//logger.log(Level.SEVERE, "can't found " + DEFAULT_CLASS);
 			e.printStackTrace();
 		}
 	};
@@ -71,13 +71,12 @@ public class Renderer {
 		// find a driver
 		Ref driver = null;
 		int count = drivers.size();
-		for (int i = 0; i < count && driver == null; i++) {
+		for (int i = 0; i < count; i++) {
 			driver = (Ref) drivers.get(i);
 			if (driver.getName().equals(driverName)) {
 				return driver.GetRefAPI(rimp);
 			}
 		}
-		//logger.log(Level.INFO, "Refresh driver \"" + driverName + "\"not found");
 		// null if driver not found
 		return null;
 	}

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 27.11.2003 by RST.
-// $Id: frame_t.java,v 1.2 2004-07-08 20:56:50 hzi Exp $
+// $Id: frame_t.java,v 1.2.2.1 2004-07-09 08:38:24 hzi Exp $
 
 package jake2.client;
 
@@ -27,7 +27,7 @@ import jake2.game.player_state_t;
 
 import java.util.Arrays;
 
-public class frame_t implements Cloneable {
+public class frame_t {
 		
 	public static final int MAX_MAP_AREAS = 256; 
 		
@@ -37,8 +37,8 @@ public class frame_t implements Cloneable {
 	int				deltaframe;
 	byte			areabits[] = new byte [MAX_MAP_AREAS/8];		// portalarea visibility bits
 	public 		player_state_t playerstate = new player_state_t(); // mem
-	int				num_entities;
-	int				parse_entities;	// non-masked index into cl_parse_entities array
+	public int				num_entities;
+	public int				parse_entities;	// non-masked index into cl_parse_entities array
 		
 	public void set(frame_t from) {
 		valid = from.valid;

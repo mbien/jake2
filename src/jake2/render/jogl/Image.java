@@ -2,7 +2,7 @@
  * Image.java
  * Copyright (C) 2003
  *
- * $Id: Image.java,v 1.2 2004-07-08 20:24:30 hzi Exp $
+ * $Id: Image.java,v 1.2.2.1 2004-07-09 08:38:26 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -26,27 +26,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.jogl;
 
 import jake2.Defines;
+import jake2.client.particle_t;
 import jake2.game.cvar_t;
 import jake2.qcommon.longjmpException;
 import jake2.qcommon.qfiles;
 import jake2.render.image_t;
+import jake2.util.Lib;
 import jake2.util.Vargs;
 
 import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
+import java.nio.*;
 import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 
 import net.java.games.jogl.GL;
 
@@ -128,8 +121,7 @@ public abstract class Image extends Main {
 		GL_TexEnv(GL.GL_REPLACE);
 	}
 
-	void GL_SelectTexture(int texture /* GLenum */
-	) {
+	void GL_SelectTexture(int texture /* GLenum */) {
 		int tmu;
 
 		if (!qglSelectTextureSGIS && !qglActiveTextureARB)
@@ -787,9 +779,9 @@ public abstract class Image extends Main {
 			filledcolor = 0;
 			// attempt to find opaque black
 			for (i = 0; i < 256; ++i)
-				if (d_8to24table[i] == (255 << 0)) // alpha 1.0
-					// TODO check this: if ((d_8to24table[i] & 0xFF000000) == 0xFF000000) // alpha 1.0
-					{
+				// TODO check this
+				if (d_8to24table[i]  == 0xFF000000) { // alpha 1.0
+				//if (d_8to24table[i] == (255 << 0)) // alpha 1.0
 					filledcolor = i;
 					break;
 				}
@@ -1068,6 +1060,7 @@ public abstract class Image extends Main {
 	*/
 	int[] scaled = new int[256 * 256];
 	byte[] paletted_texture = new byte[256 * 256];
+	IntBuffer tex = Lib.newIntBuffer(512 * 256, ByteOrder.LITTLE_ENDIAN);
 
 	boolean GL_Upload32(int[] data, int width, int height, boolean mipmap) {
 		int samples;
@@ -1149,6 +1142,7 @@ public abstract class Image extends Main {
 							paletted_texture);
 					}
 					else {
+						tex.rewind(); tex.put(data);
 						gl.glTexImage2D(
 							GL.GL_TEXTURE_2D,
 							0,
@@ -1158,13 +1152,13 @@ public abstract class Image extends Main {
 							0,
 							GL.GL_RGBA,
 							GL.GL_UNSIGNED_BYTE,
-							data);
+							tex);
 					}
 					//goto done;
 					throw new longjmpException();
 				}
 				//memcpy (scaled, data, width*height*4); were bytes
-				IntBuffer.wrap(data).get(scaled, 0, width * height);
+				System.arraycopy(data, 0, scaled, 0, width * height);
 
 			}
 			else
@@ -1187,7 +1181,8 @@ public abstract class Image extends Main {
 					paletted_texture);
 			}
 			else {
-				gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, scaled);
+				tex.rewind(); tex.put(scaled);
+				gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, tex);
 			}
 
 			if (mipmap) {
@@ -1218,6 +1213,7 @@ public abstract class Image extends Main {
 							paletted_texture);
 					}
 					else {
+						tex.rewind(); tex.put(scaled);
 						gl.glTexImage2D(
 							GL.GL_TEXTURE_2D,
 							miplevel,
@@ -1227,14 +1223,14 @@ public abstract class Image extends Main {
 							0,
 							GL.GL_RGBA,
 							GL.GL_UNSIGNED_BYTE,
-							scaled);
+							tex);
 					}
 				}
 			}
 			// label done:
 		}
 		catch (longjmpException e) {
-			; // replaces labe done
+			; // replaces label done
 		}
 
 		if (mipmap) {
@@ -1578,7 +1574,7 @@ public abstract class Image extends Main {
 
 			// free it
 			// TODO jogl bug
-			//gl.glDeleteTextures(1, new int[] {image.texnum});
+			gl.glDeleteTextures(1, new int[] {image.texnum});
 			image.clear();
 		}
 	}
@@ -1590,7 +1586,6 @@ public abstract class Image extends Main {
 	*/
 	protected void Draw_GetPalette() {
 		int r, g, b;
-		int v;
 		Dimension dim;
 		byte[] pic;
 		byte[][] palette = new byte[1][]; //new byte[768];
@@ -1604,15 +1599,18 @@ public abstract class Image extends Main {
 
 		byte[] pal = palette[0];
 
+		int j = 0;
 		for (int i = 0; i < 256; i++) {
-			r = pal[i * 3 + 0];
-			g = pal[i * 3 + 1];
-			b = pal[i * 3 + 2];
+			r = pal[j++] & 0xFF;
+			g = pal[j++] & 0xFF;
+			b = pal[j++] & 0xFF;
 
-			d_8to24table[i] = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+			d_8to24table[i] = (255 << 24) | (b << 16) | (g << 8) | (r << 0);
 		}
 
-		d_8to24table[255] &= 0x00ffffff; // 255 is transparent
+		d_8to24table[255] &= 0x00FFFFFF; // 255 is transparent
+		
+		particle_t.setColorPalette(d_8to24table);
 	}
 
 	/*
@@ -1686,7 +1684,7 @@ public abstract class Image extends Main {
 	   			continue; // free image_t slot
 			// free it
 			// TODO jogl bug
-			//gl.glDeleteTextures(1, new int[] {image.texnum});
+			gl.glDeleteTextures(1, new int[] {image.texnum});
 	  		image.clear();
 		}
 	}

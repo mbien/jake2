@@ -2,7 +2,7 @@
  * VID.java
  * Copyright (C) 2003
  *
- * $Id: VID.java,v 1.4 2004-07-08 20:56:50 hzi Exp $
+ * $Id: VID.java,v 1.4.2.1 2004-07-09 08:38:24 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -370,7 +370,7 @@ public class VID extends Globals {
 	public static void Init()
 	{
 		/* Create the video variables so we know how to start the graphics drivers */
-		vid_ref = Cvar.Get("vid_ref", "jogl", CVAR_ARCHIVE);
+		vid_ref = Cvar.Get("vid_ref", "fastjogl", CVAR_ARCHIVE);
 		vid_xpos = Cvar.Get("vid_xpos", "3", CVAR_ARCHIVE);
 		vid_ypos = Cvar.Get("vid_ypos", "22", CVAR_ARCHIVE);
 		vid_fullscreen = Cvar.Get("vid_fullscreen", "0", CVAR_ARCHIVE);
@@ -419,6 +419,7 @@ public class VID extends Globals {
 //	#define REF_3DFXGL 3
 //	#define REF_OPENGLX	4
 	static final int REF_OPENGL_JOGL = 0;
+	static final int REF_OPENGL_FASTJOGL =1;
 //	#define REF_MESA3DGLX 5
 
 //	extern cvar_t *vid_ref;
@@ -605,6 +606,12 @@ public class VID extends Globals {
 			if (gl_driver.modified)
 				vid_ref.modified = true;
 			break;
+		case REF_OPENGL_FASTJOGL :
+				Cvar.Set( "vid_ref", "fastjogl" );
+				Cvar.Set( "gl_driver", "fastjogl" );
+				if (gl_driver.modified)
+					vid_ref.modified = true;
+				break;
 		}
 
 		Menu.ForceMenuOff();
@@ -634,6 +641,7 @@ public class VID extends Globals {
 		// "[OpenGL glX     ]",
 		// "[Mesa 3-D glX   ]",
 		"[OpenGL jogl    ]",
+		"[OpenGL fastjogl]",
 		null
 	};
 	static final String[] yesno_names =
@@ -685,6 +693,11 @@ public class VID extends Globals {
 		{
 			s_current_menu_index = OPENGL_MENU;
 			s_ref_list[0].curvalue = s_ref_list[1].curvalue = REF_OPENGL_JOGL;
+		}
+		else if ( vid_ref.string.equalsIgnoreCase("fastjogl"))
+		{
+			s_current_menu_index = OPENGL_MENU;
+			s_ref_list[0].curvalue = s_ref_list[1].curvalue = REF_OPENGL_FASTJOGL;
 		}
 //		else if (strcmp( vid_ref->string, "softx" ) == 0 ) 
 //		{

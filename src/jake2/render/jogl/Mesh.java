@@ -2,7 +2,7 @@
  * Mesh.java
  * Copyright (C) 2003
  *
- * $Id: Mesh.java,v 1.3 2004-07-08 20:24:30 hzi Exp $
+ * $Id: Mesh.java,v 1.3.2.1 2004-07-09 08:38:26 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -104,36 +104,36 @@ public abstract class Mesh extends Light {
 	{
 		int i;
 		int lerpIndex = 0;
-		lerp.position(0);
 
 		//PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0 )
 		{
 			float[] normal;
+			int j = 0;
 			for (i=0 ; i < nverts; i++/* , v++, ov++, lerp+=4 */)
 			{
 				normal = r_avertexnormals[verts[i].lightnormalindex];
 
-				lerp.put(move[0] + ov[i].v[0]*backv[0] + v[i].v[0]*frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
-				lerp.put(move[1] + ov[i].v[1]*backv[1] + v[i].v[1]*frontv[1] + normal[1] * Defines.POWERSUIT_SCALE);
-				lerp.put(move[2] + ov[i].v[2]*backv[2] + v[i].v[2]*frontv[2] + normal[2] * Defines.POWERSUIT_SCALE); 
-				lerp.get();
+				lerp.put(j++, move[0] + ov[i].v[0]*backv[0] + v[i].v[0]*frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
+				lerp.put(j++, move[1] + ov[i].v[1]*backv[1] + v[i].v[1]*frontv[1] + normal[1] * Defines.POWERSUIT_SCALE);
+				lerp.put(j++, move[2] + ov[i].v[2]*backv[2] + v[i].v[2]*frontv[2] + normal[2] * Defines.POWERSUIT_SCALE); 
 			}
 		}
 		else
 		{
+			int j = 0;
 			for (i=0 ; i < nverts; i++ /* , v++, ov++, lerp+=4 */)
 			{
-				lerp.put(move[0] + ov[i].v[0]*backv[0] + v[i].v[0]*frontv[0]);
-				lerp.put(move[1] + ov[i].v[1]*backv[1] + v[i].v[1]*frontv[1]);
-				lerp.put(move[2] + ov[i].v[2]*backv[2] + v[i].v[2]*frontv[2]);
-				lerp.get();
+				
+				lerp.put(j++, move[0] + ov[i].v[0]*backv[0] + v[i].v[0]*frontv[0]);
+				lerp.put(j++, move[1] + ov[i].v[1]*backv[1] + v[i].v[1]*frontv[1]);
+				lerp.put(j++, move[2] + ov[i].v[2]*backv[2] + v[i].v[2]*frontv[2]);
 			}
 		}
 	}
 
 	FloatBuffer colorArrayBuf = BufferUtils.newFloatBuffer(qfiles.MAX_VERTS * 4);
-	FloatBuffer vertexArrayBuf = BufferUtils.newFloatBuffer(qfiles.MAX_VERTS * 4);
+	FloatBuffer vertexArrayBuf = BufferUtils.newFloatBuffer(qfiles.MAX_VERTS * 3);
 	boolean isFilled = false;
 	float[] tmpVec = {0, 0, 0};
 			
@@ -218,7 +218,7 @@ public abstract class Mesh extends Light {
 			GL_LerpVerts( paliashdr.num_xyz, v, ov, verts, vertexArrayBuf, move, frontv, backv );
 
 			gl.glEnableClientState( GL.GL_VERTEX_ARRAY );
-			gl.glVertexPointer( 3, GL.GL_FLOAT, 16, vertexArrayBuf );	// padded for SIMD
+			gl.glVertexPointer( 3, GL.GL_FLOAT, 0, vertexArrayBuf );
 
 			// PMM - added double damage shell
 			if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
@@ -233,11 +233,15 @@ public abstract class Mesh extends Light {
 				//
 				// pre light everything
 				//
-				colorArrayBuf.position(0);
+				FloatBuffer color = colorArrayBuf;
+				int j = 0;
 				for ( i = 0; i < paliashdr.num_xyz; i++ )
 				{
 					l = shadedots[verts[i].lightnormalindex];
-					colorArrayBuf.put(l * shadelight[0]).put(l * shadelight[1]).put(l * shadelight[2]).put(alpha);
+					color.put(j++, l * shadelight[0]);
+					color.put(j++, l * shadelight[1]);
+					color.put(j++, l * shadelight[2]);
+					color.put(j++, alpha);
 				}
 			}
 
@@ -294,13 +298,15 @@ public abstract class Mesh extends Light {
 				gl.glEnd ();
 			}
 
-			if ( qglUnlockArraysEXT )
+			if ( qglLockArraysEXT )
 				gl.glUnlockArraysEXT();
 		}
 		else
 		{
 			GL_LerpVerts( paliashdr.num_xyz, v, ov, verts, s_lerped, move, frontv, backv );
 
+			float[] tmp;
+			
 			while (true)
 			{
 				// get the vertex count and primitive type
@@ -325,7 +331,8 @@ public abstract class Mesh extends Light {
 						orderIndex += 3;
 
 						gl.glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha);
-						gl.glVertex3fv (s_lerped[index_xyz]);
+						tmp = s_lerped[index_xyz];
+						gl.glVertex3f(tmp[0], tmp[1], tmp[2]);
 
 					} while (--count != 0);
 				}
@@ -344,7 +351,8 @@ public abstract class Mesh extends Light {
 						l = shadedots[verts[index_xyz].lightnormalindex];
 					
 						gl.glColor4f (l* shadelight[0], l*shadelight[1], l*shadelight[2], alpha);
-						gl.glVertex3fv (s_lerped[index_xyz]);
+						tmp = s_lerped[index_xyz];
+						gl.glVertex3f(tmp[0], tmp[1], tmp[2]);
 					} while (--count != 0);
 				}
 				gl.glEnd ();
@@ -384,6 +392,7 @@ public abstract class Mesh extends Light {
 		height = -lheight + 1.0f;
 		
 		int orderIndex = 0;
+		int index = 0;
 
 		while (true)
 		{
@@ -410,18 +419,20 @@ public abstract class Mesh extends Light {
 
 				if ( gl_vertex_arrays.value != 0.0f )
 				{
-					vertexArrayBuf.position(order[orderIndex + 2] * 4);
-					vertexArrayBuf.get(point);
+					index = order[orderIndex + 2] * 3;
+					point[0] = vertexArrayBuf.get(index);
+					point[1] = vertexArrayBuf.get(index + 1);
+					point[2] = vertexArrayBuf.get(index + 2);
 				}
 				else
 				{
-					System.arraycopy(s_lerped[order[orderIndex + 2]], 0, point, 0, 3);
+					Math3D.VectorCopy(s_lerped[order[orderIndex + 2]], point);
 				}
 					
 				point[0] -= shadevector[0]*(point[2]+lheight);
 				point[1] -= shadevector[1]*(point[2]+lheight);
 				point[2] = height;
-				gl.glVertex3fv (point);
+				gl.glVertex3f(point[0], point[1], point[2]);
 
 				orderIndex += 3;
 

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 20.11.2003 by RST.
-// $Id: glpoly_t.java,v 1.1 2004-07-07 19:59:35 hzi Exp $
+// $Id: glpoly_t.java,v 1.1.1.1.2.1 2004-07-09 08:38:23 hzi Exp $
 
 package jake2.render;
 
@@ -35,4 +35,12 @@ public class glpoly_t {
 	public glpoly_t(int numverts) {
 		this.verts = new float[numverts][VERTEXSIZE];
 	}
+	
+	/*
+	 * vertex array extension
+	 */
+	 
+	// the array position (glDrawArrays) 
+	public int pos = 0;
+	
 }

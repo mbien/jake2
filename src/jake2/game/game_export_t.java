@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 31.10.2003 by RST.
-// $Id: game_export_t.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
+// $Id: game_export_t.java,v 1.2.2.1 2004-07-09 08:38:29 hzi Exp $
 
 package jake2.game;
 
@@ -58,8 +58,8 @@ public class game_export_t
 	// ReadGame is called on a loadgame.
 	public void WriteGame(String filename, boolean autosave)
 	{
-		// TODO WriteGame not implemnted!
-		Com.Println("WriteGame not implemnted!");
+		// TODO WriteGame not implemented.
+		Com.Println("WriteGame not implemented.");
 	}
 
 	public void ReadGame(String filename)
@@ -71,14 +71,14 @@ public class game_export_t
 	// loaded with SpawnEntities
 	public void WriteLevel(String filename)
 	{
-		// TODO WriteLevel not implemented!
-		Com.Println("WriteLevel not implemented!");
+		// TODO WriteLevel not implemented.
+		Com.Println("WriteLevel not implemented.");
 	}
 
 	public void ReadLevel(String filename)
 	{
-		// TODO ReadLevel not implemnted!
-		Com.Println("ReadLevel not implemnted!");
+		// TODO ReadLevel not implemented.
+		Com.Println("ReadLevel not implemented.");
 	}
 
 	public boolean ClientConnect(edict_t ent, String userinfo)

@@ -2,7 +2,7 @@
  * FS.java
  * Copyright (C) 2003
  * 
- * $Id: FS.java,v 1.2.2.1 2004-07-09 08:09:08 hzi Exp $
+ * $Id: FS.java,v 1.2.2.2 2004-07-09 08:38:29 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -116,7 +116,7 @@ public final class FS extends Globals {
 		if (index > 0) {
 			File f = new File(path.substring(0, index));
 			if (!f.mkdirs()) {
-				Com.Printf("can't create path \"" + path + '"');
+				Com.Printf("can't create path \"" + path + '"' + "\n" );
 			}
 		}
 	}

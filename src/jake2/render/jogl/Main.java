@@ -2,7 +2,7 @@
  * Main.java
  * Copyright (C) 2003
  *
- * $Id: Main.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
+ * $Id: Main.java,v 1.2.2.1 2004-07-09 08:38:26 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -29,6 +29,7 @@ import jake2.*;
 import jake2.client.*;
 import jake2.game.cplane_t;
 import jake2.game.cvar_t;
+import jake2.qcommon.Cvar;
 import jake2.qcommon.qfiles;
 import jake2.qcommon.xcommand_t;
 import jake2.render.*;
@@ -36,9 +37,12 @@ import jake2.util.Math3D;
 import jake2.util.Vargs;
 
 import java.awt.Dimension;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import net.java.games.jogl.GL;
 import net.java.games.jogl.GLU;
+import net.java.games.jogl.util.BufferUtils;
 import net.java.games.jogl.util.GLUT;
 
 /**
@@ -52,7 +56,7 @@ public abstract class Main extends Base {
 	GLU glu;
 	GLUT glut = new GLUT();
 
-	int[] d_8to24table = new int[256];
+	public static int[] d_8to24table = new int[256];
 
 	int c_visible_lightmaps;
 	int c_visible_textures;
@@ -66,8 +70,8 @@ public abstract class Main extends Base {
 	boolean qglActiveTextureARB = false;
 	boolean qglPointParameterfEXT = false;
 	boolean qglLockArraysEXT = false;
-	boolean qglUnlockArraysEXT = false;
 	boolean qglMTexCoord2fSGIS = false;
+	boolean qwglSwapIntervalEXT = false;
 
 	//	=================
 	//  abstract methods
@@ -323,22 +327,22 @@ public abstract class Main extends Base {
 		gl.glTexCoord2f(0, 1);
 		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
 		Math3D.VectorMA(point, -frame.origin_x, vright, point);
-		gl.glVertex3fv(point);
+		gl.glVertex3f(point[0], point[1], point[2]);
 
 		gl.glTexCoord2f(0, 0);
 		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
 		Math3D.VectorMA(point, -frame.origin_x, vright, point);
-		gl.glVertex3fv(point);
+		gl.glVertex3f(point[0], point[1], point[2]);
 
 		gl.glTexCoord2f(1, 0);
 		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
 		Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
-		gl.glVertex3fv(point);
+		gl.glVertex3f(point[0], point[1], point[2]);
 
 		gl.glTexCoord2f(1, 1);
 		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
 		Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
-		gl.glVertex3fv(point);
+		gl.glVertex3f(point[0], point[1], point[2]);
 
 		gl.glEnd();
 
@@ -375,7 +379,7 @@ public abstract class Main extends Base {
 		R_RotateForEntity(currententity);
 
 		gl.glDisable(GL.GL_TEXTURE_2D);
-		gl.glColor3fv(shadelight);
+		gl.glColor3f(shadelight[0], shadelight[1], shadelight[2]);
 
 		// this replaces the TRIANGLE_FAN
 		glut.glutWireCube(gl, 20);
@@ -479,63 +483,63 @@ public abstract class Main extends Base {
 		}
 		gl.glDepthMask(true); // back to writing
 	}
-
+	
 	/*
 	** GL_DrawParticles
 	**
 	*/
-	void GL_DrawParticles(int num_particles, particle_t[] particles) {
-		particle_t p;
-		int i;
+	void GL_DrawParticles(int num_particles) {
 		float[] up = { 0, 0, 0 };
 		float[] right = { 0, 0, 0 };
 		float scale;
 		int color;
 
+		float origin_x, origin_y, origin_z;
+
+		Math3D.VectorScale(vup, 1.5f, up);
+		Math3D.VectorScale(vright, 1.5f, right);
+		
 		GL_Bind(r_particletexture.texnum);
 		gl.glDepthMask(false); // no z buffering
 		gl.glEnable(GL.GL_BLEND);
 		GL_TexEnv(GL.GL_MODULATE);
+		
 		gl.glBegin(GL.GL_TRIANGLES);
 
-		Math3D.VectorScale(vup, 1.5f, up);
-		Math3D.VectorScale(vright, 1.5f, right);
+		FloatBuffer sourceVertices = particle_t.vertexArray;
+		IntBuffer sourceColors = particle_t.colorArray;
+		for (int j = 0, i = 0; i < num_particles; i++) {
+			origin_x = sourceVertices.get(j++);
+			origin_y = sourceVertices.get(j++);
+			origin_z = sourceVertices.get(j++);
 
-		for (i = 0; i < num_particles; i++) {
-			p = particles[i];
 			// hack a scale up to keep particles from disapearing
 			scale =
-				(p.origin[0] - r_origin[0]) * vpn[0]
-					+ (p.origin[1] - r_origin[1]) * vpn[1]
-					+ (p.origin[2] - r_origin[2]) * vpn[2];
+				(origin_x - r_origin[0]) * vpn[0]
+					+ (origin_y - r_origin[1]) * vpn[1]
+					+ (origin_z - r_origin[2]) * vpn[2];
 
-			if (scale < 20)
-				scale = 1;
-			else
-				scale = 1 + scale * 0.004f;
+			scale = (scale < 20) ? 1 :  1 + scale * 0.004f;
 
-			color = d_8to24table[p.color];
-
+			color = sourceColors.get(i);
 			gl.glColor4ub(
-				(byte) ((color >> 0) & 0xff),
-				(byte) ((color >> 8) & 0xff),
-				(byte) ((color >> 16) & 0xff),
-				(byte) (p.alpha * 255));
-
+				(byte)((color >> 0) & 0xFF),
+				(byte)((color >> 8) & 0xFF),
+				(byte)((color >> 16) & 0xFF),
+				(byte)((color >> 24) & 0xFF)
+			);
+			// first vertex
 			gl.glTexCoord2f(0.0625f, 0.0625f);
-			gl.glVertex3fv(p.origin);
-
+			gl.glVertex3f(origin_x, origin_y, origin_z);
+			// second vertex
 			gl.glTexCoord2f(1.0625f, 0.0625f);
-			gl.glVertex3f(p.origin[0] + up[0] * scale, p.origin[1] + up[1] * scale, p.origin[2] + up[2] * scale);
-
+			gl.glVertex3f(origin_x + up[0] * scale, origin_y + up[1] * scale, origin_z + up[2] * scale);
+			// third vertex
 			gl.glTexCoord2f(0.0625f, 1.0625f);
-			gl.glVertex3f(
-				p.origin[0] + right[0] * scale,
-				p.origin[1] + right[1] * scale,
-				p.origin[2] + right[2] * scale);
+			gl.glVertex3f(origin_x + right[0] * scale, origin_y + right[1] * scale, origin_z + right[2] * scale);
 		}
-
 		gl.glEnd();
+		
 		gl.glDisable(GL.GL_BLEND);
 		gl.glColor4f(1, 1, 1, 1);
 		gl.glDepthMask(true); // back to normal Z buffering
@@ -550,29 +554,21 @@ public abstract class Main extends Base {
 	void R_DrawParticles() {
 
 		if (gl_ext_pointparameters.value != 0.0f && qglPointParameterfEXT) {
-			int color;
-			particle_t p;
 
+			gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
+			gl.glVertexPointer(3, GL.GL_FLOAT, 0, particle_t.vertexArray);
+			gl.glEnableClientState(GL.GL_COLOR_ARRAY);
+			gl.glColorPointer(4, GL.GL_UNSIGNED_BYTE, 0, particle_t.colorArray);
+			
 			gl.glDepthMask(false);
 			gl.glEnable(GL.GL_BLEND);
 			gl.glDisable(GL.GL_TEXTURE_2D);
-
 			gl.glPointSize(gl_particle_size.value);
-
-			gl.glBegin(GL.GL_POINTS);
-			for (int i = 0; i < r_newrefdef.num_particles; i++) {
-				p = r_newrefdef.particles[i];
-				color = d_8to24table[p.color];
-
-				gl.glColor4ub(
-					(byte) ((color >> 0) & 0xff),
-					(byte) ((color >> 8) & 0xff),
-					(byte) ((color >> 16) & 0xff),
-					(byte) (p.alpha * 255));
-
-				gl.glVertex3fv(p.origin);
-			}
-			gl.glEnd();
+			
+			gl.glDrawArrays(GL.GL_POINTS, 0, r_newrefdef.num_particles);
+			
+			gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+			gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
 
 			gl.glDisable(GL.GL_BLEND);
 			gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -581,7 +577,7 @@ public abstract class Main extends Base {
 
 		}
 		else {
-			GL_DrawParticles(r_newrefdef.num_particles, r_newrefdef.particles);
+			GL_DrawParticles(r_newrefdef.num_particles);
 		}
 	}
 
@@ -608,7 +604,7 @@ public abstract class Main extends Base {
 		gl.glRotatef(-90, 1, 0, 0); // put Z going up
 		gl.glRotatef(90, 0, 0, 1); // put Z going up
 
-		gl.glColor4fv(v_blend);
+		gl.glColor4f(v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 
 		gl.glBegin(GL.GL_QUADS);
 
@@ -958,7 +954,7 @@ public abstract class Main extends Base {
 	protected void R_Register() {
 		r_lefthand = ri.Cvar_Get("hand", "0", Globals.CVAR_USERINFO | Globals.CVAR_ARCHIVE);
 		r_norefresh = ri.Cvar_Get("r_norefresh", "0", 0);
-		r_fullbright = ri.Cvar_Get("r_fullbright", "1", 0);
+		r_fullbright = ri.Cvar_Get("r_fullbright", "0", 0);
 		r_drawentities = ri.Cvar_Get("r_drawentities", "1", 0);
 		r_drawworld = ri.Cvar_Get("r_drawworld", "1", 0);
 		r_novis = ri.Cvar_Get("r_novis", "0", 0);
@@ -1007,7 +1003,7 @@ public abstract class Main extends Base {
 		gl_vertex_arrays = ri.Cvar_Get("gl_vertex_arrays", "0", Globals.CVAR_ARCHIVE);
 
 		gl_ext_swapinterval = ri.Cvar_Get("gl_ext_swapinterval", "1", Globals.CVAR_ARCHIVE);
-		gl_ext_palettedtexture = ri.Cvar_Get("gl_ext_palettedtexture", "1", Globals.CVAR_ARCHIVE);
+		gl_ext_palettedtexture = ri.Cvar_Get("gl_ext_palettedtexture", "0", Globals.CVAR_ARCHIVE);
 		gl_ext_multitexture = ri.Cvar_Get("gl_ext_multitexture", "1", Globals.CVAR_ARCHIVE);
 		gl_ext_pointparameters = ri.Cvar_Get("gl_ext_pointparameters", "1", Globals.CVAR_ARCHIVE);
 		gl_ext_compiled_vertex_array = ri.Cvar_Get("gl_ext_compiled_vertex_array", "1", Globals.CVAR_ARCHIVE);
@@ -1056,11 +1052,11 @@ public abstract class Main extends Base {
 		int err; //  enum rserr_t
 		boolean fullscreen;
 
-		if (vid_fullscreen.modified && !gl_config.allow_cds) {
-			ri.Con_Printf(Defines.PRINT_ALL, "R_SetMode() - CDS not allowed with this driver\n");
-			ri.Cvar_SetValue("vid_fullscreen", (vid_fullscreen.value > 0.0f) ? 0.0f : 1.0f);
-			vid_fullscreen.modified = false;
-		}
+//		if (vid_fullscreen.modified && !gl_config.allow_cds) {
+//			ri.Con_Printf(Defines.PRINT_ALL, "R_SetMode() - CDS not allowed with this driver\n");
+//			ri.Cvar_SetValue("vid_fullscreen", (vid_fullscreen.value > 0.0f) ? 0.0f : 1.0f);
+//			vid_fullscreen.modified = false;
+//		}
 
 		fullscreen = (vid_fullscreen.value > 0.0f);
 
@@ -1237,25 +1233,24 @@ public abstract class Main extends Base {
 			|| gl_config.extensions_string.indexOf("GL_SGI_compiled_vertex_array") >= 0) {
 			ri.Con_Printf(Defines.PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n");
 			//		 qglLockArraysEXT = ( void * ) qwglGetProcAddress( "glLockArraysEXT" );
-			qglLockArraysEXT = true;
+			if (gl_ext_compiled_vertex_array.value != 0.0f)
+				qglLockArraysEXT = true;
+			else
+				qglLockArraysEXT = false;
 			//		 qglUnlockArraysEXT = ( void * ) qwglGetProcAddress( "glUnlockArraysEXT" );
-			qglUnlockArraysEXT = true;
+			//qglUnlockArraysEXT = true;
 		}
 		else {
 			ri.Con_Printf(Defines.PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n");
 		}
 
-		// #ifdef _WIN32
-		//	 if ( strstr( gl_config.extensions_string, "WGL_EXT_swap_control" ) )
-		//	 {
-		//		 qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) qwglGetProcAddress( "wglSwapIntervalEXT" );
-		//		 ri.Con_Printf( Defines.PRINT_ALL, "...enabling WGL_EXT_swap_control\n" );
-		//	 }
-		//	 else
-		//	 {
-		//		 ri.Con_Printf( Defines.PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
-		//	 }
-		// #endif
+		if (gl_config.extensions_string.indexOf("WGL_EXT_swap_control") >= 0) {
+			qwglSwapIntervalEXT = true;
+			ri.Con_Printf(Defines.PRINT_ALL, "...enabling WGL_EXT_swap_control\n");
+		} else {
+			qwglSwapIntervalEXT = false;
+			ri.Con_Printf(Defines.PRINT_ALL, "...WGL_EXT_swap_control not found\n");
+		}
 
 		if (gl_config.extensions_string.indexOf("GL_EXT_point_parameters") >= 0) {
 			if (gl_ext_pointparameters.value != 0.0f) {
@@ -1301,6 +1296,7 @@ public abstract class Main extends Base {
 			}
 			else {
 				ri.Con_Printf(Defines.PRINT_ALL, "...ignoring GL_EXT_shared_texture_palette\n");
+				qglColorTableEXT = false;
 			}
 		}
 		else {
@@ -1317,34 +1313,40 @@ public abstract class Main extends Base {
 				qglMTexCoord2fSGIS = true;
 				GL_TEXTURE0 = GL.GL_TEXTURE0_ARB;
 				GL_TEXTURE1 = GL.GL_TEXTURE1_ARB;
+				Cvar.SetValue("r_fullbright", 1);
 			}
 			else {
 				ri.Con_Printf(Defines.PRINT_ALL, "...ignoring GL_ARB_multitexture\n");
+				Cvar.SetValue("r_fullbright", 0);
 			}
 		}
 		else {
 			ri.Con_Printf(Defines.PRINT_ALL, "...GL_ARB_multitexture not found\n");
+			Cvar.SetValue("r_fullbright", 0);
 		}
 
 		if (gl_config.extensions_string.indexOf("GL_SGIS_multitexture") >= 0) {
 			if (qglActiveTextureARB) {
 				ri.Con_Printf(Defines.PRINT_ALL, "...GL_SGIS_multitexture deprecated in favor of ARB_multitexture\n");
-			}
-			else if (gl_ext_multitexture.value != 0.0f) {
+				Cvar.SetValue("r_fullbright", 1);
+			}	else if (gl_ext_multitexture.value != 0.0f) {
 				ri.Con_Printf(Defines.PRINT_ALL, "...using GL_SGIS_multitexture\n");
 				//			 qglMTexCoord2fSGIS = ( void * ) qwglGetProcAddress( "glMTexCoord2fSGIS" );
 				//			 qglSelectTextureSGIS = ( void * ) qwglGetProcAddress( "glSelectTextureSGIS" );
 				qglSelectTextureSGIS = true;
 				qglMTexCoord2fSGIS = true;
+				Cvar.SetValue("r_fullbright", 1);
 				//			 //GL_TEXTURE0 = GL.GL_TEXTURE0_SGIS;
 				//			 //GL_TEXTURE1 = GL.GL_TEXTURE1_SGIS;
-			}
-			else {
+			} else {
 				ri.Con_Printf(Defines.PRINT_ALL, "...ignoring GL_SGIS_multitexture\n");
+				Cvar.SetValue("r_fullbright", 0);
 			}
 		}
 		else {
 			ri.Con_Printf(Defines.PRINT_ALL, "...GL_SGIS_multitexture not found\n");
+			if (!qglActiveTextureARB)
+				Cvar.SetValue("r_fullbright", 0);
 		}
 
 		GL_SetDefaultState();
@@ -1359,7 +1361,7 @@ public abstract class Main extends Base {
 			ri.Con_Printf(
 				Defines.PRINT_ALL,
 				"glGetError() = 0x%x\n\t%s\n",
-				new Vargs(2).add(err).add(gl.glGetString(err)));
+				new Vargs(2).add(err).add("" + gl.glGetString(err)));
 
 		return true;
 	}
@@ -1406,7 +1408,7 @@ public abstract class Main extends Base {
 			// FIXME: only restart if CDS is required
 			cvar_t ref;
 
-			ref = ri.Cvar_Get("vid_ref", "gl", 0);
+			ref = ri.Cvar_Get("vid_ref", "jogl", 0);
 			ref.modified = true;
 		}
 
@@ -1511,26 +1513,22 @@ public abstract class Main extends Base {
 	=============
 	*/
 	protected void R_SetPalette(byte[] palette) {
-
-		//assert(palette != null && palette.length == 768) : "byte palette[768] bug";
-		// es darf auch null sein
-
+		// 256 RGB values (768 bytes)
+		// or null
 		int i;
 		int color = 0;
 
 		if (palette != null) {
-
+			int j =0;
 			for (i = 0; i < 256; i++) {
-				color = (palette[i * 3 + 0] << 0) & 0x000000FF;
-				color |= (palette[i * 3 + 1] << 8) & 0x0000FF00;
-				color |= (palette[i * 3 + 2] << 8) & 0x00FF0000;
+				color = (palette[j++] & 0xFF) << 0;
+				color |= (palette[j++] & 0xFF) << 8;
+				color |= (palette[j++] & 0xFF) << 16;
 				color |= 0xFF000000;
 				r_rawpalette[i] = color;
 			}
-
 		}
 		else {
-
 			for (i = 0; i < 256; i++) {
 				r_rawpalette[i] = d_8to24table[i] | 0xff000000;
 			}
@@ -1543,6 +1541,9 @@ public abstract class Main extends Base {
 	}
 
 	static final int NUM_BEAM_SEGS = 6;
+	float[][] start_points = new float[NUM_BEAM_SEGS][3];
+	// array of vec3_t
+	float[][] end_points = new float[NUM_BEAM_SEGS][3]; // array of vec3_t
 
 	/*
 	** R_DrawBeam
@@ -1555,10 +1556,6 @@ public abstract class Main extends Base {
 		float[] perpvec = { 0, 0, 0 }; // vec3_t
 		float[] direction = { 0, 0, 0 }; // vec3_t
 		float[] normalized_direction = { 0, 0, 0 }; // vec3_t
-
-		float[][] start_points = new float[NUM_BEAM_SEGS][3];
-		// array of vec3_t
-		float[][] end_points = new float[NUM_BEAM_SEGS][3]; // array of vec3_t
 
 		float[] oldorigin = { 0, 0, 0 }; // vec3_t
 		float[] origin = { 0, 0, 0 }; // vec3_t
@@ -1607,11 +1604,18 @@ public abstract class Main extends Base {
 		gl.glColor4f(r, g, b, e.alpha);
 
 		gl.glBegin(GL.GL_TRIANGLE_STRIP);
+		
+		float[] v;
+		
 		for (i = 0; i < NUM_BEAM_SEGS; i++) {
-			gl.glVertex3fv(start_points[i]);
-			gl.glVertex3fv(end_points[i]);
-			gl.glVertex3fv(start_points[(i + 1) % NUM_BEAM_SEGS]);
-			gl.glVertex3fv(end_points[(i + 1) % NUM_BEAM_SEGS]);
+			v = start_points[i];
+			gl.glVertex3f(v[0], v[1], v[2]);
+			v = end_points[i];
+			gl.glVertex3f(v[0], v[1], v[2]);
+			v = start_points[(i + 1) % NUM_BEAM_SEGS];
+			gl.glVertex3f(v[0], v[1], v[2]);
+			v = end_points[(i + 1) % NUM_BEAM_SEGS];
+			gl.glVertex3f(v[0], v[1], v[2]);
 		}
 		gl.glEnd();
 
