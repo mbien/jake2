@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 29.11.2003 by RST.
-// $Id: MSG.java,v 1.3 2004-07-08 20:24:48 hzi Exp $
+// $Id: MSG.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
 
 package jake2.qcommon;
 
@@ -34,6 +34,9 @@ public class MSG extends GameBase {
 
 	//ok.
 	public static void WriteChar(sizebuf_t sb, int c) {
+//		if (c < -128 || c > 127)
+//			Com.Error(ERR_FATAL, "WriteChar: range error");
+
 		sb.data[SZ.GetSpace(sb, 1)] = (byte) (c & 0xFF);
 	}
 	
@@ -45,6 +48,11 @@ public class MSG extends GameBase {
 	
 	//ok.
 	public static void WriteByte(sizebuf_t sb, int c) {
+		byte buf;
+
+		//if (c < 0 || c > 255)
+			//Com.Error(ERR_FATAL, "WriteByte: range error");
+
 		sb.data[SZ.GetSpace(sb, 1)] = (byte) (c & 0xFF);
 	}
 
@@ -55,6 +63,11 @@ public class MSG extends GameBase {
 
 
 	public static void WriteShort(sizebuf_t sb, int c) {
+
+	// TODO brauchen wir nicht (cwei)
+	// if (c < -32768 || c > 32767)
+	//	 Com.Error(ERR_FATAL, "WriteShort: range error");
+
 		int i = SZ.GetSpace(sb, 2);
 		sb.data[i++] = (byte) (c & 0xff);
 		sb.data[i] = (byte) ((c >>> 8) & 0xFF);
@@ -62,6 +75,7 @@ public class MSG extends GameBase {
 
 	//ok.
 	public static void WriteInt(sizebuf_t sb, int c) {
+
 		int i = SZ.GetSpace(sb, 4);
 		sb.data[i++] = (byte) ((c & 0xff));
 		sb.data[i++] = (byte) ((c >>> 8) & 0xff);

@@ -2,7 +2,7 @@
  * CL_pred.java
  * Copyright (C) 2004
  * 
- * $Id: CL_pred.java,v 1.3 2004-07-08 20:24:28 hzi Exp $
+ * $Id: CL_pred.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -203,6 +203,14 @@ public class CL_pred extends CL_parse {
 	=================
 	*/
 	static void PredictMovement() {
+		int ack, current;
+		int frame;
+		int oldframe;
+		usercmd_t cmd;
+		pmove_t pm;
+		int i;
+		int step;
+		int oldz;
 
 		if (cls.state != ca_active)
 			return;
@@ -212,14 +220,14 @@ public class CL_pred extends CL_parse {
 
 		if (cl_predict.value == 0.0f || (cl.frame.playerstate.pmove.pm_flags & PMF_NO_PREDICTION) != 0) {
 			// just set angles
-			for (int i = 0; i < 3; i++) {
+			for (i = 0; i < 3; i++) {
 				cl.predicted_angles[i] = cl.viewangles[i] + SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[i]);
 			}
 			return;
 		}
 
-		int ack = cls.netchan.incoming_acknowledged;
-		int current = cls.netchan.outgoing_sequence;
+		ack = cls.netchan.incoming_acknowledged;
+		current = cls.netchan.outgoing_sequence;
 
 		// if we are too far out of date, just freeze
 		if (current - ack >= CMD_BACKUP) {
@@ -230,7 +238,7 @@ public class CL_pred extends CL_parse {
 
 		// copy current state to pmove
 		//memset (pm, 0, sizeof(pm));
-		pmove_t pm = new pmove_t();
+		pm = new pmove_t();
 
 		pm.trace = new pmove_t.TraceAdapter() {
 			public trace_t trace(float[] start, float[] mins, float[] maxs, float[] end) {
@@ -249,10 +257,9 @@ public class CL_pred extends CL_parse {
 		pm.s.set(cl.frame.playerstate.pmove);
 
 		// SCR_DebugGraph (current - ack - 1, 0);
-		int frame = 0;
+		frame = 0;
 
 		// run frames
-		usercmd_t cmd;
 		while (++ack < current) {
 			frame = ack & (CMD_BACKUP - 1);
 			cmd = cl.cmds[frame];
@@ -265,9 +272,9 @@ public class CL_pred extends CL_parse {
 			VectorCopy(pm.s.origin, cl.predicted_origins[frame]);
 		}
 
-		int oldframe = (ack - 2) & (CMD_BACKUP - 1);
-		int oldz = cl.predicted_origins[oldframe][2];
-		int step = pm.s.origin[2] - oldz;
+		oldframe = (ack - 2) & (CMD_BACKUP - 1);
+		oldz = cl.predicted_origins[oldframe][2];
+		step = pm.s.origin[2] - oldz;
 		if (step > 63 && step < 160 && (pm.s.pm_flags & PMF_ON_GROUND) != 0) {
 			cl.predicted_step = step * 0.125f;
 			cl.predicted_step_time = (int) (cls.realtime - cls.frametime * 500);

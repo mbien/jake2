@@ -2,7 +2,7 @@
  * Impl.java
  * Copyright (C) 2003
  *
- * $Id: Impl.java,v 1.4 2004-07-08 20:56:55 hzi Exp $
+ * $Id: Impl.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -27,10 +27,7 @@ package jake2.render.jogl;
 
 import jake2.Defines;
 import jake2.Globals;
-import jake2.client.CL;
-import jake2.qcommon.Com;
 import jake2.qcommon.xcommand_t;
-import jake2.server.SV;
 import jake2.sys.KBD;
 
 import java.awt.Dimension;
@@ -129,7 +126,9 @@ public class Impl extends Misc implements GLEventListener {
 		// register event listener
 		window.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				ri.Cmd_ExecuteText(Defines.EXEC_APPEND, "quit");
+				R_Shutdown();
+				System.out.println("Received event " + e.paramString() + ", exiting...\n");
+				System.exit(0);
 			}
 		});
 		
@@ -138,12 +137,11 @@ public class Impl extends Misc implements GLEventListener {
 		canvas.addMouseListener(KBD.listener);
 		canvas.addMouseMotionListener(KBD.listener);
 		window.addComponentListener(KBD.listener);
-		canvas.requestFocus();
-		
+
 		window.pack();
 		window.show();
 		canvas.requestFocus();
-		
+
 		this.canvas = canvas;
 
 		vid.width = newDim.width;
@@ -224,10 +222,12 @@ public class Impl extends Misc implements GLEventListener {
 		this.contextInUse = true;
 
 		if (switchToCallback) {
-			callback.execute();
+			if (callback == null)
+				ri.updateScreenCallback();
+			else
+				callback.execute();
 		}
-		else
-		{
+		else {
 
 			// after the first run (initialization) switch to callback
 			switchToCallback = true;
@@ -271,9 +271,9 @@ public class Impl extends Misc implements GLEventListener {
 	 * @see jake2.client.refexport_t#updateScreen()
 	 */
 	public void updateScreen(xcommand_t callback) {
-//		if (canvas == null) {
-//			throw new IllegalStateException("Refresh modul \"" + DRIVER_NAME + "\" have to be initialized.");
-//		}
+		if (canvas == null) {
+			throw new IllegalStateException("Refresh modul \"" + DRIVER_NAME + "\" have to be initialized.");
+		}
 		this.callback = callback;
 		canvas.display();
 	}

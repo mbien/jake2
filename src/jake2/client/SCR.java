@@ -2,7 +2,7 @@
  * SCR.java
  * Copyright (C) 2003
  * 
- * $Id: SCR.java,v 1.4 2004-07-08 20:56:49 hzi Exp $
+ * $Id: SCR.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -30,7 +30,6 @@ import jake2.Globals;
 import jake2.game.Cmd;
 import jake2.game.cvar_t;
 import jake2.qcommon.*;
-import jake2.sound.*;
 import jake2.sys.Sys;
 import jake2.util.Vargs;
 
@@ -85,6 +84,7 @@ public final class SCR extends Globals
 	static cvar_t scr_graphshift;
 	static cvar_t scr_drawall;
 	static cvar_t fps;
+	static cvar_t fps_updates;
 
 	static dirty_t scr_dirty = new dirty_t();
 	static dirty_t[] scr_old_dirty = { new dirty_t(), new dirty_t()};
@@ -436,6 +436,7 @@ public final class SCR extends Globals
 		scr_graphshift = Cvar.Get("graphshift", "0", 0);
 		scr_drawall = Cvar.Get("scr_drawall", "1", 0);
 		fps = Cvar.Get("fps", "0", 0);
+		fps_updates = Cvar.Get("fps_updates", "1", 0);
 
 		//
 		// register our commands
@@ -1420,16 +1421,10 @@ public final class SCR extends Globals
 			crosshair_pic);
 	}
 
-	private static xcommand_t updateScreenCallback = new xcommand_t() {
-		public void execute() {
-			UpdateScreen2();
-		}
-	};	 
-
 	// wird anstelle von der richtigen UpdateScreen benoetigt
 	public static void UpdateScreen()
 	{
-		Globals.re.updateScreen(updateScreenCallback);
+		Globals.re.updateScreen(null);
 	}
 
 	/*

@@ -2,7 +2,7 @@
  * CL_fx.java
  * Copyright (C) 2004
  * 
- * $Id: CL_fx.java,v 1.4 2004-07-08 20:56:50 hzi Exp $
+ * $Id: CL_fx.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,12 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.client;
 
-import jake2.Globals;
 import jake2.game.M_Flash;
 import jake2.game.entity_state_t;
 import jake2.qcommon.Com;
 import jake2.qcommon.MSG;
-import jake2.sound.*;
 
 /**
  * CL_fx
@@ -241,10 +239,11 @@ public class CL_fx extends CL_tent {
 	===============
 	*/
 	static void RunDLights() {
+		int i;
 		cdlight_t[] dl;
 
 		dl = cl_dlights;
-		for (int i = 0; i < MAX_DLIGHTS; i++) {
+		for (i = 0; i < MAX_DLIGHTS; i++) {
 			if (dl[i].radius == 0.0f)
 				continue;
 
@@ -266,20 +265,24 @@ public class CL_fx extends CL_tent {
 	static void ParseMuzzleFlash() {
 		float[] fv = new float[3];
 		float[] rv = new float[3];
+		cdlight_t dl;
+		int i, weapon;
+		centity_t pl;
+		int silenced;
 		float volume;
 		String soundname;
 
-		int i = MSG.ReadShort(net_message);
+		i = MSG.ReadShort(net_message);
 		if (i < 1 || i >= MAX_EDICTS)
 			Com.Error(ERR_DROP, "CL_ParseMuzzleFlash: bad entity");
 
-		int weapon = MSG.ReadByte(net_message);
-		int silenced = weapon & MZ_SILENCED;
+		weapon = MSG.ReadByte(net_message);
+		silenced = weapon & MZ_SILENCED;
 		weapon &= ~MZ_SILENCED;
 
-		centity_t pl = cl_entities[i];
+		pl = cl_entities[i];
 
-		cdlight_t dl = CL.AllocDlight(i);
+		dl = CL.AllocDlight(i);
 		VectorCopy(pl.current.origin, dl.origin);
 		AngleVectors(pl.current.angles, fv, rv, null);
 		VectorMA(dl.origin, 18, fv, dl.origin);
@@ -510,16 +513,19 @@ public class CL_fx extends CL_tent {
 	==============
 	*/
 	static void ParseMuzzleFlash2() {
+		int ent;
 		float[] origin = new float[3];
+		int flash_number;
+		cdlight_t dl;
 		float[] forward = new float[3];
 		float[] right = new float[3];
 		String soundname;
 
-		int ent = MSG.ReadShort(net_message);
+		ent = MSG.ReadShort(net_message);
 		if (ent < 1 || ent >= MAX_EDICTS)
 			Com.Error(ERR_DROP, "CL_ParseMuzzleFlash2: bad entity");
 
-		int flash_number = MSG.ReadByte(net_message);
+		flash_number = MSG.ReadByte(net_message);
 
 		// locate the origin
 		AngleVectors(cl_entities[ent].current.angles, forward, right, null);
@@ -537,7 +543,7 @@ public class CL_fx extends CL_tent {
 				+ right[2] * M_Flash.monster_flash_offset[flash_number][1]
 				+ M_Flash.monster_flash_offset[flash_number][2];
 
-		cdlight_t dl = CL.AllocDlight(ent);
+		dl = CL.AllocDlight(ent);
 		VectorCopy(origin, dl.origin);
 		dl.radius = 200 + (rnd.nextInt() & 31);
 		dl.minlight = 32;
@@ -954,8 +960,9 @@ public class CL_fx extends CL_tent {
 	*/
 	static void AddDLights() {
 		int i;
-		
-		cdlight_t[] dl = cl_dlights;
+		cdlight_t[] dl;
+
+		dl = cl_dlights;
 
 		//	  =====
 		//	  PGM
@@ -1052,7 +1059,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = -PARTICLE_GRAVITY;
 			p.alpha = 1.0f;
 
-			p.alphavel = -1.0f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -1.0f / (0.5f + frand() * 0.3f);
 		}
 	}
 
@@ -1087,7 +1094,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = -PARTICLE_GRAVITY;
 			p.alpha = 1.0f;
 
-			p.alphavel = -1.0f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -1.0f / (0.5f + frand() * 0.3f);
 		}
 	}
 
@@ -1123,7 +1130,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = PARTICLE_GRAVITY;
 			p.alpha = 1.0f;
 
-			p.alphavel = -1.0f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -1.0f / (0.5f + frand() * 0.3f);
 		}
 	}
 
@@ -1190,9 +1197,9 @@ public class CL_fx extends CL_tent {
 			else
 				p.color = 0xe0 + (rand() & 7); // yellow
 
-			p.org[0] = org[0] - 16 + Globals.rnd.nextFloat() * 32;
-			p.org[1] = org[1] - 16 + Globals.rnd.nextFloat() * 32;
-			p.org[2] = org[2] - 24 + Globals.rnd.nextFloat() * 56;
+			p.org[0] = org[0] - 16 + frand() * 32;
+			p.org[1] = org[1] - 16 + frand() * 32;
+			p.org[2] = org[2] - 24 + frand() * 56;
 
 			for (j = 0; j < 3; j++)
 				p.vel[j] = crand() * 20;
@@ -1201,7 +1208,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = -PARTICLE_GRAVITY;
 			p.alpha = 1.0f;
 
-			p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -1.0f / (1.0f + frand() * 0.3f);
 		}
 	}
 
@@ -1238,7 +1245,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = -PARTICLE_GRAVITY * 0.2f;
 			p.alpha = 1.0f;
 
-			p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -1.0f / (1.0f + frand() * 0.3f);
 		}
 	}
 
@@ -1271,7 +1278,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = -PARTICLE_GRAVITY;
 			p.alpha = 1.0f;
 
-			p.alphavel = -0.8f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -0.8f / (0.5f + frand() * 0.3f);
 		}
 	}
 
@@ -1313,7 +1320,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = PARTICLE_GRAVITY * 4;
 			p.alpha = 1.0f;
 
-			p.alphavel = -0.3f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -0.3f / (0.5f + frand() * 0.3f);
 		}
 	}
 
@@ -1352,7 +1359,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = -PARTICLE_GRAVITY;
 			p.alpha = 1.0f;
 
-			p.alphavel = -1.0f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -1.0f / (0.5f + frand() * 0.3f);
 		}
 	}
 
@@ -1392,7 +1399,7 @@ public class CL_fx extends CL_tent {
 			p.time = cl.time;
 
 			p.alpha = 1.0f;
-			p.alphavel = -1.0f / (0.3f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (0.3f + frand() * 0.2f);
 			p.color = 0xe0;
 			for (j = 0; j < 3; j++) {
 				p.org[j] = move[j] + crand();
@@ -1439,7 +1446,7 @@ public class CL_fx extends CL_tent {
 			p.time = cl.time;
 
 			p.alpha = 1.0f;
-			p.alphavel = -1.0f / (0.8f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (0.8f + frand() * 0.2f);
 			p.color = 115;
 			for (j = 0; j < 3; j++) {
 				p.org[j] = move[j] + crand() * 16;
@@ -1486,7 +1493,7 @@ public class CL_fx extends CL_tent {
 			p.time = cl.time;
 
 			p.alpha = 1.0f;
-			p.alphavel = -1.0f / (0.8f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (0.8f + frand() * 0.2f);
 			p.color = color;
 			for (j = 0; j < 3; j++) {
 				p.org[j] = move[j] + crand() * 16;
@@ -1550,7 +1557,7 @@ public class CL_fx extends CL_tent {
 
 				if ((flags & EF_GIB) != 0) {
 					p.alpha = 1.0f;
-					p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.4f);
+					p.alphavel = -1.0f / (1.0f + frand() * 0.4f);
 					p.color = 0xe8 + (rand() & 7);
 					for (j = 0; j < 3; j++) {
 						p.org[j] = move[j] + crand() * orgscale;
@@ -1560,7 +1567,7 @@ public class CL_fx extends CL_tent {
 					p.vel[2] -= PARTICLE_GRAVITY;
 				} else if ((flags & EF_GREENGIB) != 0) {
 					p.alpha = 1.0f;
-					p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.4f);
+					p.alphavel = -1.0f / (1.0f + frand() * 0.4f);
 					p.color = 0xdb + (rand() & 7);
 					for (j = 0; j < 3; j++) {
 						p.org[j] = move[j] + crand() * orgscale;
@@ -1570,7 +1577,7 @@ public class CL_fx extends CL_tent {
 					p.vel[2] -= PARTICLE_GRAVITY;
 				} else {
 					p.alpha = 1.0f;
-					p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.2f);
+					p.alphavel = -1.0f / (1.0f + frand() * 0.2f);
 					p.color = 4 + (rand() & 7);
 					for (j = 0; j < 3; j++) {
 						p.org[j] = move[j] + crand() * orgscale;
@@ -1628,7 +1635,7 @@ public class CL_fx extends CL_tent {
 				p.time = cl.time;
 
 				p.alpha = 1.0f;
-				p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.2f);
+				p.alphavel = -1.0f / (1.0f + frand() * 0.2f);
 				p.color = 0xdc + (rand() & 3);
 				for (j = 0; j < 3; j++) {
 					p.org[j] = move[j] + crand() * 5;
@@ -1686,7 +1693,7 @@ public class CL_fx extends CL_tent {
 			VectorMA(dir, s, up, dir);
 
 			p.alpha = 1.0f;
-			p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (1.0f + frand() * 0.2f);
 			p.color = clr + (rand() & 7);
 			for (j = 0; j < 3; j++) {
 				p.org[j] = move[j] + dir[j] * 3;
@@ -1714,7 +1721,7 @@ public class CL_fx extends CL_tent {
 			VectorClear(p.accel);
 
 			p.alpha = 1.0f;
-			p.alphavel = -1.0f / (0.6f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (0.6f + frand() * 0.2f);
 			p.color = 0x0 + rand() & 15;
 
 			for (j = 0; j < 3; j++) {
@@ -1762,7 +1769,7 @@ public class CL_fx extends CL_tent {
 	
 			p.time = cl.time;
 			p.alpha = 0.5f;
-			p.alphavel = -1.0f / (0.3f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (0.3f + frand() * 0.2f);
 			p.color = 0xe4 + (rand() & 3);
 	
 			for (j = 0; j < 3; j++) {
@@ -1818,7 +1825,7 @@ public class CL_fx extends CL_tent {
 			p.time = cl.time;
 
 			p.alpha = 1.0f;
-			p.alphavel = -1.0f / (1.0f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (1.0f + frand() * 0.2f);
 			p.color = 4 + (rand() & 7);
 			for (j = 0; j < 3; j++) {
 				p.org[j] = move[j] + crand() * 2;
@@ -2034,7 +2041,7 @@ public class CL_fx extends CL_tent {
 			p.time = cl.time;
 
 			p.alpha = 1.0f;
-			p.alphavel = -1.0f / (0.3f + Globals.rnd.nextFloat() * 0.2f);
+			p.alphavel = -1.0f / (0.3f + frand() * 0.2f);
 			p.color = 0xe0;
 			for (j = 0; j < 3; j++) {
 				p.org[j] = move[j] + crand();
@@ -2120,7 +2127,7 @@ public class CL_fx extends CL_tent {
 			p.accel[2] = -PARTICLE_GRAVITY;
 			p.alpha = 1.0f;
 
-			p.alphavel = -0.8f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
+			p.alphavel = -0.8f / (0.5f + frand() * 0.3f);
 		}
 	}
 
@@ -2131,14 +2138,14 @@ public class CL_fx extends CL_tent {
 	===============
 	*/
 	static void TeleportParticles(float[] org) {
-
+		int i, j, k;
 		cparticle_t p;
 		float vel;
 		float[] dir = new float[3];
 
-		for (int i = -16; i <= 16; i += 4)
-			for (int j = -16; j <= 16; j += 4)
-				for (int k = -16; k <= 32; k += 4) {
+		for (i = -16; i <= 16; i += 4)
+			for (j = -16; j <= 16; j += 4)
+				for (k = -16; k <= 32; k += 4) {
 					if (free_particles == null)
 						return;
 					p = free_particles;

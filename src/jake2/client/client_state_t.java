@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 27.11.2003 by RST.
-//$Id: client_state_t.java,v 1.2 2004-07-08 20:56:51 hzi Exp $
+//$Id: client_state_t.java,v 1.1 2004-07-07 19:58:52 hzi Exp $
 
 package jake2.client;
 
@@ -28,7 +28,6 @@ import jake2.game.cmodel_t;
 import jake2.game.usercmd_t;
 import jake2.render.image_t;
 import jake2.render.model_t;
-import jake2.sound.*;
 
 import java.io.RandomAccessFile;
 
@@ -119,9 +118,9 @@ public class client_state_t {
 	boolean attractloop; // running the attract loop, any key will menu
 	int servercount; // server identification for prespawns
 	String gamedir ="";
-	public int playernum;
+	int playernum;
 
-	public String configstrings[] = new String[Defines.MAX_CONFIGSTRINGS];
+	String configstrings[] = new String[Defines.MAX_CONFIGSTRINGS];
 
 	//
 	// locally derived information from server state

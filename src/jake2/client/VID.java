@@ -2,7 +2,7 @@
  * VID.java
  * Copyright (C) 2003
  *
- * $Id: VID.java,v 1.4 2004-07-08 20:56:50 hzi Exp $
+ * $Id: VID.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -31,7 +31,6 @@ import jake2.game.Cmd;
 import jake2.game.cvar_t;
 import jake2.qcommon.*;
 import jake2.render.Renderer;
-import jake2.sound.*;
 import jake2.sys.IN;
 import jake2.sys.KBD;
 import jake2.util.Vargs;
@@ -264,6 +263,10 @@ public class VID extends Globals {
 
 			public void Vid_NewWindow(int width, int height) {
 				VID.NewWindow(width, height);
+			}
+
+			public void updateScreenCallback() {
+				SCR.UpdateScreen2();
 			}
 		};
 

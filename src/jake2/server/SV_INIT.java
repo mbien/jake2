@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 14.01.2004 by RST.
-// $Id: SV_INIT.java,v 1.3 2004-07-08 20:24:30 hzi Exp $
+// $Id: SV_INIT.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
 
 package jake2.server;
 
@@ -115,7 +115,7 @@ public class SV_INIT extends Globals  {
 			//
 			VectorCopy(svent.s.origin, svent.s.old_origin);
 			// rst: bugfix
-			sv.baselines[entnum].set(svent.s);// = svent.s.getClone();
+			sv.baselines[entnum] = svent.s.getClone();
 		}
 	}
 

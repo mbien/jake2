@@ -2,7 +2,7 @@
  * Mesh.java
  * Copyright (C) 2003
  *
- * $Id: Mesh.java,v 1.3 2004-07-08 20:24:30 hzi Exp $
+ * $Id: Mesh.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -228,7 +228,7 @@ public abstract class Mesh extends Light {
 			else
 			{
 				gl.glEnableClientState( GL.GL_COLOR_ARRAY );
-				gl.glColorPointer( 4, GL.GL_FLOAT, 0, colorArrayBuf );
+				gl.glColorPointer( 3, GL.GL_FLOAT, 0, colorArrayBuf );
 
 				//
 				// pre light everything
@@ -237,7 +237,7 @@ public abstract class Mesh extends Light {
 				for ( i = 0; i < paliashdr.num_xyz; i++ )
 				{
 					l = shadedots[verts[i].lightnormalindex];
-					colorArrayBuf.put(l * shadelight[0]).put(l * shadelight[1]).put(l * shadelight[2]).put(alpha);
+					colorArrayBuf.put(l * shadelight[0]).put(l * shadelight[1]).put(l * shadelight[2]);
 				}
 			}
 
