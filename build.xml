@@ -1,5 +1,5 @@
 <!-- Buildfile -->
-<project name="jake2" default="dist" basedir=".">
+<project name="jake2" default="usage" basedir=".">
 
 	<taskdef name="proguard" classname="proguard.ant.ProGuardTask">
 		<classpath>
@@ -20,6 +20,19 @@
 		<pathelement location="lib/joal/linux/joal.jar"/>
 	</path>
 	
+	<!-- usage -->
+	<target name="usage">
+		<echo message="command line arguments of build.sh or build.bat"/>
+		<echo message=""/>
+		<echo message="bindist      build only binary distibution"/>
+		<echo message="srcdist      build only source distibution"/>
+		<echo message="all          build source and binary distibution"/>
+		<echo message="clean        delete classfiles keep jake2*.tar.gz and jake2*.zip"/>
+		<echo message="distclean    delete all generated files"/>
+		<echo message="jar          build only dist/lib/jake2.jar"/>
+		<echo message=""/>
+	</target>
+
 	<!-- initialize directories -->
 	<target name="init">
 		<mkdir dir="${build}"/>
@@ -129,7 +142,7 @@
 	</target>
 	
 	<!-- source distribution -->
-	<target name="srcdist" >
+	<target name="srcdist">
 		<tar destfile="jake2src-${version}.tar.gz" compression="gzip">
 			<tarfileset dir="." prefix="Jake2" mode="755">
 				<include name="scripts/*.*"/>
@@ -165,7 +178,6 @@
 	<!-- clean -->
 	<target name="clean">
 		<delete dir="${build}"/>
-		<delete dir="${gensrc}"/>
 	</target>
 	
 	<!-- distclean -->

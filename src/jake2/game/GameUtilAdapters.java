@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 26.02.2004 by RST.
-// $Id: GameUtilAdapters.java,v 1.1.2.1 2004-07-09 08:38:29 hzi Exp $
+// $Id: GameUtilAdapters.java,v 1.1.2.2 2004-09-08 20:57:08 hzi Exp $
 
 package jake2.game;
 
@@ -78,7 +78,6 @@ public class GameUtilAdapters
 
 				master = ent.teammaster;
 
-				// tiefe zählen
 				// count the depth
 				for (count = 0, ent = master; ent != null; ent = ent.chain, count++);
 
