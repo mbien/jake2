@@ -2,7 +2,7 @@
  * CL_parse.java
  * Copyright (C) 2004
  * 
- * $Id: CL_parse.java,v 1.4.2.1 2004-07-09 08:38:23 hzi Exp $
+ * $Id: CL_parse.java,v 1.4.2.2 2004-09-06 19:39:13 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.client;
 
 import jake2.Defines;
+import jake2.Globals;
 import jake2.game.Cmd;
 import jake2.game.entity_state_t;
 import jake2.qcommon.*;
@@ -103,7 +104,7 @@ public class CL_parse extends CL_view {
 		// download to a temp name, and only rename
 		// to the real name when done, so if interrupted
 		// a runt file wont be left
-		Com.StripExtension(cls.downloadname, cls.downloadtempname);
+		cls.downloadtempname = Com.StripExtension(cls.downloadname);
 		cls.downloadtempname += ".tmp";
 
 		//	  ZOID
@@ -175,7 +176,7 @@ public class CL_parse extends CL_view {
 			// download to a temp name, and only rename
 			// to the real name when done, so if interrupted
 			// a runt file wont be left
-			Com.StripExtension(cls.downloadname, cls.downloadtempname);
+			cls.downloadtempname = Com.StripExtension(cls.downloadname);
 			cls.downloadtempname += ".tmp";
 
 			MSG.WriteByte(cls.netchan.message, clc_stringcmd);
@@ -218,7 +219,9 @@ public class CL_parse extends CL_view {
 			Com.Printf("Server does not have this file.\n");
 			if (cls.download != null) {
 				// if here, we tried to resume a file but the server said no
-				fclose(cls.download);
+				try {
+					cls.download.close();
+				} catch (IOException e) {}
 				cls.download = null;
 			}
 			CL.RequestNextDownload();
@@ -262,7 +265,9 @@ public class CL_parse extends CL_view {
 
 			//			Com.Printf ("100%%\n");
 
-			fclose(cls.download);
+			try {
+				cls.download.close();
+			} catch (IOException e) {}
 
 			// rename the temp file to it's final name
 			oldn = DownloadFileName(cls.downloadtempname);
@@ -311,7 +316,7 @@ public class CL_parse extends CL_view {
 		cls.serverProtocol = i;
 
 		// BIG HACK to let demos from release work with the 3.0x patch!!!
-		if (Com.ServerState() != 0 && PROTOCOL_VERSION == 34) {
+		if (Globals.server_state != 0 && PROTOCOL_VERSION == 34) {
 		}
 		else if (i != PROTOCOL_VERSION)
 			Com.Error(ERR_DROP, "Server returned version " + i + ", not " + PROTOCOL_VERSION);
@@ -693,7 +698,9 @@ public class CL_parse extends CL_view {
 					Com.Printf("Server disconnected, reconnecting\n");
 					if (cls.download != null) {
 						//ZOID, close download
-						fclose(cls.download);
+						try {
+							cls.download.close();
+						} catch (IOException e) {}
 						cls.download = null;
 					}
 					cls.state = ca_connecting;

@@ -19,22 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 14.01.2004 by RST.
-// $Id: SV_GAME.java,v 1.4.2.1 2004-07-09 08:38:25 hzi Exp $
+// $Id: SV_GAME.java,v 1.4.2.2 2004-09-06 19:39:18 hzi Exp $
 
 package jake2.server;
 
-import jake2.*;
-import jake2.client.*;
 import jake2.game.*;
 import jake2.qcommon.*;
-import jake2.render.*;
-import jake2.sys.Sys;
 
 public class SV_GAME extends SV_INIT {
 
-	// sv_game.c -- interface to the game dll
-
-	public static game_export_t ge;
 
 	/*
 	===============
@@ -50,7 +43,6 @@ public class SV_GAME extends SV_INIT {
 		if (ent == null)
 			return;
 
-		//p = NUM_FOR_EDICT(ent);
 		p = ent.index;
 		if (p < 1 || p > SV_MAIN.maxclients.value)
 			return;
@@ -73,16 +65,6 @@ public class SV_GAME extends SV_INIT {
 	===============
 	*/
 	public static void PF_dprintf(String fmt) {
-		/*
-		char		msg[1024];
-		va_list		argptr;
-		
-		va_start (argptr,fmt);
-		vsprintf (msg, fmt, argptr);
-		va_end (argptr);
-		
-		*/
-
 		Com.Printf(fmt);
 	}
 
@@ -94,21 +76,14 @@ public class SV_GAME extends SV_INIT {
 	===============
 	*/
 	public static void PF_cprintf(edict_t ent, int level, String fmt) {
-		//char		msg[1024];
-		//va_list		argptr;
+
 		int n = 0;
 
 		if (ent != null) {
-
-			//n = NUM_FOR_EDICT(ent);
 			n = ent.index;
 			if (n < 1 || n > SV_MAIN.maxclients.value)
 				Com.Error(ERR_DROP, "cprintf to a non-client");
 		}
-
-		//		va_start (argptr,fmt);
-		//		vsprintf (msg, fmt, argptr);
-		//		va_end (argptr);
 
 		if (ent != null)
 			SV_SEND.SV_ClientPrintf(svs.clients[n - 1], level, fmt);
@@ -124,19 +99,11 @@ public class SV_GAME extends SV_INIT {
 	===============
 	*/
 	public static void PF_centerprintf(edict_t ent, String fmt) {
-		//char		msg[1024];
-		//va_list		argptr;
 		int n;
 
-		//TODO:  NUM_FOR_EDICT
-		//n = NUM_FOR_EDICT(ent);
 		n = ent.index;
 		if (n < 1 || n > SV_MAIN.maxclients.value)
 			return; // Com_Error (ERR_DROP, "centerprintf to a non-client");
-
-		//		va_start (argptr,fmt);
-		//		vsprintf (msg, fmt, argptr);
-		//		va_end (argptr);
 
 		MSG.WriteByte(sv.multicast, svc_centerprint);
 		MSG.WriteString(sv.multicast, fmt);
@@ -174,7 +141,6 @@ public class SV_GAME extends SV_INIT {
 
 		i = SV_ModelIndex(name);
 
-		//ent.model = name;
 		ent.s.modelindex = i;
 
 		// if it is an inline model, get the size information for it
@@ -326,11 +292,7 @@ public class SV_GAME extends SV_INIT {
 	===============
 	*/
 	public static void SV_ShutdownGameProgs() {
-		if (ge == null)
-			return;
-		ge.Shutdown();
-		Sys.UnloadGame();
-		ge = null;
+		Game.ShutdownGame();
 	}
 
 	/*
@@ -344,19 +306,13 @@ public class SV_GAME extends SV_INIT {
 	public static void SV_InitGameProgs() {
 
 		// unload anything we have now
-		if (ge != null)
-			SV_ShutdownGameProgs();
+		SV_ShutdownGameProgs();
 
 		game_import_t gimport = new game_import_t();
 
 		// all functions set in game_export_t (rst) 
-		ge = GameBase.GetGameApi(gimport);
+		GameBase.GetGameApi(gimport);
 
-		if (ge == null)
-			Com.Error(ERR_DROP, "failed to load game DLL");
-		if (ge.apiversion != GAME_API_VERSION)
-			Com.Error(ERR_DROP, "game is version " + ge.apiversion + " not " + GAME_API_VERSION);
-
-		ge.Init();
+		Game.InitGame();
 	}
 }

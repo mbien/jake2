@@ -2,7 +2,7 @@
  * Cvar.java
  * Copyright (C) 2003
  * 
- * $Id: Cvar.java,v 1.1 2004-07-07 19:59:30 hzi Exp $
+ * $Id: Cvar.java,v 1.1.1.1.2.1 2004-09-06 19:39:18 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -28,6 +28,7 @@ package jake2.qcommon;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Vector;
 
 import jake2.Defines;
 import jake2.Globals;
@@ -132,7 +133,12 @@ public class Cvar extends Globals {
 			Globals.userinfo_modified = true; // transmit at next oportunity
 
 		var.string = value;
-		var.value = Lib.atof(var.string);
+		try {
+			var.value = Float.parseFloat(var.string);
+		} catch (Exception e) {
+			var.value = 0.0f;
+		}
+		
 		var.flags = flags;
 
 		return var;
@@ -184,15 +190,17 @@ public class Cvar extends Globals {
 						return var;
 				}
 
-				if (Com.ServerState() != 0) {
+				if (Globals.server_state != 0) {
 					Com.Printf(var_name + " will be changed for next game.\n");
-					//var.latched_string = CopyString(value);
 					var.latched_string = value;
 				}
 				else {
-					//var.string = CopyString(value);
 					var.string = value;
-					var.value = Lib.atof(var.string);
+					try {
+						var.value = Float.parseFloat(var.string);
+					} catch (Exception e) {
+						var.value = 0.0f;
+					}
 					if (var.name.equals("game")) {
 						FS.SetGamedir(var.string);
 						FS.ExecAutoexec();
@@ -216,11 +224,12 @@ public class Cvar extends Globals {
 		if ((var.flags & CVAR_USERINFO) != 0)
 			Globals.userinfo_modified = true; // transmit at next oportunity
 
-		//Z_Free(var.string); // free the old value string
-
-		//var.string = CopyString(value);
 		var.string = value;
-		var.value = Lib.atof(var.string);
+		try {
+			var.value = Float.parseFloat(var.string);
+		} catch (Exception e) {
+			var.value = 0.0f;
+		}
 
 		return var;
 	}
@@ -311,7 +320,11 @@ public class Cvar extends Globals {
 		cvar_t var = Cvar.FindVar(var_name);
 		if (var == null)
 			return 0;
-		return Lib.atof(var.string);
+		float val = 0.0f;
+		try {
+			val = Float.parseFloat(var.string);
+		} catch (Exception e) {}
+		return val;
 	}
 
 	/*
@@ -418,21 +431,16 @@ public class Cvar extends Globals {
 	Cvar_CompleteVariable
 	============
 	*/
-	static String CompleteVariable(String partial) {
-		cvar_t cvar;
-		int len;
-
-		len = partial.length();
-
-		if (len == 0)
-			return null;
+	public static Vector CompleteVariable(String partial) {
+		
+		Vector vars = new Vector();
 
 		// check match
-		for (cvar = Globals.cvar_vars; cvar != null; cvar = cvar.next)
+		for (cvar_t cvar = Globals.cvar_vars; cvar != null; cvar = cvar.next)
 			if (cvar.name.startsWith(partial))
-				return cvar.name;
-
-		return null;
+				vars.add(cvar.name);
+		
+		return vars;
 	}
 
 	/*

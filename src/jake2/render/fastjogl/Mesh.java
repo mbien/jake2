@@ -2,7 +2,7 @@
  * Mesh.java
  * Copyright (C) 2003
  *
- * $Id: Mesh.java,v 1.1.2.1 2004-07-09 08:38:27 hzi Exp $
+ * $Id: Mesh.java,v 1.1.2.2 2004-09-06 19:39:17 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,18 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.fastjogl;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import net.java.games.gluegen.runtime.BufferFactory;
-import net.java.games.jogl.GL;
-import net.java.games.jogl.util.BufferUtils;
 import jake2.Defines;
-import jake2.Globals;
+import jake2.client.VID;
 import jake2.client.entity_t;
 import jake2.qcommon.qfiles;
 import jake2.render.image_t;
 import jake2.util.Math3D;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import net.java.games.jogl.GL;
+import net.java.games.jogl.util.BufferUtils;
 
 /**
  * Mesh
@@ -68,43 +68,39 @@ public abstract class Mesh extends Light {
 
 	float[] shadedots = r_avertexnormal_dots[0];
 
-	void GL_LerpVerts( int nverts, qfiles.dtrivertx_t[] v, qfiles.dtrivertx_t[] ov, qfiles.dtrivertx_t[] verts, FloatBuffer lerp, float[] move, float[] frontv, float[] backv )
+	void GL_LerpVerts(int nverts, qfiles.dtrivertx_t[] ov, qfiles.dtrivertx_t[] verts, float[] move, float[] frontv, float[] backv )
 	{
-		int i;
-		int lerpIndex = 0;
-
 		int[] ovv;
 		int[] vv;
+		FloatBuffer lerp = vertexArrayBuf;
 
 		//PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0 )
 		{
 			float[] normal;
 			int j = 0;
-			for (i=0 ; i < nverts; i++/* , v++, ov++, lerp+=4 */)
+			for (int i=0 ; i < nverts; i++/* , v++, ov++, lerp+=4 */)
 			{
 				normal = r_avertexnormals[verts[i].lightnormalindex];
 				ovv = ov[i].v;
-				vv = v[i].v;
+				vv = verts[i].v;
 				
-				lerp.put(j, move[0] + ovv[0]*backv[0] + vv[0]*frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
-				lerp.put(j + 1, move[1] + ovv[1]*backv[1] + vv[1]*frontv[1] + normal[1] * Defines.POWERSUIT_SCALE);
-				lerp.put(j + 2, move[2] + ovv[2]*backv[2] + vv[2]*frontv[2] + normal[2] * Defines.POWERSUIT_SCALE); 
-				j+=3;
+				lerp.put(j++, move[0] + ovv[0]*backv[0] + vv[0]*frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
+				lerp.put(j++, move[1] + ovv[1]*backv[1] + vv[1]*frontv[1] + normal[1] * Defines.POWERSUIT_SCALE);
+				lerp.put(j++, move[2] + ovv[2]*backv[2] + vv[2]*frontv[2] + normal[2] * Defines.POWERSUIT_SCALE); 
 			}
 		}
 		else
 		{
 			int j = 0;
-			for (i=0 ; i < nverts; i++ /* , v++, ov++, lerp+=4 */)
+			for (int i=0 ; i < nverts; i++ /* , v++, ov++, lerp+=4 */)
 			{
 				ovv = ov[i].v;
-				vv = v[i].v;
+				vv = verts[i].v;
 				
-				lerp.put(j, move[0] + ovv[0]*backv[0] + vv[0]*frontv[0]);
-				lerp.put(j + 1, move[1] + ovv[1]*backv[1] + vv[1]*frontv[1]);
-				lerp.put(j + 2, move[2] + ovv[2]*backv[2] + vv[2]*frontv[2]);
-				j+=3;
+				lerp.put(j++, move[0] + ovv[0]*backv[0] + vv[0]*frontv[0]);
+				lerp.put(j++, move[1] + ovv[1]*backv[1] + vv[1]*frontv[1]);
+				lerp.put(j++, move[2] + ovv[2]*backv[2] + vv[2]*frontv[2]);
 			}
 		}
 	}
@@ -129,33 +125,20 @@ public abstract class Mesh extends Light {
 
 	void GL_DrawAliasFrameLerp(qfiles.dmdl_t paliashdr, float backlerp)
 	{
-		float 	l;
-		qfiles.daliasframe_t	frame, oldframe;
-		qfiles.dtrivertx_t[]	v, ov, verts;
-
-		int[] order;
-		int orderIndex = 0;
 		int count;
-
-		float	frontlerp;
 		float	alpha;
 
-		float[] move = {0, 0, 0}; // vec3_t
-		float[] delta = {0, 0, 0}; // vec3_t
-		
+		float[] move = {0, 0, 0}; // vec3_t		
 		float[] frontv = {0, 0, 0}; // vec3_t
 		float[] backv = {0, 0, 0}; // vec3_t
 
-		int		i;
-		int		index_xyz;
+		qfiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
 
-		frame = paliashdr.aliasFrames[currententity.frame];
+		qfiles.dtrivertx_t[] verts = frame.verts;
 
-		verts = v = frame.verts;
+		qfiles.daliasframe_t oldframe = paliashdr.aliasFrames[currententity.oldframe];
 
-		oldframe = paliashdr.aliasFrames[currententity.oldframe];
-
-		ov = oldframe.verts;
+		qfiles.dtrivertx_t[] ov = oldframe.verts;
 
 		if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0)
 			alpha = currententity.alpha;
@@ -166,32 +149,28 @@ public abstract class Mesh extends Light {
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
 			gl.glDisable( GL.GL_TEXTURE_2D );
 
-		frontlerp = 1.0f - backlerp;
+		float frontlerp = 1.0f - backlerp;
 
 		// move should be the delta back to the previous frame * backlerp
-		Math3D.VectorSubtract (currententity.oldorigin, currententity.origin, delta);
+		Math3D.VectorSubtract (currententity.oldorigin, currententity.origin, frontv);
 		Math3D.AngleVectors (currententity.angles, vectors[0], vectors[1], vectors[2]);
 
-		move[0] = Math3D.DotProduct (delta, vectors[0]);	// forward
-		move[1] = -Math3D.DotProduct (delta, vectors[1]);	// left
-		move[2] = Math3D.DotProduct (delta, vectors[2]);	// up
+		move[0] = Math3D.DotProduct (frontv, vectors[0]);	// forward
+		move[1] = -Math3D.DotProduct (frontv, vectors[1]);	// left
+		move[2] = Math3D.DotProduct (frontv, vectors[2]);	// up
 
 		Math3D.VectorAdd (move, oldframe.translate, move);
 
-		for (i=0 ; i<3 ; i++)
+		for (int i=0 ; i<3 ; i++)
 		{
 			move[i] = backlerp*move[i] + frontlerp*frame.translate[i];
-		}
-
-		for (i=0 ; i<3 ; i++)
-		{
 			frontv[i] = frontlerp*frame.scale[i];
 			backv[i] = backlerp*oldframe.scale[i];
 		}
 		
 		// ab hier wird optimiert
 
-		GL_LerpVerts( paliashdr.num_xyz, v, ov, verts, vertexArrayBuf, move, frontv, backv );
+		GL_LerpVerts( paliashdr.num_xyz, ov, verts, move, frontv, backv );
 		
 		//gl.glEnableClientState( GL.GL_VERTEX_ARRAY );
 		gl.glVertexPointer( 3, GL.GL_FLOAT, 0, vertexArrayBuf );
@@ -211,7 +190,8 @@ public abstract class Mesh extends Light {
 			//
 			FloatBuffer color = colorArrayBuf;
 			int j = 0;
-			for ( i = 0; i < paliashdr.num_xyz; i++ )
+			float l;
+			for (int i = 0; i < paliashdr.num_xyz; i++ )
 			{
 				l = shadedots[verts[i].lightnormalindex];
 				color.put(j++,  l * shadelight[0]);
@@ -246,20 +226,21 @@ public abstract class Mesh extends Light {
 				
 			srcIndexBuf = paliashdr.indexElements[j];
 			
-			size = (count < 0) ? -count + pos : count + pos;
+			int mode = GL.GL_TRIANGLE_STRIP;
+			if (count < 0) {
+				mode = GL.GL_TRIANGLE_FAN;
+				count = -count;
+			}
+			size = count + pos;
+			srcIndex = 2 * pos;
 			for (int k = pos; k < size; k++) {
-				srcIndex = 2 * k; 
 				dstIndex = 2 * srcIndexBuf.get(k-pos);
-				dstTextureCoords.put(dstIndex, srcTextureCoords.get(srcIndex));
-				dstTextureCoords.put(dstIndex + 1, srcTextureCoords.get(srcIndex + 1));
+				dstTextureCoords.put(dstIndex++, srcTextureCoords.get(srcIndex++));
+				dstTextureCoords.put(dstIndex, srcTextureCoords.get(srcIndex++));
 			}
 				
-			if (count < 0) {
-				count = -count;
-				gl.glDrawElements(GL.GL_TRIANGLE_FAN, count, GL.GL_UNSIGNED_INT, srcIndexBuf);
-			} else {
-				gl.glDrawElements(GL.GL_TRIANGLE_STRIP, count, GL.GL_UNSIGNED_INT, srcIndexBuf);
-			}
+			gl.glDrawElements(mode, count, GL.GL_UNSIGNED_INT, srcIndexBuf);
+
 			pos += count;
 		}
 
@@ -340,143 +321,114 @@ public abstract class Mesh extends Light {
 	/*
 	** R_CullAliasModel
 	*/
-	boolean R_CullAliasModel( float[][] bbox, entity_t e )
-	{
-		int i;
-		float[] mins = {0, 0, 0};
-		float[] maxs = {0, 0, 0};
-		
-		qfiles.dmdl_t paliashdr;
+//	TODO sync with jogl renderer. hoz
+	boolean R_CullAliasModel(entity_t e) {
+		float[] mins = { 0, 0, 0 };
+		float[] maxs = { 0, 0, 0 };
 
-		float[] thismins = {0, 0, 0};
-		float[] oldmins = {0, 0, 0};
-		float[] thismaxs = {0, 0, 0};
-		float[] oldmaxs = {0, 0, 0};
-		qfiles.daliasframe_t pframe, poldframe;
-		float[] angles = {0, 0, 0};
+		qfiles.dmdl_t paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
 
-		paliashdr = (qfiles.dmdl_t)currentmodel.extradata;
-
-		if ( ( e.frame >= paliashdr.num_frames ) || ( e.frame < 0 ) )
-		{
-			ri.Con_Printf (Defines.PRINT_ALL, "R_CullAliasModel " + currentmodel.name +": no such frame " + e.frame + '\n');
+		if ((e.frame >= paliashdr.num_frames) || (e.frame < 0)) {
+			VID.Printf(Defines.PRINT_ALL, "R_CullAliasModel " + currentmodel.name + ": no such frame " + e.frame + '\n');
 			e.frame = 0;
 		}
-		if ( ( e.oldframe >= paliashdr.num_frames ) || ( e.oldframe < 0 ) )
-		{
-			ri.Con_Printf (Defines.PRINT_ALL, "R_CullAliasModel " + currentmodel.name + ": no such oldframe " + e.oldframe + '\n');
+		if ((e.oldframe >= paliashdr.num_frames) || (e.oldframe < 0)) {
+			VID.Printf(Defines.PRINT_ALL, "R_CullAliasModel " + currentmodel.name + ": no such oldframe " + e.oldframe + '\n');
 			e.oldframe = 0;
 		}
 
-		pframe = paliashdr.aliasFrames[e.frame];
-		poldframe = paliashdr.aliasFrames[e.oldframe];
+		qfiles.daliasframe_t pframe = paliashdr.aliasFrames[e.frame];
+		qfiles.daliasframe_t poldframe = paliashdr.aliasFrames[e.oldframe];
 
 		/*
 		** compute axially aligned mins and maxs
 		*/
-		if ( pframe == poldframe )
-		{
-			for ( i = 0; i < 3; i++ )
-			{
+		if (pframe == poldframe) {
+			for (int i = 0; i < 3; i++) {
 				mins[i] = pframe.translate[i];
-				maxs[i] = mins[i] + pframe.scale[i]*255;
+				maxs[i] = mins[i] + pframe.scale[i] * 255;
 			}
-		}
-		else
-		{
-			for ( i = 0; i < 3; i++ )
-			{
-				thismins[i] = pframe.translate[i];
-				thismaxs[i] = thismins[i] + pframe.scale[i]*255;
+		} else {
+			float thismaxs, oldmaxs;
+			for (int i = 0; i < 3; i++) {
+				thismaxs = pframe.translate[i] + pframe.scale[i] * 255;
 
-				oldmins[i]  = poldframe.translate[i];
-				oldmaxs[i]  = oldmins[i] + poldframe.scale[i]*255;
+				oldmaxs = poldframe.translate[i] + poldframe.scale[i] * 255;
 
-				if ( thismins[i] < oldmins[i] )
-					mins[i] = thismins[i];
+				if (pframe.translate[i] < poldframe.translate[i])
+					mins[i] = pframe.translate[i];
 				else
-					mins[i] = oldmins[i];
+					mins[i] = poldframe.translate[i];
 
-				if ( thismaxs[i] > oldmaxs[i] )
-					maxs[i] = thismaxs[i];
+				if (thismaxs > oldmaxs)
+					maxs[i] = thismaxs;
 				else
-					maxs[i] = oldmaxs[i];
+					maxs[i] = oldmaxs;
 			}
 		}
 
 		/*
 		** compute a full bounding box
 		*/
-		for ( i = 0; i < 8; i++ )
-		{
-			float[] tmp = {0, 0, 0};
-
-			if ( (i & 1) != 0 )
+		float[] tmp;
+		for (int i = 0; i < 8; i++) {
+			tmp = bbox[i];
+			if ((i & 1) != 0)
 				tmp[0] = mins[0];
 			else
 				tmp[0] = maxs[0];
 
-			if ( (i & 2) != 0)
+			if ((i & 2) != 0)
 				tmp[1] = mins[1];
 			else
 				tmp[1] = maxs[1];
 
-			if ( (i & 4) != 0)
+			if ((i & 4) != 0)
 				tmp[2] = mins[2];
 			else
 				tmp[2] = maxs[2];
-
-			Math3D.VectorCopy( tmp, bbox[i] );
 		}
 
 		/*
 		** rotate the bounding box
 		*/
-		Math3D.VectorCopy( e.angles, angles );
-		angles[YAW] = -angles[YAW];
-		Math3D.AngleVectors( angles, vectors[0], vectors[1], vectors[2] );
+		tmp = mins;
+		Math3D.VectorCopy(e.angles, tmp);
+		tmp[YAW] = -tmp[YAW];
+		Math3D.AngleVectors(tmp, vectors[0], vectors[1], vectors[2]);
 
-		float[] tmp = {0, 0, 0};
+		for (int i = 0; i < 8; i++) {
+			Math3D.VectorCopy(bbox[i], tmp);
 
-		for ( i = 0; i < 8; i++ )
-		{
-			Math3D.VectorCopy( bbox[i], tmp );
+			bbox[i][0] = Math3D.DotProduct(vectors[0], tmp);
+			bbox[i][1] = -Math3D.DotProduct(vectors[1], tmp);
+			bbox[i][2] = Math3D.DotProduct(vectors[2], tmp);
 
-			bbox[i][0] = Math3D.DotProduct( vectors[0], tmp );
-			bbox[i][1] = -Math3D.DotProduct( vectors[1], tmp );
-			bbox[i][2] = Math3D.DotProduct( vectors[2], tmp );
-
-			Math3D.VectorAdd( e.origin, bbox[i], bbox[i] );
+			Math3D.VectorAdd(e.origin, bbox[i], bbox[i]);
 		}
 
-		{
-			int p, f;
-			int aggregatemask = ~0; // 0xFFFFFFFF
-			
-			for ( p = 0; p < 8; p++ )
-			{
-				int mask = 0;
+		int f, mask;
+		int aggregatemask = ~0; // 0xFFFFFFFF
 
-				for ( f = 0; f < 4; f++ )
-				{
-					float dp = Math3D.DotProduct( frustum[f].normal, bbox[p] );
+		for (int p = 0; p < 8; p++) {
+			mask = 0;
 
-					if ( ( dp - frustum[f].dist ) < 0 )
-					{
-						mask |= ( 1 << f );
-					}
+			for (f = 0; f < 4; f++) {
+				float dp = Math3D.DotProduct(frustum[f].normal, bbox[p]);
+
+				if ((dp - frustum[f].dist) < 0) {
+					mask |= (1 << f);
 				}
-
-				aggregatemask &= mask;
 			}
 
-			if ( aggregatemask != 0 )
-			{
-				return true;
-			}
-
-			return false;
+			aggregatemask &= mask;
 		}
+
+		if (aggregatemask != 0) {
+			return true;
+		}
+
+		return false;
 	}
 
 
@@ -492,17 +444,18 @@ public abstract class Mesh extends Light {
 
 	=================
 	*/
+//	TODO sync with jogl renderer. hoz
 	void R_DrawAliasModel(entity_t e)
 	{
 		int i;
-		qfiles.dmdl_t paliashdr;
-		float		an;
+		//qfiles.dmdl_t paliashdr;
+		//float		an;
 
 		image_t		skin;
 
 		if ( ( e.flags & Defines.RF_WEAPONMODEL ) == 0)
 		{
-			if ( R_CullAliasModel( bbox, e ) )
+			if ( R_CullAliasModel(e) )
 				return;
 		}
 
@@ -512,7 +465,7 @@ public abstract class Mesh extends Light {
 				return;
 		}
 
-		paliashdr = (qfiles.dmdl_t)currentmodel.extradata;
+		qfiles.dmdl_t paliashdr = (qfiles.dmdl_t)currentmodel.extradata;
 
 		//
 		// get lighting information
@@ -629,7 +582,7 @@ public abstract class Mesh extends Light {
 
 		shadedots = r_avertexnormal_dots[((int)(currententity.angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	
-		an = (float)(currententity.angles[1]/180*Math.PI);
+		float an = (float)(currententity.angles[1]/180*Math.PI);
 		shadevector[0] = (float)Math.cos(-an);
 		shadevector[1] = (float)Math.sin(-an);
 		shadevector[2] = 1;
@@ -696,7 +649,7 @@ public abstract class Mesh extends Light {
 		if ( (currententity.frame >= paliashdr.num_frames) 
 			|| (currententity.frame < 0) )
 		{
-			ri.Con_Printf (Defines.PRINT_ALL, "R_DrawAliasModel " + currentmodel.name +": no such frame " + currententity.frame + '\n');
+			VID.Printf (Defines.PRINT_ALL, "R_DrawAliasModel " + currentmodel.name +": no such frame " + currententity.frame + '\n');
 			currententity.frame = 0;
 			currententity.oldframe = 0;
 		}
@@ -704,7 +657,7 @@ public abstract class Mesh extends Light {
 		if ( (currententity.oldframe >= paliashdr.num_frames)
 			|| (currententity.oldframe < 0))
 		{
-			ri.Con_Printf (Defines.PRINT_ALL, "R_DrawAliasModel " + currentmodel.name +": no such oldframe " + currententity.oldframe + '\n');
+			VID.Printf (Defines.PRINT_ALL, "R_DrawAliasModel " + currentmodel.name +": no such oldframe " + currententity.oldframe + '\n');
 			currententity.frame = 0;
 			currententity.oldframe = 0;
 		}

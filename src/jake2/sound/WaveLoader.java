@@ -2,7 +2,7 @@
  * SND_MEM.java
  * Copyright (C) 2004
  * 
- * $Id: WaveLoader.java,v 1.1.2.1 2004-07-09 08:38:26 hzi Exp $
+ * $Id: WaveLoader.java,v 1.1.2.2 2004-09-06 19:39:16 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.

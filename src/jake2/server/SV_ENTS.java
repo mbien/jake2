@@ -19,18 +19,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 17.01.2004 by RST.
-// $Id: SV_ENTS.java,v 1.2 2004-07-08 15:58:45 hzi Exp $
+// $Id: SV_ENTS.java,v 1.2.2.1 2004-09-06 19:39:18 hzi Exp $
 
 package jake2.server;
 
-import java.io.IOException;
-
-import jake2.*;
-import jake2.client.*;
 import jake2.game.*;
 import jake2.qcommon.*;
-import jake2.render.*;
-import jake2.util.Vargs;
+
+import java.io.IOException;
 
 public class SV_ENTS extends SV_USER {
 
@@ -383,7 +379,7 @@ public class SV_ENTS extends SV_USER {
 		for (i = 0; i < count; i++)
 			leafs[i] = CM.CM_LeafCluster(leafs[i]);
 
-		memcpy(fatpvs, CM.CM_ClusterPVS(leafs[0]), longs << 2);
+		System.arraycopy(CM.CM_ClusterPVS(leafs[0]), 0, fatpvs, 0, longs << 2);
 		// or in all the other leaf bits
 		for (i = 1; i < count; i++) {
 			for (j = 0; j < i; j++)
@@ -460,8 +456,8 @@ public class SV_ENTS extends SV_USER {
 
 		c_fullsend = 0;
 
-		for (e = 1; e < SV_GAME.ge.num_edicts; e++) {
-			ent = SV_GAME.ge.edicts[e];
+		for (e = 1; e < GameBase.num_edicts; e++) {
+			ent = GameBase.g_edicts[e];
 
 			// ignore ents without visible models
 			if ((ent.svflags & SVF_NOCLIENT) != 0)
@@ -571,9 +567,9 @@ public class SV_ENTS extends SV_USER {
 		MSG.WriteByte(buf, svc_packetentities);
 
 		e = 1;
-		ent = SV_GAME.ge.edicts[e];
+		ent = GameBase.g_edicts[e];
 
-		while (e < SV_GAME.ge.num_edicts) {
+		while (e < GameBase.num_edicts) {
 			// ignore ents without visible models unless they have an effect
 			if (ent.inuse
 				&& ent.s.number != 0
@@ -582,7 +578,7 @@ public class SV_ENTS extends SV_USER {
 				MSG.WriteDeltaEntity(nostate, ent.s, buf, false, true);
 
 			e++;
-			ent = SV_GAME.ge.edicts[e];
+			ent = GameBase.g_edicts[e];
 		}
 
 		MSG.WriteShort(buf, 0); // end of packetentities

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 24.07.2004 by RST.
-// $Id: QuakeFile.java,v 1.2 2004-09-04 19:08:30 salomo Exp $
+// $Id: QuakeFile.java,v 1.2.2.1 2004-09-06 19:39:20 hzi Exp $
 
 package jake2.util;
 

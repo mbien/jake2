@@ -2,7 +2,7 @@
  * Sys.java
  * Copyright (C) 2003
  * 
- * $Id: Sys.java,v 1.3.2.1 2004-07-09 08:38:25 hzi Exp $
+ * $Id: Sys.java,v 1.3.2.2 2004-09-06 19:39:20 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,19 +25,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.sys;
 
+import jake2.Defines;
+import jake2.Globals;
+import jake2.client.CL;
+import jake2.qcommon.Com;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import jake2.Defines;
-import jake2.Globals;
-import jake2.client.CL;
-import jake2.game.Game;
-import jake2.game.game_export_t;
-import jake2.game.game_import_t;
-import jake2.qcommon.Com;
-import jake2.util.Lib;
 
 /**
  * Sys
@@ -179,7 +175,7 @@ public final class Sys extends Defines {
 			// . and .. never match
 			String name = dir.getName();
 
-			if (Lib.strcmp(name, ".") == 0 || Lib.strcmp(name, "..") == 0)
+			if (name.equals(".") || name.equals(".."))
 				return false;
 
 			return true;
@@ -187,15 +183,9 @@ public final class Sys extends Defines {
 
 	}
 
-	private static long secbase = 0;
+	private static long secbase = System.currentTimeMillis();
 	public static int Milliseconds() {
-		if (secbase == 0) {
-			secbase = System.currentTimeMillis();
-			return 0;
-		}
-		
-		return Globals.curtime = (int) (System.currentTimeMillis() - secbase);
-			 
+		return Globals.curtime = (int) (System.currentTimeMillis() - secbase);			 
 	}
 
 	//============================================
@@ -234,14 +224,6 @@ public final class Sys extends Defines {
 		if (fdir != null)
 			fdir = null;
 
-	}
-
-
-	public static void UnloadGame()
-	{
-		//TODO:implement UnloadGame
-		//Com.Error(Defines.ERR_FATAL, "UnloadGame not implemented!");
-		
 	}
 	
 	public static void SendKeyEvents() {

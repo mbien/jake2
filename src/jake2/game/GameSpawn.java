@@ -19,13 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 18.11.2003 by RST.
-// $Id: GameSpawn.java,v 1.2.2.1 2004-07-09 08:38:29 hzi Exp $
+// $Id: GameSpawn.java,v 1.2.2.2 2004-09-06 19:39:15 hzi Exp $
 
 package jake2.game;
 
-import jake2.Defines;
-import jake2.util.*;
-import jake2.qcommon.*;
+import jake2.qcommon.Com;
+import jake2.util.Lib;
 
 public class GameSpawn extends GameSave {
 
@@ -128,20 +127,13 @@ public class GameSpawn extends GameSave {
 	*/
 	static String ED_NewString(String string) {
 
-		//String newb, new_p;
-		int i, l;
-
-		l = string.length() + 1;
-		//newb = gi.TagMalloc(l, TAG_LEVEL);
-
+		int l = string.length();
 		StringBuffer newb = new StringBuffer(l);
 
-		for (i = 0; i < l - 1; i++) {
-			char c;
-
-			c = string.charAt(i);
+		for (int i = 0; i < l; i++) {
+			char c = string.charAt(i);
 			if (c == '\\' && i < l - 1) {
-				c = string.charAt(i++);
+				c = string.charAt(++i);
 				if (c == 'n')
 					newb.append('\n');
 				else
@@ -174,49 +166,6 @@ public class GameSpawn extends GameSave {
 			if (!ent.set(key, value))
 				gi.dprintf("??? The key [" + key + "] is not a field\n");
 
-
-
-		/** OLD CODE, delegated to ent.set(...) and st.set(...) 
-		
-		for (f = fields; f.name; f++) {
-			if (!(f.flags & FFL_NOSPAWN) && !Q_stricmp(f.name, key)) {
-				// found it
-				if (f.flags & FFL_SPAWNTEMP)
-					b = (byte *) & st;
-				else
-					b = (byte *) ent;
-		
-				switch (f.type) {
-					case F_LSTRING :
-						* (String *) (b + f.ofs) = ED_NewString(value);
-						break;
-					case F_VECTOR :
-						sscanf(value, "%f %f %f", & vec[0], & vec[1], & vec[2]);
-						((float *) (b + f.ofs))[0] = vec[0];
-						((float *) (b + f.ofs))[1] = vec[1];
-						((float *) (b + f.ofs))[2] = vec[2];
-						break;
-					case F_INT :
-						* (int *) (b + f.ofs) = atoi(value);
-						break;
-					case F_FLOAT :
-						* (float *) (b + f.ofs) = atof(value);
-						break;
-					case F_ANGLEHACK :
-						v = atof(value);
-						((float *) (b + f.ofs))[0] = 0;
-						((float *) (b + f.ofs))[1] = v;
-						((float *) (b + f.ofs))[2] = 0;
-						break;
-					case F_IGNORE :
-						break;
-				}
-				return;
-			}
-		}
-		gi.dprintf("%s is not a field\n", key);
-		
-		*/
 	}
 
 	/*
@@ -292,7 +241,7 @@ public class GameSpawn extends GameSave {
 		int c, c2;
 		c = 0;
 		c2 = 0;
-		for (i = 1; i < globals.num_edicts; i++) {
+		for (i = 1; i < num_edicts; i++) {
 			e = g_edicts[i];
 
 			if (!e.inuse)
@@ -306,7 +255,7 @@ public class GameSpawn extends GameSave {
 			c++;
 			c2++;
 			//Com.Printf("Team:" + e.team+" entity: " + e.index + "\n");
-			for (j = i + 1; j < globals.num_edicts; j++) {
+			for (j = i + 1; j < num_edicts; j++) {
 				e2 = g_edicts[j];
 				if (!e2.inuse)
 					continue;
@@ -336,7 +285,7 @@ public class GameSpawn extends GameSave {
 			==============
 	*/
 
-		static void SpawnEntities(String mapname, String entities, String spawnpoint) {
+		public static void SpawnEntities(String mapname, String entities, String spawnpoint) {
 			edict_t ent;
 			int inhibit;
 			String com_token;
@@ -595,14 +544,14 @@ public class GameSpawn extends GameSave {
 				
 			if (item.classname == null)
 				continue;
-			if (0 == Lib.stricmp(item.classname, ent.classname)) { // found it
+			if (item.classname.equalsIgnoreCase(ent.classname)) { // found it
 				SpawnItem(ent, item);
 				return;
 			}
 		} // check normal spawn functions
 	
 		for (i=0; (s = spawns[i]) !=null && s.name != null; i++) {
-			if (0 == Lib.stricmp(s.name, ent.classname)) { // found it
+			if (s.name.equalsIgnoreCase(ent.classname)) { // found it
 				
 				if (s.spawn == null)
 					gi.error("ED_CallSpawn: null-spawn on index=" + i);

@@ -2,7 +2,7 @@
  * JoglCommon.java
  * Copyright (C) 2004
  * 
- * $Id: JoglBase.java,v 1.7 2004-08-23 20:49:12 hzi Exp $
+ * $Id: JoglBase.java,v 1.7.2.1 2004-09-06 19:39:14 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.

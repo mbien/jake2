@@ -2,7 +2,7 @@
  * CL.java
  * Copyright (C) 2004
  * 
- * $Id: CL.java,v 1.4.2.1 2004-07-09 08:38:24 hzi Exp $
+ * $Id: CL.java,v 1.4.2.2 2004-09-06 19:39:13 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -37,6 +37,7 @@ import jake2.util.Vargs;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * CL
@@ -249,7 +250,7 @@ public final class CL extends CL_pred {
 		public void execute() {
 				// never pause in multiplayer
 
-	if (Cvar.VariableValue("maxclients") > 1 || Com.ServerState() == 0) {
+	if (Cvar.VariableValue("maxclients") > 1 || Globals.server_state == 0) {
 				Cvar.SetValue("paused", 0);
 				return;
 			}
@@ -312,7 +313,7 @@ public final class CL extends CL_pred {
 
 		// if the local server is running and we aren't
 		// then connect
-		if (cls.state == ca_disconnected && Com.ServerState() != 0) {
+		if (cls.state == ca_disconnected && Globals.server_state != 0) {
 			cls.state = ca_connecting;
 			cls.servername = "localhost";
 			// we don't need a challenge on the localhost
@@ -358,7 +359,7 @@ public final class CL extends CL_pred {
 				return;
 			}
 		
-			if (Com.ServerState() != 0) {
+			if (Globals.server_state != 0) {
 				// if running a local server, kill it and reissue
 				SV_MAIN.SV_Shutdown("Server quit\n", false);
 			} else {
@@ -948,7 +949,9 @@ public final class CL extends CL_pred {
 							continue; // couldn't load it
 						}
 						ByteBuffer bb = ByteBuffer.wrap(precache_model);
-						int header = Globals.endian.LittleLong(bb.getInt());
+						bb.order(ByteOrder.LITTLE_ENDIAN);
+						
+						int header = bb.getInt();
 
 						if (header != qfiles.IDALIASHEADER) {
 							// not an alias model
@@ -958,25 +961,25 @@ public final class CL extends CL_pred {
 							precache_check++;
 							continue;
 						}
-						pheader = new qfiles.dmdl_t(ByteBuffer.wrap(precache_model));
-						if (Globals.endian.LittleLong(pheader.version) != ALIAS_VERSION) {
+						pheader = new qfiles.dmdl_t(ByteBuffer.wrap(precache_model).order(ByteOrder.LITTLE_ENDIAN));
+						if (pheader.version != ALIAS_VERSION) {
 							precache_check++;
 							precache_model_skin = 0;
 							continue; // couldn't load it
 						}
 					}
 
-					pheader = new qfiles.dmdl_t(ByteBuffer.wrap(precache_model));
+					pheader = new qfiles.dmdl_t(ByteBuffer.wrap(precache_model).order(ByteOrder.LITTLE_ENDIAN));
 
-					int num_skins = Globals.endian.LittleLong(pheader.num_skins);
+					int num_skins = pheader.num_skins;
 
 					while (precache_model_skin - 1 < num_skins) {
-						Com.Printf("critical code section because of endian mess!");
+						//Com.Printf("critical code section because of endian mess!\n");
 
 						String name =
 							new String(
 								precache_model,
-								Globals.endian.LittleLong(pheader.ofs_skins) + (precache_model_skin - 1) * MAX_SKINNAME,
+								pheader.ofs_skins + (precache_model_skin - 1) * MAX_SKINNAME,
 								MAX_SKINNAME * num_skins);
 
 						if (!CheckOrDownloadFile(name)) {
@@ -1546,6 +1549,11 @@ public final class CL extends CL_pred {
 		SCR.RunConsole();
 
 		cls.framecount++;
+		if (cls.state != ca_active || cls.key_dest != key_game) {
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {}
+		}
 	}
 
 	//	  ============================================================================

@@ -19,16 +19,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 01.11.2003 by RST.
-// $Id: GameUtil.java,v 1.2.2.1 2004-07-09 08:38:28 hzi Exp $
+// $Id: GameUtil.java,v 1.2.2.2 2004-09-06 19:39:15 hzi Exp $
 
 package jake2.game;
 
-import java.sql.Savepoint;
-
-import jake2.Defines;
 import jake2.client.M;
 import jake2.qcommon.Com;
-import jake2.util.*;
+import jake2.util.Lib;
+import jake2.util.Math3D;
 
 public class GameUtil extends GameBase
 {
@@ -165,7 +163,7 @@ public class GameUtil extends GameBase
 		int i;
 		edict_t e = null;
 
-		for (i = (int) maxclients.value + 1; i < globals.num_edicts; i++)
+		for (i = (int) maxclients.value + 1; i < num_edicts; i++)
 		{
 			e = g_edicts[i];
 			// the first couple seconds of server time can involve a lot of
@@ -182,7 +180,7 @@ public class GameUtil extends GameBase
 			gi.error("ED_Alloc: no free edicts");
 
 		e = g_edicts[i] = new edict_t(i);
-		globals.num_edicts++;
+		num_edicts++;
 		G_InitEdict(e, i);
 		return e;
 	}
@@ -887,7 +885,6 @@ public class GameUtil extends GameBase
 	//geht.
 	static gitem_t FindItem(String pickup_name)
 	{
-		//Com.Printf("FindItem:" + pickup_name + "\n");
 		for (int i = 1; i < game.num_items; i++)
 		{
 			gitem_t it = GameAI.itemlist[i];

@@ -19,19 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 07.01.2000 by RST.
-// $Id: SV_WORLD.java,v 1.3.2.1 2004-07-09 08:38:25 hzi Exp $
+// $Id: SV_WORLD.java,v 1.3.2.2 2004-09-06 19:39:18 hzi Exp $
 
 package jake2.server;
 
-import jake2.game.edict_t;
-import jake2.game.trace_t;
-
-import jake2.*;
-import jake2.client.*;
 import jake2.game.*;
-import jake2.qcommon.*;
-import jake2.render.*;
-import jake2.util.Vargs;
+import jake2.qcommon.CM;
+import jake2.qcommon.Com;
 
 public class SV_WORLD extends SV_CCMDS
 {
@@ -176,6 +170,7 @@ public class SV_WORLD extends SV_CCMDS
 	{
 		if (null == ent.area.prev)
 			return; // not linked in anywhere
+			
 		RemoveLink(ent.area);
 		ent.area.prev= ent.area.next= null;
 	}
@@ -201,7 +196,7 @@ public class SV_WORLD extends SV_CCMDS
 		if (ent.area.prev != null)
 			SV_UnlinkEdict(ent); // unlink from old position
 
-		if (ent == ge.edicts[0])
+		if (ent == GameBase.g_edicts[0])
 			return; // don't add the world
 
 		if (!ent.inuse)
@@ -212,7 +207,8 @@ public class SV_WORLD extends SV_CCMDS
 
 		// encode the size into the entity_state for client prediction
 		if (ent.solid == SOLID_BBOX && 0 == (ent.svflags & SVF_DEADMONSTER))
-		{ // assume that x/y are equal and symetric
+		{ 
+			// assume that x/y are equal and symetric
 			int i= (int) (ent.maxs[0] / 8);
 			if (i < 1)
 				i= 1;
@@ -244,7 +240,8 @@ public class SV_WORLD extends SV_CCMDS
 
 		// set the abs box
 		if (ent.solid == SOLID_BSP && (ent.s.angles[0] != 0 || ent.s.angles[1] != 0 || ent.s.angles[2] != 0))
-		{ // expand for rotation
+		{ 
+			// expand for rotation
 			float max, v;
 
 			max= 0;
@@ -264,7 +261,8 @@ public class SV_WORLD extends SV_CCMDS
 			}
 		}
 		else
-		{ // normal
+		{ 
+			// normal
 			VectorAdd(ent.s.origin, ent.mins, ent.absmin);
 			VectorAdd(ent.s.origin, ent.maxs, ent.absmax);
 		}
@@ -284,7 +282,7 @@ public class SV_WORLD extends SV_CCMDS
 		ent.areanum= 0;
 		ent.areanum2= 0;
 
-		//get all leafs, including solids
+		// get all leafs, including solids
 
 		int iw[] = {topnode};
 
@@ -659,7 +657,7 @@ public class SV_WORLD extends SV_CCMDS
 
 		// clip to world
 		clip.trace= CM.BoxTrace(start, end, mins, maxs, 0, contentmask);
-		clip.trace.ent= ge.edicts[0];
+		clip.trace.ent= GameBase.g_edicts[0];
 		if (clip.trace.fraction == 0)
 			return clip.trace; // blocked by the world
 

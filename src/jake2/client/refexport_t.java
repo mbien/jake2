@@ -2,7 +2,7 @@
  * refexport_t.java
  * Copyright (C) 2003
  *
- * $Id: refexport_t.java,v 1.1 2004-07-07 19:58:52 hzi Exp $
+ * $Id: refexport_t.java,v 1.1.1.1.2.1 2004-09-06 19:39:13 hzi Exp $
  */ 
  /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -31,6 +31,7 @@ import jake2.render.image_t;
 import jake2.render.model_t;
 
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 
 /**
  * refexport_t
@@ -104,4 +105,6 @@ public interface refexport_t {
 	void updateScreen(xcommand_t callback);
 	
 	int apiVersion();
+	
+	DisplayMode[] getModeList();
 }

@@ -19,19 +19,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 09.12.2003 by RST.
-// $Id: Lib.java,v 1.2.2.1 2004-07-09 08:38:23 hzi Exp $
+// $Id: Lib.java,v 1.2.2.2 2004-09-06 19:39:20 hzi Exp $
 
 package jake2.util;
 
+import jake2.Defines;
 import jake2.Globals;
 import jake2.qcommon.Com;
 import jake2.qcommon.FS;
 
 import java.io.*;
 import java.nio.*;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 import net.java.games.jogl.util.BufferUtils;
@@ -75,10 +73,6 @@ public class Lib {
 
 	public static int strcmp(String in1, String in2) {
 		return in1.compareTo(in2);
-	}
-
-	public static int stricmp(String in1, String in2) {
-		return in1.compareToIgnoreCase(in2);
 	}
 
 	public static boolean strstr(String i1, String i2) {
@@ -125,10 +119,6 @@ public class Lib {
 		return res;
 	}
 
-//	public static int strlen(String in) {
-//		return in.length();
-//	}
-
 	public static int strlen(char in[]) {
 		for (int i = 0; i < in.length; i++)
 			if (in[i] == 0)
@@ -143,32 +133,10 @@ public class Lib {
 		return in.length;
 	}
 
-	public static void strcat(String in, String i) {
-		in += i;
-	}
-
-	public static void strcpy(byte dest[], byte src[]) {
-		for (int i = 0; i < dest.length && i < src.length; i++)
-			if (src[i] == 0) {
-				dest[i] = 0;
-				return;
-			}
-			else
-				dest[i] = src[i];
-
-	}
-
-	public static String readString(RandomAccessFile file, int len) throws IOException {
-		byte buf[] = new byte[len];
-
-		file.read(buf, 0, len);
-		return new String(buf, 0, strlen(buf));
-	}
-
-	public static String readString(ByteBuffer bb, int len) throws IOException {
-		byte buf[] = new byte[len];
-		bb.get(buf);
-		return new String(buf, 0, strlen(buf));
+	static byte[] buffer = new byte[Defines.MAX_INFO_STRING];
+	public static String readString(ByteBuffer bb, int len) {
+		bb.get(buffer, 0, len);
+		return new String(buffer, 0, len);
 	}
 
 	public static String hexdumpfile(ByteBuffer bb, int len) throws IOException {
@@ -236,19 +204,7 @@ public class Lib {
 		}
 	}
 
-	public static void memset(byte[] dest, byte c, int len) {
-		Arrays.fill(dest, 0, len, c);
-	}
-
-	public static void memset(byte[] dest, int c, int len) {
-		Arrays.fill(dest, 0, len, (byte) c);
-	}
-
-	public static void memcpy(byte[] bs, byte[] bs2, int i) {
-		System.arraycopy(bs2, 0, bs, 0, i);
-	}
-
-	static byte nullfiller[] = new byte[8192];
+	static final byte nullfiller[] = new byte[8192];
 
 	public static void fwriteString(String s, int len, RandomAccessFile f) throws IOException {
 		if (s ==  null) 
@@ -261,14 +217,6 @@ public class Lib {
 		}
 		else
 			f.write(s.getBytes(), 0, len);
-	}
-
-	public static String cut(String in, char c) {
-		int pos = in.indexOf(c);
-
-		if (pos != -1)
-			return in.substring(0, pos);
-		return in;
 	}
 
 	public static RandomAccessFile fopen(String name, String mode) {
@@ -360,51 +308,6 @@ public class Lib {
 	public static float[] clone(float in[]) {
 		float out[] = new float[in.length];
 
-		if (in.length != 0)
-			System.arraycopy(in, 0, out, 0, in.length);
-
-		return out;
-	}
-
-	public static long[] clone(long in[]) {
-		long out[] = new long[in.length];
-
-		if (in.length != 0)
-			System.arraycopy(in, 0, out, 0, in.length);
-
-		return out;
-	}
-
-	public static boolean[] clone(boolean in[]) {
-		boolean out[] = new boolean[in.length];
-
-		if (in.length != 0)
-			System.arraycopy(in, 0, out, 0, in.length);
-
-		return out;
-	}
-
-	public static int[] clone(int in[]) {
-		int out[] = new int[in.length];
-
-		if (in.length != 0)
-			System.arraycopy(in, 0, out, 0, in.length);
-
-		return out;
-	}
-
-	public static double[] clone(double in[]) {
-		double out[] = new double[in.length];
-
-		if (in.length != 0)
-			System.arraycopy(in, 0, out, 0, in.length);
-
-		return out;
-	}
-
-	// this works with Strings also.
-	public static String[] clone(String in[]) {
-		String out[] = new String[in.length];
 		if (in.length != 0)
 			System.arraycopy(in, 0, out, 0, in.length);
 

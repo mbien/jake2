@@ -2,7 +2,7 @@
  * Model.java
  * Copyright (C) 2003
  *
- * $Id: Model.java,v 1.1 2004-07-07 19:59:42 hzi Exp $
+ * $Id: Model.java,v 1.1.1.1.2.1 2004-09-06 19:39:16 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,27 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.jogl;
 
+import jake2.Defines;
+import jake2.client.VID;
+import jake2.game.cplane_t;
+import jake2.game.cvar_t;
+import jake2.qcommon.*;
+import jake2.render.*;
+import jake2.util.Math3D;
+import jake2.util.Vargs;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-import java.util.Vector;
-
-import jake2.Defines;
-import jake2.game.cplane_t;
-import jake2.game.cvar_t;
-import jake2.qcommon.lump_t;
-import jake2.qcommon.qfiles;
-import jake2.qcommon.texinfo_t;
-import jake2.render.medge_t;
-import jake2.render.mleaf_t;
-import jake2.render.mmodel_t;
-import jake2.render.mnode_t;
-import jake2.render.model_t;
-import jake2.render.msurface_t;
-import jake2.render.mtexinfo_t;
-import jake2.render.mvertex_t;
-import jake2.util.Math3D;
-import jake2.util.Vargs;
 
 /**
  * Model
@@ -82,7 +73,7 @@ public abstract class Model extends Surf {
 		cplane_t plane;
 	
 		if (model == null || model.nodes == null)
-			ri.Sys_Error (Defines.ERR_DROP, "Mod_PointInLeaf: bad model");
+			Com.Error (Defines.ERR_DROP, "Mod_PointInLeaf: bad model");
 
 		node = model.nodes[0]; // root node
 		while (true)
@@ -179,17 +170,17 @@ public abstract class Model extends Surf {
 		int total;
 
 		total = 0;
-		ri.Con_Printf(Defines.PRINT_ALL,"Loaded models:\n");
+		VID.Printf(Defines.PRINT_ALL,"Loaded models:\n");
 		for (i=0; i < mod_numknown ; i++)
 		{
 			mod = mod_known[i];
 			if (mod.name == "")
 				continue;
 
-			ri.Con_Printf (Defines.PRINT_ALL, "%8i : %s\n", new Vargs(2).add(mod.extradatasize).add(mod.name));
+			VID.Printf (Defines.PRINT_ALL, "%8i : %s\n", new Vargs(2).add(mod.extradatasize).add(mod.name));
 			total += mod.extradatasize;
 		}
-		ri.Con_Printf (Defines.PRINT_ALL, "Total resident: " + total +'\n');
+		VID.Printf (Defines.PRINT_ALL, "Total resident: " + total +'\n');
 	}
 
 	/*
@@ -221,7 +212,7 @@ public abstract class Model extends Surf {
 		int		i;
 	
 		if (name == null || name.length() == 0)
-			ri.Sys_Error(Defines.ERR_DROP, "Mod_ForName: NULL name");
+			Com.Error(Defines.ERR_DROP, "Mod_ForName: NULL name");
 		
 		//
 		// inline models are grabbed only from worldmodel
@@ -230,7 +221,7 @@ public abstract class Model extends Surf {
 		{
 			i = Integer.parseInt(name.substring(1));
 			if (i < 1 || r_worldmodel == null || i >= r_worldmodel.numsubmodels)
-				ri.Sys_Error (Defines.ERR_DROP, "bad inline model number");
+				Com.Error (Defines.ERR_DROP, "bad inline model number");
 			return mod_inline[i];
 		}
 
@@ -260,7 +251,7 @@ public abstract class Model extends Surf {
 		if (i == mod_numknown)
 		{
 			if (mod_numknown == MAX_MOD_KNOWN)
-				ri.Sys_Error (Defines.ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
+				Com.Error (Defines.ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
 			mod_numknown++;
 			mod = mod_known[i];
 		}
@@ -270,12 +261,12 @@ public abstract class Model extends Surf {
 		//
 		// load the file
 		//
-		fileBuffer = ri.FS_LoadFile(name);
+		fileBuffer = FS.LoadFile(name);
 
 		if (fileBuffer == null)
 		{
 			if (crash)
-				ri.Sys_Error(Defines.ERR_DROP, "Mod_NumForName: " + mod.name + " not found");
+				Com.Error(Defines.ERR_DROP, "Mod_NumForName: " + mod.name + " not found");
 
 			mod.name = "";
 			return null;
@@ -310,7 +301,7 @@ public abstract class Model extends Surf {
 			Mod_LoadBrushModel(mod, bb);
 			break;
 		default:
-			ri.Sys_Error(Defines.ERR_DROP,"Mod_NumForName: unknown fileid for " + mod.name);
+			Com.Error(Defines.ERR_DROP,"Mod_NumForName: unknown fileid for " + mod.name);
 			break;
 		}
 
@@ -392,7 +383,7 @@ public abstract class Model extends Surf {
 		int i, count;
 
 		if ( (l.filelen % mvertex_t.DISK_SIZE) != 0)
-			ri.Sys_Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / mvertex_t.DISK_SIZE;
 		
@@ -439,7 +430,7 @@ public abstract class Model extends Surf {
 		int i, j, count;
 
 		if ((l.filelen % qfiles.dmodel_t.SIZE) != 0)
-			ri.Sys_Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / qfiles.dmodel_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
@@ -479,7 +470,7 @@ public abstract class Model extends Surf {
 		int i, count;
 
 		if ( (l.filelen % medge_t.DISK_SIZE) != 0)
-			ri.Sys_Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / medge_t.DISK_SIZE;
 		// out = Hunk_Alloc ( (count + 1) * sizeof(*out));	
@@ -512,11 +503,14 @@ public abstract class Model extends Surf {
 		String name;
 
 		if ((l.filelen % texinfo_t.SIZE) != 0)
-			ri.Sys_Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / texinfo_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
 		out = new mtexinfo_t[count];
+		for ( i=0 ; i<count ; i++) {
+			out[i] = new mtexinfo_t();
+		}
 
 		loadmodel.texinfo = out;
 		loadmodel.numtexinfo = count;
@@ -524,13 +518,10 @@ public abstract class Model extends Surf {
 		ByteBuffer bb = ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
-		for ( i=0 ; i<count ; i++)
-		{
-			in = new texinfo_t(bb);			
-			out[i] = new mtexinfo_t();
-			//for (j=0 ; j<8 ; j++)
-				out[i].vecs = in.vecs;
+		for ( i=0 ; i<count ; i++) {
 
+			in = new texinfo_t(bb);			
+			out[i].vecs = in.vecs;
 			out[i].flags = in.flags;
 			next = in.nexttexinfo;
 			if (next > 0)
@@ -541,17 +532,14 @@ public abstract class Model extends Surf {
 			name = "textures/" +  in.texture + ".wal";
 
 			out[i].image = GL_FindImage(name, it_wall);
-			if (out[i].image == null)
-			{
-				ri.Con_Printf(Defines.PRINT_ALL, "Couldn't load " + name + '\n');
+			if (out[i].image == null) {
+				VID.Printf(Defines.PRINT_ALL, "Couldn't load " + name + '\n');
 				out[i].image = r_notexture;
 			}
 		}
 
 		// count animation frames
-		for (i=0 ; i<count ; i++)
-		{
-			// out = &loadmodel.texinfo[i];
+		for (i=0 ; i<count ; i++) {
 			out[i].numframes = 1;
 			for (step = out[i].next ; (step != null) && (step != out[i]) ; step=step.next)
 				out[i].numframes++;
@@ -571,18 +559,17 @@ public abstract class Model extends Surf {
 		float[] maxs = {0, 0};
 		float val;
 
-		int i, j, e;
+		int j, e;
 		mvertex_t v;
-		mtexinfo_t tex;
 		int[] bmins = {0, 0};
 		int[] bmaxs = {0, 0};
 
 		mins[0] = mins[1] = 999999;
 		maxs[0] = maxs[1] = -99999;
 
-		tex = s.texinfo;
+		mtexinfo_t tex = s.texinfo;
 	
-		for (i=0 ; i<s.numedges ; i++)
+		for (int i=0 ; i<s.numedges ; i++)
 		{
 			e = loadmodel.surfedges[s.firstedge+i];
 			if (e >= 0)
@@ -603,7 +590,7 @@ public abstract class Model extends Surf {
 			}
 		}
 
-		for (i=0 ; i<2 ; i++)
+		for (int i=0 ; i<2 ; i++)
 		{	
 			bmins[i] = (int)Math.floor(mins[i]/16);
 			bmaxs[i] = (int)Math.ceil(maxs[i]/16);
@@ -628,7 +615,7 @@ public abstract class Model extends Surf {
 		int ti;
 
 		if ((l.filelen % qfiles.dface_t.SIZE) != 0)
-			ri.Sys_Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / qfiles.dface_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
@@ -662,7 +649,7 @@ public abstract class Model extends Surf {
 
 			ti = in.texinfo;
 			if (ti < 0 || ti >= loadmodel.numtexinfo)
-				ri.Sys_Error(Defines.ERR_DROP, "MOD_LoadBmodel: bad texinfo number");
+				Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: bad texinfo number");
 
 			out[surfnum].texinfo = loadmodel.texinfo[ti];
 
@@ -734,7 +721,7 @@ public abstract class Model extends Surf {
 		mnode_t[] out;
 
 		if ((l.filelen % qfiles.dnode_t.SIZE) != 0)
-			ri.Sys_Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 		
 		count = l.filelen / qfiles.dnode_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));	
@@ -791,7 +778,7 @@ public abstract class Model extends Surf {
 		int i, j, count, p;
 
 		if ((l.filelen % qfiles.dleaf_t.SIZE) != 0)
-			ri.Sys_Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / qfiles.dleaf_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
@@ -836,7 +823,7 @@ public abstract class Model extends Surf {
 		msurface_t[] out; 
 
 		if ((l.filelen % Defines.SIZE_OF_SHORT) != 0)
-			ri.Sys_Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 		count = l.filelen / Defines.SIZE_OF_SHORT;
 		// out = Hunk_Alloc ( count*sizeof(*out));	
 		out = new msurface_t[count];
@@ -851,7 +838,7 @@ public abstract class Model extends Surf {
 		{
 			j = bb.getShort();
 			if (j < 0 ||  j >= loadmodel.numsurfaces)
-				ri.Sys_Error(Defines.ERR_DROP, "Mod_ParseMarksurfaces: bad surface number");
+				Com.Error(Defines.ERR_DROP, "Mod_ParseMarksurfaces: bad surface number");
 
 			out[i] = loadmodel.surfaces[j];
 		}
@@ -869,11 +856,11 @@ public abstract class Model extends Surf {
 		int[] offsets;
 	
 		if ( (l.filelen % Defines.SIZE_OF_INT) != 0)
-			ri.Sys_Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / Defines.SIZE_OF_INT;
 		if (count < 1 || count >= Defines.MAX_MAP_SURFEDGES)
-			ri.Sys_Error (Defines.ERR_DROP, "MOD_LoadBmodel: bad surfedges count in " + loadmodel.name + ": " + count);
+			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: bad surfedges count in " + loadmodel.name + ": " + count);
 
 		offsets = new int[count];
 
@@ -901,7 +888,7 @@ public abstract class Model extends Surf {
 		int bits;
 
 		if ((l.filelen % qfiles.dplane_t.SIZE) != 0)
-			ri.Sys_Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / qfiles.dplane_t.SIZE;
 		// out = Hunk_Alloc ( count*2*sizeof(*out));
@@ -944,13 +931,13 @@ public abstract class Model extends Surf {
 	
 		loadmodel.type = mod_brush;
 		if (loadmodel != mod_known[0])
-			ri.Sys_Error(Defines.ERR_DROP, "Loaded a brush model after the world");
+			Com.Error(Defines.ERR_DROP, "Loaded a brush model after the world");
 
 		header = new qfiles.dheader_t(buffer);
 
 		i = header.version;
 		if (i != Defines.BSPVERSION)
-			ri.Sys_Error (Defines.ERR_DROP, "Mod_LoadBrushModel: " + mod.name + " has wrong version number (" + i + " should be " + Defines.BSPVERSION + ")");
+			Com.Error (Defines.ERR_DROP, "Mod_LoadBrushModel: " + mod.name + " has wrong version number (" + i + " should be " + Defines.BSPVERSION + ")");
 
 		mod_base = fileBuffer; //(byte *)header;
 
@@ -984,7 +971,7 @@ public abstract class Model extends Surf {
 			starmod.nummodelsurfaces = bm.numfaces;
 			starmod.firstnode = bm.headnode;
 			if (starmod.firstnode >= loadmodel.numnodes)
-				ri.Sys_Error(Defines.ERR_DROP, "Inline model " + i + " has bad firstnode");
+				Com.Error(Defines.ERR_DROP, "Inline model " + i + " has bad firstnode");
 
 			Math3D.VectorCopy(bm.maxs, starmod.maxs);
 			Math3D.VectorCopy(bm.mins, starmod.mins);
@@ -1022,26 +1009,26 @@ public abstract class Model extends Surf {
 		pheader = new qfiles.dmdl_t(buffer);
 
 		if (pheader.version != qfiles.ALIAS_VERSION)
-			ri.Sys_Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
+			Com.Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
 					 new Vargs(3).add(mod.name).add(pheader.version).add(qfiles.ALIAS_VERSION));
 
 		if (pheader.skinheight > MAX_LBM_HEIGHT)
-			ri.Sys_Error(Defines.ERR_DROP, "model "+ mod.name +" has a skin taller than " + MAX_LBM_HEIGHT);
+			Com.Error(Defines.ERR_DROP, "model "+ mod.name +" has a skin taller than " + MAX_LBM_HEIGHT);
 
 		if (pheader.num_xyz <= 0)
-			ri.Sys_Error(Defines.ERR_DROP, "model " + mod.name + " has no vertices");
+			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no vertices");
 
 		if (pheader.num_xyz > qfiles.MAX_VERTS)
-			ri.Sys_Error(Defines.ERR_DROP, "model " + mod.name +" has too many vertices");
+			Com.Error(Defines.ERR_DROP, "model " + mod.name +" has too many vertices");
 
 		if (pheader.num_st <= 0)
-			ri.Sys_Error(Defines.ERR_DROP, "model " + mod.name + " has no st vertices");
+			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no st vertices");
 
 		if (pheader.num_tris <= 0)
-			ri.Sys_Error(Defines.ERR_DROP, "model " + mod.name + " has no triangles");
+			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no triangles");
 
 		if (pheader.num_frames <= 0)
-			ri.Sys_Error(Defines.ERR_DROP, "model " + mod.name + " has no frames");
+			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no frames");
 
 		//
 		// load base s and t vertices (not used in gl version)
@@ -1134,11 +1121,11 @@ public abstract class Model extends Surf {
 		qfiles.dsprite_t sprout = new qfiles.dsprite_t(buffer);
 		
 		if (sprout.version != qfiles.SPRITE_VERSION)
-			ri.Sys_Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
+			Com.Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
 				new Vargs(3).add(mod.name).add(sprout.version).add(qfiles.SPRITE_VERSION));
 
 		if (sprout.numframes > qfiles.MAX_MD2SKINS)
-			ri.Sys_Error(Defines.ERR_DROP, "%s has too many frames (%i > %i)",
+			Com.Error(Defines.ERR_DROP, "%s has too many frames (%i > %i)",
 				new Vargs(3).add(mod.name).add(sprout.numframes).add(qfiles.MAX_MD2SKINS));
 
 		for (int i=0 ; i<sprout.numframes ; i++)
@@ -1170,7 +1157,7 @@ public abstract class Model extends Surf {
 
 		// explicitly free the old map if different
 		// this guarantees that mod_known[0] is the world map
-		flushmap = ri.Cvar_Get("flushmap", "0", 0);
+		flushmap = Cvar.Get("flushmap", "0", 0);
 		if ( !mod_known[0].name.equals(fullname) || flushmap.value != 0.0f)
 			Mod_Free(mod_known[0]);
 		r_worldmodel = Mod_ForName(fullname, true);

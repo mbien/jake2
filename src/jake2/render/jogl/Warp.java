@@ -2,7 +2,7 @@
  * Warp.java
  * Copyright (C) 2003
  *
- * $Id: Warp.java,v 1.3.2.1 2004-07-09 08:38:26 hzi Exp $
+ * $Id: Warp.java,v 1.3.2.2 2004-09-06 19:39:16 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -27,10 +27,8 @@ package jake2.render.jogl;
 
 import jake2.Defines;
 import jake2.Globals;
-import jake2.game.GameBase;
-import jake2.render.glpoly_t;
-import jake2.render.image_t;
-import jake2.render.msurface_t;
+import jake2.qcommon.Com;
+import jake2.render.*;
 import jake2.util.Math3D;
 import net.java.games.jogl.GL;
 
@@ -117,19 +115,18 @@ public abstract class Warp extends Model {
 		float[] maxs = {0, 0, 0};
 		float	m;
 		float[] v = {0, 0, 0};
-		float[][] front = new float[64][3];
+		float[][] front = new float[64][3];		
 		float[][] back = new float[64][3];
 
 		int f, b;
 		float[] dist = new float[64];
 		float	frac;
-		glpoly_t poly;
 		float	s, t;
 		float[] total = {0, 0, 0};
 		float	total_s, total_t;
 
 		if (numverts > 60)
-			ri.Sys_Error(Defines.ERR_DROP, "numverts = " + numverts);
+			Com.Error(Defines.ERR_DROP, "numverts = " + numverts);
 
 		BoundPoly(numverts, verts, mins, maxs);
 
@@ -192,7 +189,7 @@ public abstract class Warp extends Model {
 		// poly = Hunk_Alloc (sizeof(glpoly_t) + ((numverts-4)+2) * VERTEXSIZE*sizeof(float));
 
 		// init polys
-		poly = new glpoly_t(numverts + 2);
+		glpoly_t poly = new glpoly_t(numverts + 2);
 
 		poly.next = warpface.polys;
 		warpface.polys = poly;
@@ -458,7 +455,7 @@ public abstract class Warp extends Model {
 		int i, j;
 
 		if (nump > MAX_CLIP_VERTS-2)
-			ri.Sys_Error(Defines.ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
+			Com.Error(Defines.ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
 		if (stage == 6)
 		{	// fully clipped, so draw it
 			DrawSkyPolygon(nump, vecs);

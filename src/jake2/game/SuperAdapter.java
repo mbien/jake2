@@ -19,51 +19,79 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 09.01.2004 by RST.
-// $Id: SuperAdapter.java,v 1.1 2004-07-07 19:59:24 hzi Exp $
+// $Id: SuperAdapter.java,v 1.1.1.1.2.1 2004-09-06 19:39:15 hzi Exp $
 
 package jake2.game;
 
 import jake2.qcommon.Com;
 
+import java.util.Hashtable;
 import java.util.Vector;
 
+public class SuperAdapter
+{
 
-// import jake2.*;
-// import jake2.client.*;
-// import jake2.game.*;
-// import jake2.qcommon.*;
-// import jake2.render.*;
-// import jake2.server.*;
-
-public class SuperAdapter {
-	
-	// registration
-	private static void register(SuperAdapter sa)
+	/** Adapter registration. */
+	private static void register(SuperAdapter sa, String id)
 	{
-		adapters.add(sa);
-		//Com.Println("registering adapter " + sa.getID() + " (" + sa.getClass().getSuperclass() + ")");
+		adapters.put(id, sa);
 	}
-	
-	private static int id=0;	
-	private static Vector adapters = new Vector();
+
+	/** Adapter repository. */
+	private static Hashtable adapters= new Hashtable();
+
+	/** Returns the adapter from the repository given by its ID. */
+	public static SuperAdapter getFromID(String key)
+	{
+		SuperAdapter sa = (SuperAdapter) adapters.get(key);
 		
-	
-	private static SuperAdapter find(int num)
-	{
-		return (SuperAdapter) adapters.elementAt(num);
+		// try to create the adapter
+		if (sa == null)
+		{
+			Com.DPrintf("SuperAdapter.getFromID():adapter not found->" + key + "\n");
+			int pos = key.indexOf('$');
+			String classname = key; 
+			if (pos != -1)
+				classname = key.substring(0, pos);
+				
+			// load class and instantiate
+			try
+			{
+				//Com.DPrintf("SuperAdapter.getFromID():loading class->" + classname + "\n");
+				Class.forName(classname).newInstance();
+			}
+			catch(Exception e)
+			{
+				Com.DPrintf("SuperAdapter.getFromID():class not found->" + classname + "\n");
+			}
+			
+			// try it again...			
+			sa = (SuperAdapter) adapters.get(key);
+			
+			if (sa == null)
+				Com.DPrintf("jake2: could not load adapter:" + key + "\n");
+		}
+		
+		return sa;
 	}
-	
-	// constructor
+
+	/** Constructor, does the adapter registration. */
 	public SuperAdapter()
-	{		
-		 adapterid = id++;
-		 register(this);
+	{
+		StackTraceElement tr[] = new Throwable().getStackTrace();
+		adapterid= tr[2].getClassName();
+		if (adapterid == "")
+			new Throwable("error in creating an adapter id!").printStackTrace();
+		else
+			register(this, adapterid);
 	}
-	
-	public int getID()
+
+	/** Returns the Adapter-ID. */
+	public String getID()
 	{
 		return adapterid;
 	}
 
-	private int adapterid;
+	/** Adapter id. */
+	private String adapterid;
 }

@@ -2,7 +2,7 @@
  * Image.java
  * Copyright (C) 2003
  *
- * $Id: Image.java,v 1.1.2.1 2004-07-09 08:38:27 hzi Exp $
+ * $Id: Image.java,v 1.1.2.2 2004-09-06 19:39:17 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -26,8 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.fastjogl;
 
 import jake2.Defines;
+import jake2.client.VID;
 import jake2.client.particle_t;
 import jake2.game.cvar_t;
+import jake2.qcommon.*;
 import jake2.qcommon.longjmpException;
 import jake2.qcommon.qfiles;
 import jake2.render.image_t;
@@ -245,7 +247,7 @@ public abstract class Image extends Main {
 		}
 
 		if (i == NUM_GL_MODES) {
-			ri.Con_Printf(Defines.PRINT_ALL, "bad filter name: [" + string + "]\n");
+			VID.Printf(Defines.PRINT_ALL, "bad filter name: [" + string + "]\n");
 			return;
 		}
 
@@ -279,7 +281,7 @@ public abstract class Image extends Main {
 		}
 
 		if (i == NUM_GL_ALPHA_MODES) {
-			ri.Con_Printf(Defines.PRINT_ALL, "bad alpha texture mode name: [" + string + "]\n");
+			VID.Printf(Defines.PRINT_ALL, "bad alpha texture mode name: [" + string + "]\n");
 			return;
 		}
 
@@ -299,7 +301,7 @@ public abstract class Image extends Main {
 		}
 
 		if (i == NUM_GL_SOLID_MODES) {
-			ri.Con_Printf(Defines.PRINT_ALL, "bad solid texture mode name: [" + string + "]\n");
+			VID.Printf(Defines.PRINT_ALL, "bad solid texture mode name: [" + string + "]\n");
 			return;
 		}
 
@@ -317,7 +319,7 @@ public abstract class Image extends Main {
 		int texels;
 		final String[] palstrings = { "RGB", "PAL" };
 
-		ri.Con_Printf(Defines.PRINT_ALL, "------------------\n");
+		VID.Printf(Defines.PRINT_ALL, "------------------\n");
 		texels = 0;
 
 		for (int i = 0; i < numgltextures; i++) {
@@ -328,29 +330,29 @@ public abstract class Image extends Main {
 			texels += image.upload_width * image.upload_height;
 			switch (image.type) {
 				case it_skin :
-					ri.Con_Printf(Defines.PRINT_ALL, "M");
+					VID.Printf(Defines.PRINT_ALL, "M");
 					break;
 				case it_sprite :
-					ri.Con_Printf(Defines.PRINT_ALL, "S");
+					VID.Printf(Defines.PRINT_ALL, "S");
 					break;
 				case it_wall :
-					ri.Con_Printf(Defines.PRINT_ALL, "W");
+					VID.Printf(Defines.PRINT_ALL, "W");
 					break;
 				case it_pic :
-					ri.Con_Printf(Defines.PRINT_ALL, "P");
+					VID.Printf(Defines.PRINT_ALL, "P");
 					break;
 				default :
-					ri.Con_Printf(Defines.PRINT_ALL, " ");
+					VID.Printf(Defines.PRINT_ALL, " ");
 					break;
 			}
 
-			ri.Con_Printf(
+			VID.Printf(
 				Defines.PRINT_ALL,
 				" %3i %3i %s: %s\n",
 				new Vargs(4).add(image.upload_width).add(image.upload_height).add(palstrings[(image.paletted) ? 1 : 0]).add(
 					image.name));
 		}
-		ri.Con_Printf(Defines.PRINT_ALL, "Total texel count (not counting mipmaps): " + texels + '\n');
+		VID.Printf(Defines.PRINT_ALL, "Total texel count (not counting mipmaps): " + texels + '\n');
 	}
 
 	/*
@@ -446,10 +448,10 @@ public abstract class Image extends Main {
 		//
 		// load the file
 		//
-		byte[] raw = ri.FS_LoadFile(filename);
+		byte[] raw = FS.LoadFile(filename);
 
 		if (raw == null) {
-			ri.Con_Printf(Defines.PRINT_DEVELOPER, "Bad pcx file " + filename + '\n');
+			VID.Printf(Defines.PRINT_DEVELOPER, "Bad pcx file " + filename + '\n');
 			return null;
 		}
 
@@ -465,7 +467,7 @@ public abstract class Image extends Main {
 			|| pcx.xmax >= 640
 			|| pcx.ymax >= 480) {
 
-			ri.Con_Printf(Defines.PRINT_ALL, "Bad pcx file " + filename + '\n');
+			VID.Printf(Defines.PRINT_ALL, "Bad pcx file " + filename + '\n');
 			return null;
 		}
 
@@ -541,21 +543,21 @@ public abstract class Image extends Main {
 		//
 		// load the file
 		//
-		raw = ri.FS_LoadFile (name);
+		raw = FS.LoadFile(name);
 		
 		if (raw == null)
 		{
-			ri.Con_Printf(Defines.PRINT_DEVELOPER, "Bad tga file "+ name +'\n');
+			VID.Printf(Defines.PRINT_DEVELOPER, "Bad tga file "+ name +'\n');
 			return null;
 		}
 		
 		targa_header = new qfiles.tga_t(raw);
 		
 		if (targa_header.image_type != 2 && targa_header.image_type != 10) 
-			ri.Sys_Error(Defines.ERR_DROP, "LoadTGA: Only type 2 and 10 targa RGB images supported\n");
+			Com.Error(Defines.ERR_DROP, "LoadTGA: Only type 2 and 10 targa RGB images supported\n");
 		
 		if (targa_header.colormap_type != 0 || (targa_header.pixel_size != 32 && targa_header.pixel_size != 24))
-			ri.Sys_Error (Defines.ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
+			Com.Error (Defines.ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 		
 		columns = targa_header.width;
 		rows = targa_header.height;
@@ -743,19 +745,24 @@ public abstract class Image extends Main {
 	//		}
 	//		else if (pos[off] != 255) fdc = pos[off];
 	//	}
-
+	static floodfill_t[] fifo = new floodfill_t[FLOODFILL_FIFO_SIZE];
+	static {
+		for (int j = 0; j < fifo.length; j++) {
+			fifo[j] = new floodfill_t();
+		}		
+	}
 	// TODO check this: R_FloodFillSkin( byte[] skin, int skinwidth, int skinheight)
 	void R_FloodFillSkin(byte[] skin, int skinwidth, int skinheight) {
 		//		byte				fillcolor = *skin; // assume this is the pixel to fill
 		int fillcolor = skin[0] & 0xff;
-		floodfill_t[] fifo = new floodfill_t[FLOODFILL_FIFO_SIZE];
+//		floodfill_t[] fifo = new floodfill_t[FLOODFILL_FIFO_SIZE];
 		int inpt = 0, outpt = 0;
 		int filledcolor = -1;
 		int i;
 
-		for (int j = 0; j < fifo.length; j++) {
-			fifo[j] = new floodfill_t();
-		}
+//		for (int j = 0; j < fifo.length; j++) {
+//			fifo[j] = new floodfill_t();
+//		}
 
 		if (filledcolor == -1) {
 			filledcolor = 0;
@@ -1083,7 +1090,7 @@ public abstract class Image extends Main {
 		upload_height = scaled_height;
 
 		if (scaled_width * scaled_height > 256 * 256)
-			ri.Sys_Error(Defines.ERR_DROP, "GL_Upload32: too big");
+			Com.Error(Defines.ERR_DROP, "GL_Upload32: too big");
 
 		// scan the texture for any non-255 alpha
 		c = width * height;
@@ -1101,7 +1108,7 @@ public abstract class Image extends Main {
 		else if (samples == gl_alpha_format)
 			comp = gl_tex_alpha_format;
 		else {
-			ri.Con_Printf(Defines.PRINT_ALL, "Unknown number of texture components " + samples + '\n');
+			VID.Printf(Defines.PRINT_ALL, "Unknown number of texture components " + samples + '\n');
 			comp = samples;
 		}
 
@@ -1243,7 +1250,7 @@ public abstract class Image extends Main {
 		int s = width * height;
 
 		if (s > trans.length)
-			ri.Sys_Error(Defines.ERR_DROP, "GL_Upload8: too large");
+			Com.Error(Defines.ERR_DROP, "GL_Upload8: too large");
 
 		if (qglColorTableEXT && gl_ext_palettedtexture.value != 0.0f && is_sky) {
 			gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL_COLOR_INDEX8_EXT, width, height, 0, GL.GL_COLOR_INDEX, GL.GL_UNSIGNED_BYTE, data);
@@ -1310,14 +1317,14 @@ public abstract class Image extends Main {
 		if (i == numgltextures)
 		{
 			if (numgltextures == MAX_GLTEXTURES)
-				ri.Sys_Error (Defines.ERR_DROP, "MAX_GLTEXTURES");
+				Com.Error (Defines.ERR_DROP, "MAX_GLTEXTURES");
 			
 			numgltextures++;
 		}
 		image = gltextures[i];
 
 		if (name.length() > Defines.MAX_QPATH)
-			ri.Sys_Error(Defines.ERR_DROP, "Draw_LoadPic: \"" + name + "\" is too long");
+			Com.Error(Defines.ERR_DROP, "Draw_LoadPic: \"" + name + "\" is too long");
 
 		image.name = name;
 		image.registration_sequence = registration_sequence;
@@ -1433,9 +1440,9 @@ public abstract class Image extends Main {
 
 		image_t image = null;
 
-		byte[] raw = ri.FS_LoadFile(name);
+		byte[] raw = FS.LoadFile(name);
 		if (raw == null) {
-			ri.Con_Printf(Defines.PRINT_ALL, "GL_FindImage: can't load " + name + '\n');
+			VID.Printf(Defines.PRINT_ALL, "GL_FindImage: can't load " + name + '\n');
 			return r_notexture;
 		}
 
@@ -1458,17 +1465,17 @@ public abstract class Image extends Main {
 	*/
 	image_t GL_FindImage(String name, int type) {
 		image_t image = null;
-		
-		// TODO loest das grossschreibungs problem
-		name = name.toLowerCase();
-		// bughack for bad strings (fuck \0)
-		int index = name.indexOf('\0');
-		if (index != -1)
-			name = name.substring(0, index);
+
+//		// TODO loest das grossschreibungs problem
+//		name = name.toLowerCase();
+//		// bughack for bad strings (fuck \0)
+//		int index = name.indexOf('\0');
+//		if (index != -1) 
+//			name = name.substring(0, index);
 
 		if (name == null || name.length() < 5)
-			return null; //	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
-		//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
+			return null; //	Com.Error (ERR_DROP, "GL_FindImage: NULL name");
+		//	Com.Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
 
 		// look for it
 		for (int i = 0; i < numgltextures; i++)
@@ -1484,6 +1491,7 @@ public abstract class Image extends Main {
 		//
 		// load the pic from disk
 		//
+		image = null;
 		byte[] pic = null;
 		Dimension dim = new Dimension();
 
@@ -1510,8 +1518,6 @@ public abstract class Image extends Main {
 			image = GL_LoadPic(name, pic, dim.width, dim.height, type, 32);
 
 		}
-		else
-			return null;
 
 		return image;
 	}
@@ -1576,7 +1582,7 @@ public abstract class Image extends Main {
 		pic = LoadPCX("pics/colormap.pcx", palette, dim = new Dimension());
 
 		if (palette[0] == null || palette[0].length != 768)
-			ri.Sys_Error(Defines.ERR_FATAL, "Couldn't load pics/colormap.pcx");
+			Com.Error(Defines.ERR_FATAL, "Couldn't load pics/colormap.pcx");
 
 		byte[] pal = palette[0];
 
@@ -1606,19 +1612,19 @@ public abstract class Image extends Main {
 		registration_sequence = 1;
 
 		// init intensity conversions
-		intensity = ri.Cvar_Get("intensity", "2", 0);
+		intensity = Cvar.Get("intensity", "2", 0);
 
 		if (intensity.value <= 1)
-			ri.Cvar_Set("intensity", "1");
+			Cvar.Set("intensity", "1");
 
 		gl_state.inverse_intensity = 1 / intensity.value;
 
 		Draw_GetPalette();
 
 		if (qglColorTableEXT) {
-			gl_state.d_16to8table = ri.FS_LoadFile("pics/16to8.dat");
+			gl_state.d_16to8table = FS.LoadFile("pics/16to8.dat");
 			if (gl_state.d_16to8table == null)
-				ri.Sys_Error(Defines.ERR_FATAL, "Couldn't load pics/16to8.pcx");
+				Com.Error(Defines.ERR_FATAL, "Couldn't load pics/16to8.pcx");
 		}
 
 		if ((gl_config.renderer & (GL_RENDERER_VOODOO | GL_RENDERER_VOODOO2)) != 0) {

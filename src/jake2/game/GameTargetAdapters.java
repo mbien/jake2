@@ -19,15 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 26.02.2004 by RST.
-// $Id: GameTargetAdapters.java,v 1.1 2004-07-08 15:58:43 hzi Exp $
+// $Id: GameTargetAdapters.java,v 1.1.2.1 2004-09-06 19:39:14 hzi Exp $
 
 package jake2.game;
 
-import jake2.*;
-import jake2.client.*;
-import jake2.qcommon.*;
-import jake2.render.*;
-import jake2.server.*;
+import jake2.Defines;
+import jake2.Globals;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
@@ -91,10 +88,10 @@ public class GameTargetAdapters {
 	
 			if ((ent.spawnflags & 1) != 0)
 				//strncpy(game.helpmessage1, ent.message, sizeof(game.helpmessage2) - 1);
-				ent.message = GameBase.game.helpmessage1;
+				GameBase.game.helpmessage1 = ent.message;
 			else
 				//strncpy(game.helpmessage2, ent.message, sizeof(game.helpmessage1) - 1);
-				ent.message = GameBase.game.helpmessage2;
+				GameBase.game.helpmessage2 = ent.message;
 	
 			GameBase.game.helpchanged++;
 		}
@@ -553,7 +550,7 @@ public class GameTargetAdapters {
 				self.last_move_time = GameBase.level.time + 0.5f;
 			}
 	
-			for (i = 1; i < GameBase.globals.num_edicts; i++) {
+			for (i = 1; i < GameBase.num_edicts; i++) {
 				e = GameBase.g_edicts[i];
 	
 				if (!e.inuse)
