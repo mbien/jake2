@@ -2,7 +2,7 @@
  * CL_parse.java
  * Copyright (C) 2004
  * 
- * $Id: CL_parse.java,v 1.4 2004-07-08 20:56:49 hzi Exp $
+ * $Id: CL_parse.java,v 1.3 2004-07-08 20:24:29 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,17 +25,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.client;
 
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
 import jake2.Defines;
 import jake2.game.Cmd;
 import jake2.game.entity_state_t;
-import jake2.qcommon.*;
+import jake2.qcommon.CM;
+import jake2.qcommon.Cbuf;
+import jake2.qcommon.Com;
+import jake2.qcommon.Cvar;
+import jake2.qcommon.FS;
+import jake2.qcommon.MSG;
+import jake2.qcommon.SZ;
+import jake2.qcommon.xcommand_t;
 import jake2.render.model_t;
-import jake2.sound.S;
 import jake2.sys.Sys;
 import jake2.util.Lib;
-
-import java.io.IOException;
-import java.io.RandomAccessFile;
 
 /**
  * CL_parse
@@ -194,7 +200,7 @@ public class CL_parse extends CL_view {
 		S.BeginRegistration();
 		CL.RegisterTEntSounds();
 		for (int i = 1; i < MAX_SOUNDS; i++) {
-			if (cl.configstrings[CS_SOUNDS + i] == null || cl.configstrings[CS_SOUNDS + i].equals("") || cl.configstrings[CS_SOUNDS + i].equals("\0"))
+			if (cl.configstrings[CS_SOUNDS + i] == null || cl.configstrings[CS_SOUNDS + i] == "")
 				break;
 			cl.sound_precache[i] = S.RegisterSound(cl.configstrings[CS_SOUNDS + i]);
 			Sys.SendKeyEvents(); // pump message loop
@@ -549,7 +555,7 @@ public class CL_parse extends CL_view {
 		}
 		else if (i >= CS_SOUNDS && i < CS_SOUNDS + MAX_MODELS) {
 			if (cl.refresh_prepped)
-				cl.sound_precache[i - CS_SOUNDS] = S.RegisterSound(cl.configstrings[i]);
+				cl.sound_precache[i - CS_SOUNDS] = SND_DMA.RegisterSound(cl.configstrings[i]);
 		}
 		else if (i >= CS_IMAGES && i < CS_IMAGES + MAX_MODELS) {
 			if (cl.refresh_prepped)
@@ -626,7 +632,7 @@ public class CL_parse extends CL_view {
 		if (null==cl.sound_precache[sound_num])
 			return;
 
-		S.StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume, attenuation, ofs);
+		SND_DMA.StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume, attenuation, ofs);
 	}
 
 	public static void SHOWNET(String s) {
@@ -703,7 +709,7 @@ public class CL_parse extends CL_view {
 				case svc_print :
 					i = MSG.ReadByte(net_message);
 					if (i == PRINT_CHAT) {
-						S.StartLocalSound("misc/talk.wav");
+						SND_DMA.StartLocalSound("misc/talk.wav");
 						con.ormask = 128;
 					}
 					Com.Printf(MSG.ReadString(net_message));

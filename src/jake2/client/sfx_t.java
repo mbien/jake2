@@ -1,4 +1,16 @@
 /*
+ * sfx_t.java
+ * Copyright (C) 2003
+ * 
+ * $Id: sfx_t.java,v 1.3 2004-07-08 20:24:29 hzi Exp $
+ */
+/*
+ * sfx_t.java
+ * Copyright (C) 2004
+ * 
+ * $Id: sfx_t.java,v 1.3 2004-07-08 20:24:29 hzi Exp $
+ */
+/*
 Copyright (C) 1997-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
@@ -8,7 +20,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -18,22 +30,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 27.11.2003 by RST.
-// $Id: centity_t.java,v 1.1 2004-07-07 19:58:52 hzi Exp $
+// Created on 28.11.2003 by RST.
 
 package jake2.client;
 
-import jake2.game.entity_state_t;
-
-public class centity_t {
-	entity_state_t baseline= new entity_state_t(null); // delta from this if not from a previous frame
-	entity_state_t current= new entity_state_t(null);
-	entity_state_t prev= new entity_state_t(null); // will always be valid, but might just be a copy of current
-
-	int serverframe; // if not current, this ent isn't in the frame
-
-	int trailcount; // for diminishing grenade trails
-	float[] lerp_origin = { 0, 0, 0 }; // for trails (variable hz)
-
-	int fly_stoptime;
+public class sfx_t {
+	String name; //mem
+	int registration_sequence;
+	sfxcache_t cache; //ptr
+	String truename; //ptr
+	
+	public void clear() {
+		name = truename = null;
+		cache = null;
+		registration_sequence = 0;
+	}
 }

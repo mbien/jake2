@@ -1,8 +1,8 @@
 /*
- * sfx_t.java
- * Copyright (C) 2004
+ * S.java
+ * Copyright (C) 2003
  * 
- * $Id: sfx_t.java,v 1.1 2004-07-08 20:56:49 hzi Exp $
+ * $Id: S.java,v 1.1 2004-07-07 19:58:51 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -23,27 +23,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+package jake2.client;
 
-// Created on 28.11.2003 by RST.
+/**
+ * S
+ */
+public class S extends SND_DMA {
 
-package jake2.sound;
-
-
-public class sfx_t {
-	public String name; //mem
-	public int registration_sequence;
-	public sfxcache_t cache; //ptr
-	public String truename; //ptr
-	
-	// cwei
-	public int id = -1;
-	
-	public void clear() {
-		name = truename = null;
-		cache = null;
-		registration_sequence = 0;
-		
-		// cwei
-		id = -1; 
-	}
 }

@@ -2,7 +2,7 @@
  * SND_MEM.java
  * Copyright (C) 2004
  * 
- * $Id: WaveLoader.java,v 1.1 2004-07-09 06:50:48 hzi Exp $
+ * $Id: SND_MEM.java,v 1.2 2004-07-08 15:58:42 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -23,31 +23,94 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-package jake2.sound;
+package jake2.client;
 
-import jake2.Defines;
 import jake2.qcommon.Com;
 import jake2.qcommon.FS;
-import jake2.sys.Sys;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import javax.sound.sampled.*;
 
 /**
  * SND_MEM
  */
-public class WaveLoader {
+public class SND_MEM extends SND_JAVA {
 
-	private static final AudioFormat sampleFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 22050, 16, 1, 2, 22050, false);
+////	   snd_mem.c: sound caching
+//
+//	#include "client.h"
+//	#include "snd_loc.h"
+//
+//	int			cache_full_cycle;
+//
+//	byte *S_Alloc (int size);
+//
+	/*
+	================
+	ResampleSfx
+	================
+	*/
+	static void ResampleSfx (sfx_t sfx, int inrate, int inwidth, byte[] data, int ofs)
+	{
+		int		outcount;
+		int		srcsample;
+		float	stepscale;
+		int		i;
+		int		sample, samplefrac, fracstep;
+		sfxcache_t	sc;
+	
+		sc = sfx.cache;
+		if (sc == null)
+			return;
 
+		stepscale = (float)inrate / dma.speed;	// this is usually 0.5, 1, or 2
+
+		outcount = (int)(sc.length / stepscale);
+		sc.length = outcount;
+		if (sc.loopstart != -1)
+			sc.loopstart = (int)(sc.loopstart / stepscale);
+
+		sc.speed = dma.speed;
+		if (SND_DMA.s_loadas8bit.value != 0.0f)
+			sc.width = 1;
+		else
+			sc.width = inwidth;
+		sc.stereo = 0;
+
+//	   resample / decimate to the current source rate
+
+		if (stepscale == 1 && inwidth == 1 && sc.width == 1)
+		{
+//	   fast special case
+			for (i=0 ; i<outcount ; i++)
+				sc.data[i+ofs] = (byte)((data[i+ofs] & 0xFF) - 128);
+		}
+		else
+		{
+//	   general case
+			samplefrac = 0;
+			fracstep = (int)(stepscale*256);
+//			for (i=0 ; i<outcount ; i++)
+//			{
+//				srcsample = samplefrac >> 8;
+//				samplefrac += fracstep;
+//				if (inwidth == 2)
+//					sample = LittleShort ( ((short *)data)[srcsample] );
+//				else
+//					sample = (int)( (unsigned char)(data[srcsample]) - 128) << 8;
+//				if (sc->width == 2)
+//					((short *)sc->data)[i] = sample;
+//				else
+//					((signed char *)sc->data)[i] = sample >> 8;
+//			}
+		}
+	}
+//
+////	  =============================================================================
+//
 	/*
 	==============
 	S_LoadSound
 	==============
 	*/
-	public static sfxcache_t LoadSound(sfx_t s) {
+	static sfxcache_t LoadSound(sfx_t s) {
 		String namebuffer;
 		byte[] data;
 		wavinfo_t info;
@@ -73,9 +136,10 @@ public class WaveLoader {
 
 		if (name.charAt(0) == '#')
 			namebuffer = name.substring(1);
-
+		//strcpy(namebuffer, &name[1]);
 		else
 			namebuffer = "sound/" + name;
+		//Com_sprintf (namebuffer, sizeof(namebuffer), "sound/%s", name);
 
 		data = FS.LoadFile(namebuffer);
 
@@ -86,59 +150,43 @@ public class WaveLoader {
 		size = data.length;
 
 		info = GetWavinfo(s.name, data, size);
-		
-		AudioInputStream in = null;
-		AudioInputStream out = null;
-		try {
-			in = AudioSystem.getAudioInputStream(new ByteArrayInputStream(data));
-			if (in.getFormat().getSampleSizeInBits() == 8) {
-				in = convertTo16bit(in);
-			}
-			out = AudioSystem.getAudioInputStream(sampleFormat, in);
-			int l = (int)out.getFrameLength();
-			sc = s.cache = new sfxcache_t(l*2);
-			sc.length = l;
-			int c = out.read(sc.data, 0, l * 2);
-			out.close();
-			in.close();
-		} catch (Exception e) {
-			Com.Printf("Couldn't load " + namebuffer + "\n");
+		if (info.channels != 1) {
+			Com.Printf(s.name + " is a stereo sample\n");
+			FS.FreeFile(data);
 			return null;
 		}
-		
-		sc.loopstart = info.loopstart * ((int)sampleFormat.getSampleRate() / info.rate);
-		sc.speed = (int)sampleFormat.getSampleRate();
-		sc.width = sampleFormat.getSampleSizeInBits() / 8;
-		sc.stereo = 0;
 
-		data = null;
+		stepscale = ((float)info.rate) / dma.speed;
+		len = (int) (info.samples / stepscale);
+
+		len = len * info.width * info.channels;
+
+		//sc = s.cache = Z_Malloc (len + sizeof(sfxcache_t));
+		sc = s.cache = new sfxcache_t(len);
+
+		sc.length = info.samples;
+		sc.loopstart = info.loopstart;
+		sc.speed = info.rate;
+		sc.width = info.width;
+		sc.stereo = info.channels;
+
+		ResampleSfx(s, sc.speed, sc.width, data, info.dataofs);
+
+		FS.FreeFile(data);
 
 		return sc;
 	}
-
-	static AudioInputStream convertTo16bit(AudioInputStream in) throws IOException {
-		AudioFormat format = in.getFormat();
-		int length = (int)in.getFrameLength();
-		byte[] samples = new byte[2*length];
-		
-		for (int i = 0; i < length; i++) {
-			in.read(samples, 2*i+1, 1);
-			samples[2*i+1] -= 128;
-		}
-		in.close();			
-
-		AudioFormat newformat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, format.getSampleRate(), 16, format.getChannels(), 2, format.getFrameRate(), false);
-		return new AudioInputStream(new ByteArrayInputStream(samples), newformat, length);
-	}
-	
-	/*
-	===============================================================================
-
-	WAV loading
-
-	===============================================================================
-	*/
-
+//
+//
+//
+//	/*
+//	===============================================================================
+//
+//	WAV loading
+//
+//	===============================================================================
+//	*/
+//
 	static byte[] data_b;
 	static int data_p;
 	static int iff_end;
@@ -148,23 +196,23 @@ public class WaveLoader {
 
 
 	static short GetLittleShort() {
-		int val = 0;
-		val = data_b[data_p] & 0xFF;
+		short val = 0;
+		val = data_b[data_p];
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 8);
+		val |= (data_b[data_p] << 8);
 		data_p++;
-		return (short)val;
+		return val;
 	}
 
 	static int GetLittleLong() {
 		int val = 0;
-		val = data_b[data_p] & 0xFF;
+		val = data_b[data_p];
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 8);
+		val |= (data_b[data_p] << 8);
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 16);
+		val |= (data_b[data_p] << 16);
 		data_p++;
-		val |= ((data_b[data_p] & 0xFF) << 24);
+		val |= (data_b[data_p] << 24);
 		data_p++;
 		return val;
 	}
@@ -179,16 +227,13 @@ public class WaveLoader {
 			}
 
 			data_p += 4;
-
 			iff_chunk_len = GetLittleLong();
-			
 			if (iff_chunk_len < 0) {
 				data_p = 0;
 				return;
 			}
-			if (iff_chunk_len > 1024*1024)
-				Sys.Error("FindNextChunk: length is past the 1 meg sanity limit");
-				
+			//			if (iff_chunk_len > 1024*1024)
+			//				Sys_Error ("FindNextChunk: %i length is past the 1 meg sanity limit", iff_chunk_len);
 			data_p -= 8;
 			last_chunk = data_p + 8 + ((iff_chunk_len + 1) & ~1);
 			String s = new String(data_b, data_p, 4);
@@ -201,7 +246,24 @@ public class WaveLoader {
 		last_chunk = iff_data;
 		FindNextChunk(name);
 	}
-
+//
+//
+//	void DumpChunks(void)
+//	{
+//		char	str[5];
+//	
+//		str[4] = 0;
+//		data_p=iff_data;
+//		do
+//		{
+//			memcpy (str, data_p, 4);
+//			data_p += 4;
+//			iff_chunk_len = GetLittleLong();
+//			Com_Printf ("0x%x : %s (%d)\n", (int)(data_p - 4), str, iff_chunk_len);
+//			data_p += (iff_chunk_len + 1) & ~1;
+//		} while (data_p < iff_end);
+//	}
+//
 	/*
 	============
 	GetWavinfo
@@ -223,7 +285,7 @@ public class WaveLoader {
 		// find "RIFF" chunk
 		FindChunk("RIFF");
 		String s = new String(data_b, data_p + 8, 4);
-		if (!s.equals("WAVE")) {
+		if (!((data_p != 0) && s.equals("WAVE"))) {
 			Com.Printf("Missing RIFF/WAVE chunks\n");
 			return info;
 		}
@@ -282,7 +344,7 @@ public class WaveLoader {
 
 		if (info.samples != 0) {
 			if (samples < info.samples)
-				Com.Error(Defines.ERR_DROP, "Sound " + name + " has a bad loop length");
+				Com.Error(ERR_DROP, "Sound " + name + " has a bad loop length");
 		} else
 			info.samples = samples;
 
