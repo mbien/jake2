@@ -12,7 +12,7 @@
          classname="com.izforge.izpack.ant.IzPackTask"/>
          
 	<!-- properties -->
-	<property name="version" value="cvs"/> 
+	<property name="version" value="0.9.4"/> 
 	<property name="src" location="src"/>
 	<property name="patch" location="patch"/>
 	<property name="test" location="test"/>
@@ -112,7 +112,7 @@
 		</copy>
 		<copy todir="${dist}">
 			<fileset dir="scripts">
-				<include name="Jake2.*"/>
+				<include name="Jake2*"/>
 			</fileset>
 			<fileset dir=".">
 				<include name="ChangeLog"/>
@@ -218,7 +218,7 @@
 	<!-- standalone installer -->
 	<target name="installer" depends="dist">
 		<izpack input="${basedir}/install.xml"
-        	output="${basedir}/Jake2-install.jar"
+        	output="${basedir}/Jake2-${version}-install.jar"
         	installerType="standard"
         	basedir="${dist}"
         	izPackDir="${basedir}/lib/izpack"/>
