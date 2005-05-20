@@ -1,12 +1,13 @@
 0.9.4
 
-	- multiplayer client and server functionality
+	- multiplayer client and partial server functionality
 	- Mac OS X support
 	- webstart version
 	- experimental lwjgl driver
 	- standalone installer
 	- online installation of Quake2 demo data files
 	- mouse wheel support
+	- memory footprint reduced
 	- bugfixes
 	
 0.9.3 2004-09-09
