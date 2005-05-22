@@ -2,7 +2,7 @@
  * Q2DataDialog.java
  * Copyright (C)  2003
  * 
- * $Id: Q2DataDialog.java,v 1.13.2.1 2005-05-22 14:27:17 cawe Exp $
+ * $Id: Q2DataDialog.java,v 1.13.2.2 2005-05-22 17:09:00 cawe Exp $
  */
 
 package jake2.qcommon;
@@ -760,7 +760,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
 		
 		void endInstall(String message) {
 			parent.notFoundPanel.message.setText(message);
-			parent.dir = destDir + "/baseq2";
+			parent.jTextField1.setText(destDir + "/baseq2");
 			parent.showChooseDialog();
 			parent.okButtonActionPerformed(null);			
 		}
