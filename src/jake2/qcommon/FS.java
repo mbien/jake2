@@ -2,7 +2,7 @@
  * FS.java
  * Copyright (C) 2003
  * 
- * $Id: FS.java,v 1.12 2004-11-10 20:41:40 cawe Exp $
+ * $Id: FS.java,v 1.12.4.1 2005-05-22 13:32:58 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -659,14 +659,11 @@ public final class FS extends Globals {
      * ExecAutoexec
      */
     public static void ExecAutoexec() {
+        String dir = fs_userdir;
 
-        String dir;
         String name;
-
-        dir = Cvar.VariableString("gamedir");
-
         if (dir != null && dir.length() > 0) {
-            name = fs_basedir.string + '/' + dir + "/autoexec.cfg";
+            name = dir + "/autoexec.cfg";
         } else {
             name = fs_basedir.string + '/' + Globals.BASEDIRNAME
                     + "/autoexec.cfg";
