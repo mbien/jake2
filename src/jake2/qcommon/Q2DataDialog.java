@@ -2,7 +2,7 @@
  * Q2DataDialog.java
  * Copyright (C)  2003
  * 
- * $Id: Q2DataDialog.java,v 1.13.2.2 2005-05-22 17:09:00 cawe Exp $
+ * $Id: Q2DataDialog.java,v 1.13.2.3 2005-05-22 17:10:39 cawe Exp $
  */
 
 package jake2.qcommon;
@@ -227,7 +227,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
     private InstallPanel installPanel;
     private NotFoundPanel notFoundPanel;
     private JLabel status;
-    private javax.swing.JTextField jTextField1;
+    javax.swing.JTextField jTextField1;
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
     
