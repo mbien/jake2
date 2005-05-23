@@ -45,7 +45,7 @@ Jake2 sources from CVS.
 - "cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jake2 login"
 - when askesd for password simply press the Enter key
 - "cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jake2 co jake2"
-- procced with the build from source instructions
+- proceed with the build from source instructions
 
 3rd party components
 --------------------
