@@ -2,7 +2,7 @@
  * Qcommon.java
  * Copyright 2003
  * 
- * $Id: Qcommon.java,v 1.16 2005-05-14 10:10:45 hzi Exp $
+ * $Id: Qcommon.java,v 1.16.2.1 2005-05-23 08:26:11 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -246,6 +246,10 @@ public final class Qcommon extends Globals {
 		Cbuf.AddText("exec default.cfg\n");
 		Cbuf.AddText("bind MWHEELUP weapnext\n");
 		Cbuf.AddText("bind MWHEELDOWN weapprev\n");
+		Cbuf.AddText("bind w +forward\n");
+		Cbuf.AddText("bind s +back\n");
+		Cbuf.AddText("bind a +moveleft\n");
+		Cbuf.AddText("bind d +moveright\n");
 		Cbuf.Execute();
 		Cvar.Set("vid_fullscreen", "0");
 		Cbuf.AddText("exec config.cfg\n");
