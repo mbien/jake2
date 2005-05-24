@@ -23,7 +23,7 @@ Installation
 ------------
 
 from binary distribution:
-- run the installer with "java -jar Jake2-Install.jar"
+- run the installer with "java -jar Jake2-0.9.4-Install.jar"
 - follow the instructions
 - change to the installation directory
 - run the game with Jake2.sh or Jake2.bat
