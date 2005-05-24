@@ -2,7 +2,7 @@
  * Cvar.java
  * Copyright (C) 2003
  * 
- * $Id: Cvar.java,v 1.7 2005-02-08 18:00:02 cawe Exp $
+ * $Id: Cvar.java,v 1.7.2.1 2005-05-24 23:43:38 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -294,6 +294,13 @@ public class Cvar extends Globals {
     /*
      * ============ Cvar_SetValue ============
      */
+    // the overloading is very important
+    // there was a problem with networt "rate" string
+    // 10000 became "10000.0" and that wasn't right
+    public static void SetValue(String var_name, int value) {
+        Cvar.Set(var_name, "" + value);
+    }
+
     public static void SetValue(String var_name, float value) {
         Cvar.Set(var_name, "" + value);
     }
