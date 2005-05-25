@@ -28,7 +28,7 @@ Installation
 ------------
 
 ausgehend von der Binärdistribution:
-- Installationsprogramm mit "java -jar Jake2-0.9.4-Install.jar" starten
+- Installationsprogramm mit "java -jar Jake2-0.9.4-install.jar" starten
 - den Anweisungen folgen
 - ins Installationsverzeichnis wechseln
 - Jake2 mit "jake2.sh" oder "jake2.bat" aus dem Installationsverzeichnis starten
