@@ -57,6 +57,7 @@
             	<exclude name="*mac.sh"/>
             	<exclude name="*lwjgl.sh"/>
             </fileset>
+            <executable targetfile="$INSTALL_PATH/Jake2.sh"/>
         </pack>
         <pack name="Jake2" required="yes">
             <description>Jake2 files</description>
@@ -68,6 +69,7 @@
             	<exclude name="*.sh"/>
             	<include name="*mac.sh"/>
             </fileset>
+            <executable targetfile="$INSTALL_PATH/Jake2_mac.sh"/>
         </pack>                
         
         <pack name="jogl OpenGL library" required="yes">
@@ -141,6 +143,7 @@
         	<fileset dir="." targetdir="$INSTALL_PATH">
         		<include name="Jake2_lwjgl.sh"/>
         	</fileset>
+        	<executable targetfile="$INSTALL_PATH/Jake2_lwjgl.sh"/>
         </pack>
         <pack name="lwjgl library" required="no">
         	<description>alternative OpenGL and sound driver</description>
@@ -151,7 +154,8 @@
         	</fileset>
         	<fileset dir="." targetdir="$INSTALL_PATH">
         		<include name="Jake2_mac_lwjgl.sh"/>
-        	</fileset>        	
+        	</fileset>
+        	<executable targetfile="$INSTALL_PATH/Jake2_mac_lwjgl.sh"/>
         </pack>                
     </packs>
     
