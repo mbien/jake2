@@ -1,6 +1,6 @@
 0.9.4 2005-05-26
 
-	- multiplayer client and partial server functionality
+	- multiplayer client and server functionality
 	- Mac OS X support
 	- webstart version
 	- experimental lwjgl driver
