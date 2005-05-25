@@ -21,7 +21,7 @@
     <resources>
         <res id="LicencePanel.licence" src="LICENSE"/>
         <res id="InfoPanel.info" src="README"/>
-        <res src="../shortcutSpec.xml" id="shortcutSpec.xml" />
+        <!-- res src="../shortcutSpec.xml" id="shortcutSpec.xml" / -->
         <!-- res id="Installer.image" src="../resources/icon.png"/ -->
     </resources>
     
