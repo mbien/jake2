@@ -2,7 +2,7 @@
  * Cvar.java
  * Copyright (C) 2003
  * 
- * $Id: Cvar.java,v 1.7.2.1 2005-05-24 23:43:38 cawe Exp $
+ * $Id: Cvar.java,v 1.7.2.2 2005-05-25 22:11:17 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -302,7 +302,11 @@ public class Cvar extends Globals {
     }
 
     public static void SetValue(String var_name, float value) {
-        Cvar.Set(var_name, "" + value);
+        if (value == (int)value) {
+            Cvar.Set(var_name, "" + (int)value);
+        } else {
+            Cvar.Set(var_name, "" + value);
+        }
     }
 
     /*
