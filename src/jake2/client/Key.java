@@ -2,7 +2,7 @@
  * Key.java
  * Copyright (C) 2003
  * 
- * $Id: Key.java,v 1.7 2004-10-28 18:15:25 cawe Exp $
+ * $Id: Key.java,v 1.11 2005-06-07 12:57:21 hzi Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -287,7 +287,7 @@ public class Key extends Globals {
 	/**
 	 * Called by the system between frames for both key up and key down events.
 	 */
-	public static void Event(int key, boolean down, long time) {		
+	public static void Event(int key, boolean down, int time) {		
 		String kb;
 		String cmd;
 
@@ -301,13 +301,9 @@ public class Key extends Globals {
 		// update auto-repeat status
 		if (down) {
 			key_repeats[key]++;
-			if (key != K_BACKSPACE
-				&& key != K_PAUSE
-				&& key != K_PGUP
-				&& key != K_KP_PGUP
-				&& key != K_PGDN
-				&& key != K_KP_PGDN
-				&& key_repeats[key] > 1)
+			if (key_repeats[key] > 1
+				&& Globals.cls.key_dest == Defines.key_game
+				&& !(Globals.cls.state == Defines.ca_disconnected))
 				return; // ignore most autorepeats
 
 			if (key >= 200 && Globals.keybindings[key] == null)

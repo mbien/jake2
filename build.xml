@@ -112,7 +112,7 @@
 		</copy>
 		<copy todir="${dist}">
 			<fileset dir="scripts">
-				<include name="Jake2.*"/>
+				<include name="Jake2*"/>
 			</fileset>
 			<fileset dir=".">
 				<include name="ChangeLog"/>
@@ -138,12 +138,12 @@
 		
 	<!-- jar -->
 	<target name="jar" depends="compile,copyres">
-		<jar destfile="jake2.jar" basedir="${build}">
+		<jar destfile="${dist}/lib/jake2.jar" basedir="${build}">
 			<include name="jake2/**"/>
 			<include name="*.png"/>
 			<include name="mirrors"/>
 		</jar>
-		<proguard printseeds="on" printusage="off" outjar="${dist}/lib/jake2.jar"
+		<!-- proguard printseeds="on" printusage="off" outjar="${dist}/lib/jake2.jar"
 			defaultpackage="" overloadaggressively="off" printmapping="jake2.map">
 			<injar name="jake2.jar"/>
 			<libraryjar name="lib/jogl/jogl.jar"/>
@@ -152,7 +152,7 @@
 			<keep access="public" name="jake2.Jake2">
 				<method name="main(java.lang.String[])"/>
 			</keep>
-		</proguard>
+		</proguard -->
 	</target>
 				
 	<!-- everything -->
@@ -190,18 +190,23 @@
 			</tarfileset>
 			<tarfileset dir="." prefix="Jake2">
 				<include name="src/jake2/**"/>
+				<include name="patch/**"/>
+				<include name="resources/**"/>
 				<include name="lib/**"/>
 				<include name="build.xml"/>
 				<include name="build.bat"/>
 				<include name="ChangeLog"/>
 				<include name="LICENSE"/>
-				<include name="README"/>
+				<include name="README*"/>
+				<include name="install.xml"/>
 				<include name="readme.id"/>
 			</tarfileset>
 		</tar>
 		<zip destfile="jake2src-${version}.zip">
 			<zipfileset dir="." prefix="Jake2">
 				<include name="src/jake2/**"/>
+				<include name="patch/**"/>
+				<include name="resources/**"/>				
 				<include name="scripts/*.*"/>
 				<include name="lib/**"/>
 				<include name="build.xml"/>
@@ -209,7 +214,8 @@
 				<include name="build.bat"/>
 				<include name="ChangeLog"/>
 				<include name="LICENSE"/>
-				<include name="README"/>
+				<include name="README*"/>
+				<include name="install.xml"/>
 				<include name="readme.id"/>				
 			</zipfileset>
 		</zip>
@@ -218,7 +224,7 @@
 	<!-- standalone installer -->
 	<target name="installer" depends="dist">
 		<izpack input="${basedir}/install.xml"
-        	output="${basedir}/Jake2-install.jar"
+        	output="${basedir}/Jake2-${version}-install.jar"
         	installerType="standard"
         	basedir="${dist}"
         	izPackDir="${basedir}/lib/izpack"/>
@@ -230,12 +236,10 @@
 		<copy todir="webstart/lib">
 			<fileset dir="${dist}/lib">
 				<include name="**/*.jar"/>
-				<exclude name="jake2.jar"/>
 				<exclude name="jogl.jar"/>
 			</fileset>
 			<fileset dir=".">
 				<include name="patch.jar"/>
-				<include name="jake2.jar"/>
 			</fileset>
 		</copy>
 
