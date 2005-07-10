@@ -2,7 +2,7 @@
  * JoglRenderer.java
  * Copyright (C) 2003
  *
- * $Id: JoglRenderer.java,v 1.6 2004-12-14 00:11:03 hzi Exp $
+ * $Id: JoglRenderer.java,v 1.6.8.1 2005-07-10 17:57:34 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -29,7 +29,6 @@ import jake2.Defines;
 import jake2.client.refdef_t;
 import jake2.client.refexport_t;
 import jake2.qcommon.xcommand_t;
-import jake2.render.jogl.Misc;
 import jake2.sys.JOGLKBD;
 import jake2.sys.KBD;
 
@@ -40,7 +39,7 @@ import java.awt.Dimension;
  * 
  * @author cwei
  */
-final class JoglRenderer extends Misc implements refexport_t, Ref {
+final class JoglRenderer extends JoglGL implements refexport_t, Ref {
 
 	private JOGLKBD kbd=new JOGLKBD();
 	
@@ -64,7 +63,7 @@ final class JoglRenderer extends Misc implements refexport_t, Ref {
 	 */
 	public boolean Init(int vid_xpos, int vid_ypos) {
 		// pre init
-		if (!R_Init(vid_xpos, vid_ypos)) return false;
+		if (!R_Init()) return false;
 		// calls the R_Init2() internally		
 		updateScreen();
 		// the result from R_Init2()

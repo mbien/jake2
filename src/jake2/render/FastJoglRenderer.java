@@ -2,7 +2,7 @@
  * FastJoglRenderer.java
  * Copyright (C) 2003
  *
- * $Id: FastJoglRenderer.java,v 1.4 2004-12-14 00:11:09 hzi Exp $
+ * $Id: FastJoglRenderer.java,v 1.4.8.1 2005-07-10 17:57:34 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -28,7 +28,7 @@ package jake2.render;
 import jake2.Defines;
 import jake2.client.*;
 import jake2.qcommon.xcommand_t;
-import jake2.render.fastjogl.Misc;
+import jake2.render.JoglGL;
 import jake2.sys.JOGLKBD;
 import jake2.sys.KBD;
 
@@ -39,7 +39,7 @@ import java.awt.Dimension;
  * 
  * @author cwei
  */
-final class FastJoglRenderer extends Misc implements refexport_t, Ref {
+final class FastJoglRenderer extends JoglGL implements refexport_t, Ref {
 	
 	private JOGLKBD kbd=new JOGLKBD();
 	
@@ -64,7 +64,7 @@ final class FastJoglRenderer extends Misc implements refexport_t, Ref {
 	public boolean Init(int vid_xpos, int vid_ypos) {
 		
 		// pre init
-		if (!R_Init(vid_xpos, vid_ypos)) return false;
+		if (!R_Init()) return false;
 		// calls the R_Init2() internally		
 		updateScreen();
 		// the result from R_Init2()

@@ -2,7 +2,7 @@
  * LWJGLRenderer.java
  * Copyright (C) 2004
  *
- * $Id: LWJGLRenderer.java,v 1.3 2004-12-20 21:49:14 cawe Exp $
+ * $Id: LWJGLRenderer.java,v 1.3.6.1 2005-07-10 17:57:34 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -27,6 +27,7 @@ package jake2.render;
 
 import jake2.Defines;
 import jake2.client.*;
+import jake2.render.lwjgl.LWJGLBase;
 import jake2.render.lwjgl.Misc;
 import jake2.sys.KBD;
 import jake2.sys.LWJGLKBD;
@@ -38,7 +39,7 @@ import java.awt.Dimension;
  * 
  * @author dsanders/cwei
  */
-final class LWJGLRenderer extends Misc implements refexport_t, Ref {
+final class LWJGLRenderer extends LwjglGL implements refexport_t, Ref {
 	
 	private LWJGLKBD kbd=new LWJGLKBD();
 	

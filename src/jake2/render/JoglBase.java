@@ -2,7 +2,7 @@
  * JoglCommon.java
  * Copyright (C) 2004
  * 
- * $Id: JoglBase.java,v 1.15 2005-06-26 08:51:19 hzi Exp $
+ * $Id: JoglBase.java,v 1.15.2.1 2005-07-10 17:57:34 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -28,10 +28,9 @@ package jake2.render;
 
 import jake2.Defines;
 import jake2.client.VID;
-import jake2.client.viddef_t;
-import jake2.game.cvar_t;
 import jake2.qcommon.Cbuf;
 import jake2.qcommon.xcommand_t;
+import jake2.render.lwjgl.Misc;
 import jake2.sys.JOGLKBD;
 
 import java.awt.*;
@@ -48,7 +47,7 @@ import net.java.games.jogl.util.GLUT;
 /**
  * JoglCommon
  */
-public abstract class JoglBase implements GLEventListener {
+public abstract class JoglBase extends Misc implements GLEventListener {
 
 	// IMPORTED FUNCTIONS
 	protected GraphicsDevice device;
@@ -56,25 +55,23 @@ public abstract class JoglBase implements GLEventListener {
 	protected GLCanvas canvas;
 	JFrame window;
 
-	protected GL gl;
-	protected GLU glu;
-	protected GLUT glut = new GLUT();
+	GL gl;
+	GLU glu;
+	GLUT glut = new GLUT();
 
 	// window position on the screen
 	int window_xpos, window_ypos;
-	protected viddef_t vid = new viddef_t();
 
 	// handles the post initialization with JoglRenderer
-	protected boolean post_init = false;
-	protected boolean contextInUse = false;
-	protected abstract boolean R_Init2();
+	boolean post_init = false;
+	boolean contextInUse = false;
 	
 	protected final xcommand_t INIT_CALLBACK = new xcommand_t() {
 		public void execute() {
 			// only used for the first run (initialization)
 			// clear the screen
-			gl.glClearColor(0, 0, 0, 0);
-			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+			glClearColor(0, 0, 0, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			//
 			// check the post init process
@@ -86,16 +83,9 @@ public abstract class JoglBase implements GLEventListener {
 			GLimp_EndFrame();
 		}
 	};
-	protected xcommand_t callback = INIT_CALLBACK;
+    
+	xcommand_t callback = INIT_CALLBACK;
 	
-	protected cvar_t vid_fullscreen;
-
-	// enum rserr_t
-	protected static final int rserr_ok = 0;
-	protected static final int rserr_invalid_fullscreen = 1;
-	protected static final int rserr_invalid_mode = 2;
-	protected static final int rserr_unknown = 3;
-		
 	public DisplayMode[] getModeList() {
 		DisplayMode[] modes = device.getDisplayModes();
 		LinkedList l = new LinkedList();
@@ -307,28 +297,11 @@ public abstract class JoglBase implements GLEventListener {
 	}
 
 	protected void GLimp_EndFrame() {
-		gl.glFlush();
+		glFlush();
 		canvas.swapBuffers();
 	}
-	protected void GLimp_BeginFrame(float camera_separation) {
-		// do nothing
-	}
 
-	protected void GLimp_AppActivate(boolean activate) {
-		// do nothing
-	}
-
-	protected void GLimp_EnableLogging(boolean enable) {
-		// doesn't need jogl logging
-		// do nothing
-	}
-
-	protected void GLimp_LogNewFrame() {
-		// doesn't need jogl logging
-		// do nothing
-	}
-
-	/* 
+    /* 
 	 * @see jake2.client.refexport_t#updateScreen()
 	 */
 	public void updateScreen() {
