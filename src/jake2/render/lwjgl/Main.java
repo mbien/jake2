@@ -2,7 +2,7 @@
  * Main.java
  * Copyright (C) 2003
  *
- * $Id: Main.java,v 1.7 2005-05-07 18:23:25 cawe Exp $
+ * $Id: Main.java,v 1.7.6.1 2005-07-10 17:55:50 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -27,33 +27,15 @@ package jake2.render.lwjgl;
 
 import jake2.Defines;
 import jake2.Globals;
-import jake2.client.VID;
-import jake2.client.entity_t;
-import jake2.client.particle_t;
-import jake2.client.refdef_t;
-import jake2.game.Cmd;
-import jake2.game.cplane_t;
-import jake2.game.cvar_t;
-import jake2.qcommon.Com;
-import jake2.qcommon.Cvar;
-import jake2.qcommon.qfiles;
-import jake2.qcommon.xcommand_t;
-import jake2.render.glconfig_t;
-import jake2.render.glstate_t;
-import jake2.render.image_t;
-import jake2.render.mleaf_t;
-import jake2.render.model_t;
-import jake2.util.Math3D;
-import jake2.util.Vargs;
+import jake2.client.*;
+import jake2.game.*;
+import jake2.qcommon.*;
+import jake2.render.*;
+import jake2.util.*;
 
 import java.awt.Dimension;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBMultitexture;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 
 /**
  * Main
@@ -123,8 +105,8 @@ public abstract class Main extends Base {
 	====================================================================
 	*/
 
-	int GL_TEXTURE0 = GL13.GL_TEXTURE0;
-	int GL_TEXTURE1 = GL13.GL_TEXTURE1;
+	int TEXTURE0 = GL_TEXTURE0;
+	int TEXTURE1 = GL_TEXTURE1;
 
 	model_t r_worldmodel;
 
@@ -157,7 +139,7 @@ public abstract class Main extends Base {
 	float[] r_origin = { 0, 0, 0 };
 
 	//float r_world_matrix[] = new float[16];
-	FloatBuffer r_world_matrix=BufferUtils.createFloatBuffer(16);
+	FloatBuffer r_world_matrix = Lib.newFloatBuffer(16);
 	
 	float r_base_world_matrix[] = new float[16];
 
@@ -258,11 +240,11 @@ public abstract class Main extends Base {
 	 * R_RotateForEntity
 	 */
 	final void R_RotateForEntity(entity_t e) {
-		gl.glTranslatef(e.origin[0], e.origin[1], e.origin[2]);
+		glTranslatef(e.origin[0], e.origin[1], e.origin[2]);
 
-		gl.glRotatef(e.angles[1], 0, 0, 1);
-		gl.glRotatef(-e.angles[0], 0, 1, 0);
-		gl.glRotatef(-e.angles[2], 1, 0, 0);
+		glRotatef(e.angles[1], 0, 0, 1);
+		glRotatef(-e.angles[0], 0, 1, 0);
+		glRotatef(-e.angles[2], 1, 0, 0);
 	}
 
 	/*
@@ -297,50 +279,50 @@ public abstract class Main extends Base {
 			alpha = e.alpha;
 
 		if (alpha != 1.0F)
-			gl.glEnable(GL11.GL_BLEND);
+			glEnable(GL_BLEND);
 
-		gl.glColor4f(1, 1, 1, alpha);
+		glColor4f(1, 1, 1, alpha);
 
 		GL_Bind(currentmodel.skins[e.frame].texnum);
 
-		GL_TexEnv(GL11.GL_MODULATE);
+		GL_TexEnv(GL_MODULATE);
 
 		if (alpha == 1.0)
-			gl.glEnable(GL11.GL_ALPHA_TEST);
+			glEnable(GL_ALPHA_TEST);
 		else
-			gl.glDisable(GL11.GL_ALPHA_TEST);
+			glDisable(GL_ALPHA_TEST);
 
-		gl.glBegin(GL11.GL_QUADS);
+		glBegin(GL_QUADS);
 
-		gl.glTexCoord2f(0, 1);
+		glTexCoord2f(0, 1);
 		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
 		Math3D.VectorMA(point, -frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		glVertex3f(point[0], point[1], point[2]);
 
-		gl.glTexCoord2f(0, 0);
+		glTexCoord2f(0, 0);
 		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
 		Math3D.VectorMA(point, -frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		glVertex3f(point[0], point[1], point[2]);
 
-		gl.glTexCoord2f(1, 0);
+		glTexCoord2f(1, 0);
 		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
 		Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		glVertex3f(point[0], point[1], point[2]);
 
-		gl.glTexCoord2f(1, 1);
+		glTexCoord2f(1, 1);
 		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
 		Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		glVertex3f(point[0], point[1], point[2]);
 
-		gl.glEnd();
+		glEnd();
 
-		gl.glDisable(GL11.GL_ALPHA_TEST);
-		GL_TexEnv(GL11.GL_REPLACE);
+		glDisable(GL_ALPHA_TEST);
+		GL_TexEnv(GL_REPLACE);
 
 		if (alpha != 1.0F)
-			gl.glDisable(GL11.GL_BLEND);
+			glDisable(GL_BLEND);
 
-		gl.glColor4f(1, 1, 1, 1);
+		glColor4f(1, 1, 1, 1);
 	}
 
 	// ==================================================================================
@@ -360,34 +342,34 @@ public abstract class Main extends Base {
 			R_LightPoint(currententity.origin, shadelight);
 		}
 
-		gl.glPushMatrix();
+		glPushMatrix();
 		R_RotateForEntity(currententity);
 
-		gl.glDisable(GL11.GL_TEXTURE_2D);
-		gl.glColor3f(shadelight[0], shadelight[1], shadelight[2]);
+		glDisable(GL_TEXTURE_2D);
+		glColor3f(shadelight[0], shadelight[1], shadelight[2]);
 
 		// this replaces the TRIANGLE_FAN
 		//glut.glutWireCube(gl, 20);
 
-		gl.glBegin(GL11.GL_TRIANGLE_FAN);
-		gl.glVertex3f(0, 0, -16);
+		glBegin(GL_TRIANGLE_FAN);
+		glVertex3f(0, 0, -16);
 		int i;
 		for (i=0 ; i<=4 ; i++) {
-			gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
+			glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
 		}
-		gl.glEnd();
+		glEnd();
 		
-		gl.glBegin(GL11.GL_TRIANGLE_FAN);
-		gl.glVertex3f (0, 0, 16);
+		glBegin(GL_TRIANGLE_FAN);
+		glVertex3f (0, 0, 16);
 		for (i=4 ; i>=0 ; i--) {
-			gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
+			glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
 		}
-		gl.glEnd();
+		glEnd();
 
 		
-		gl.glColor3f(1, 1, 1);
-		gl.glPopMatrix();
-		gl.glEnable(GL11.GL_TEXTURE_2D);
+		glColor3f(1, 1, 1);
+		glPopMatrix();
+		glEnable(GL_TEXTURE_2D);
 	}
 
 	/**
@@ -431,7 +413,7 @@ public abstract class Main extends Base {
 		}
 		// draw transparent entities
 		// we could sort these if it ever becomes a problem...
-		gl.glDepthMask(false); // no z writes
+		glDepthMask(false); // no z writes
 		for (i = 0; i < r_newrefdef.num_entities; i++) {
 			currententity = r_newrefdef.entities[i];
 			if ((currententity.flags & Defines.RF_TRANSLUCENT) == 0)
@@ -463,7 +445,7 @@ public abstract class Main extends Base {
 				}
 			}
 		}
-		gl.glDepthMask(true); // back to writing
+		glDepthMask(true); // back to writing
 	}
 	
 	// stack variable 
@@ -479,11 +461,11 @@ public abstract class Main extends Base {
 		Math3D.VectorScale(vright, 1.5f, right);
 		
 		GL_Bind(r_particletexture.texnum);
-		gl.glDepthMask(false); // no z buffering
-		gl.glEnable(GL11.GL_BLEND);
-		GL_TexEnv(GL11.GL_MODULATE);
+		glDepthMask(false); // no z buffering
+		glEnable(GL_BLEND);
+		GL_TexEnv(GL_MODULATE);
 		
-		gl.glBegin(GL11.GL_TRIANGLES);
+		glBegin(GL_TRIANGLES);
 
 		FloatBuffer sourceVertices = particle_t.vertexArray;
 		IntBuffer sourceColors = particle_t.colorArray;
@@ -504,28 +486,28 @@ public abstract class Main extends Base {
 
 			color = sourceColors.get(i);
 		
-			gl.glColor4ub(
+			glColor4ub(
 				(byte)((color) & 0xFF),
 				(byte)((color >> 8) & 0xFF),
 				(byte)((color >> 16) & 0xFF),
 				(byte)((color >>> 24))
 			);
 			// first vertex
-			gl.glTexCoord2f(0.0625f, 0.0625f);
-			gl.glVertex3f(origin_x, origin_y, origin_z);
+			glTexCoord2f(0.0625f, 0.0625f);
+			glVertex3f(origin_x, origin_y, origin_z);
 			// second vertex
-			gl.glTexCoord2f(1.0625f, 0.0625f);
-			gl.glVertex3f(origin_x + up[0] * scale, origin_y + up[1] * scale, origin_z + up[2] * scale);
+			glTexCoord2f(1.0625f, 0.0625f);
+			glVertex3f(origin_x + up[0] * scale, origin_y + up[1] * scale, origin_z + up[2] * scale);
 			// third vertex
-			gl.glTexCoord2f(0.0625f, 1.0625f);
-			gl.glVertex3f(origin_x + right[0] * scale, origin_y + right[1] * scale, origin_z + right[2] * scale);
+			glTexCoord2f(0.0625f, 1.0625f);
+			glVertex3f(origin_x + right[0] * scale, origin_y + right[1] * scale, origin_z + right[2] * scale);
 		}
-		gl.glEnd();
+		glEnd();
 		
-		gl.glDisable(GL11.GL_BLEND);
-		gl.glColor4f(1, 1, 1, 1);
-		gl.glDepthMask(true); // back to normal Z buffering
-		GL_TexEnv(GL11.GL_REPLACE);
+		glDisable(GL_BLEND);
+		glColor4f(1, 1, 1, 1);
+		glDepthMask(true); // back to normal Z buffering
+		GL_TexEnv(GL_REPLACE);
 	}
 
 	/**
@@ -535,25 +517,25 @@ public abstract class Main extends Base {
 
 		if (gl_ext_pointparameters.value != 0.0f && qglPointParameterfEXT) {
 
-			//gl.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-			gl.glVertexPointer(3, 0, particle_t.vertexArray);
-			gl.glEnableClientState(GL11.GL_COLOR_ARRAY);
-			gl.glColorPointer(4, true, 0, particle_t.getColorAsByteBuffer());
+			//gl.glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(3, 0, particle_t.vertexArray);
+			glEnableClientState(GL_COLOR_ARRAY);
+			glColorPointer(4, true, 0, particle_t.getColorAsByteBuffer());
 			
-			gl.glDepthMask(false);
-			gl.glEnable(GL11.GL_BLEND);
-			gl.glDisable(GL11.GL_TEXTURE_2D);
-			gl.glPointSize(gl_particle_size.value);
+			glDepthMask(false);
+			glEnable(GL_BLEND);
+			glDisable(GL_TEXTURE_2D);
+			glPointSize(gl_particle_size.value);
 			
-			gl.glDrawArrays(GL11.GL_POINTS, 0, r_newrefdef.num_particles);
+			glDrawArrays(GL_POINTS, 0, r_newrefdef.num_particles);
 			
-			gl.glDisableClientState(GL11.GL_COLOR_ARRAY);
-			//gl.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+			glDisableClientState(GL_COLOR_ARRAY);
+			//gl.glDisableClientState(GL_VERTEX_ARRAY);
 
-			gl.glDisable(GL11.GL_BLEND);
-			gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			gl.glDepthMask(true);
-			gl.glEnable(GL11.GL_TEXTURE_2D);
+			glDisable(GL_BLEND);
+			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			glDepthMask(true);
+			glEnable(GL_TEXTURE_2D);
 
 		}
 		else {
@@ -571,32 +553,32 @@ public abstract class Main extends Base {
 		if (v_blend[3] == 0.0f)
 			return;
 
-		gl.glDisable(GL11.GL_ALPHA_TEST);
-		gl.glEnable(GL11.GL_BLEND);
-		gl.glDisable(GL11.GL_DEPTH_TEST);
-		gl.glDisable(GL11.GL_TEXTURE_2D);
+		glDisable(GL_ALPHA_TEST);
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_TEXTURE_2D);
 
-		gl.glLoadIdentity();
+		glLoadIdentity();
 
 		// FIXME: get rid of these
-		gl.glRotatef(-90, 1, 0, 0); // put Z going up
-		gl.glRotatef(90, 0, 0, 1); // put Z going up
+		glRotatef(-90, 1, 0, 0); // put Z going up
+		glRotatef(90, 0, 0, 1); // put Z going up
 
-		gl.glColor4f(v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
+		glColor4f(v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 
-		gl.glBegin(GL11.GL_QUADS);
+		glBegin(GL_QUADS);
 
-		gl.glVertex3f(10, 100, 100);
-		gl.glVertex3f(10, -100, 100);
-		gl.glVertex3f(10, -100, -100);
-		gl.glVertex3f(10, 100, -100);
-		gl.glEnd();
+		glVertex3f(10, 100, 100);
+		glVertex3f(10, -100, 100);
+		glVertex3f(10, -100, -100);
+		glVertex3f(10, 100, -100);
+		glEnd();
 
-		gl.glDisable(GL11.GL_BLEND);
-		gl.glEnable(GL11.GL_TEXTURE_2D);
-		gl.glEnable(GL11.GL_ALPHA_TEST);
+		glDisable(GL_BLEND);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_ALPHA_TEST);
 
-		gl.glColor4f(1, 1, 1, 1);
+		glColor4f(1, 1, 1, 1);
 	}
 
 	// =======================================================================
@@ -682,16 +664,16 @@ public abstract class Main extends Base {
 
 		// clear out the portion of the screen that the NOWORLDMODEL defines
 		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0) {
-			gl.glEnable(GL11.GL_SCISSOR_TEST);
-			gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-			gl.glScissor(
+			glEnable(GL_SCISSOR_TEST);
+			glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+			glScissor(
 				r_newrefdef.x,
 				vid.height - r_newrefdef.height - r_newrefdef.y,
 				r_newrefdef.width,
 				r_newrefdef.height);
-			gl.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			gl.glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
-			gl.glDisable(GL11.GL_SCISSOR_TEST);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
+			glDisable(GL_SCISSOR_TEST);
 		}
 	}
 
@@ -713,7 +695,7 @@ public abstract class Main extends Base {
 		xmin += - (2 * gl_state.camera_separation) / zNear;
 		xmax += - (2 * gl_state.camera_separation) / zNear;
 
-		gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+		glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
 	}
 
 	/**
@@ -736,42 +718,42 @@ public abstract class Main extends Base {
 		int w = x2 - x;
 		int h = y - y2;
 
-		gl.glViewport(x, y2, w, h);
+		glViewport(x, y2, w, h);
 
 		//
 		// set up projection matrix
 		//
 		float screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
-		gl.glMatrixMode(GL11.GL_PROJECTION);
-		gl.glLoadIdentity();
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 		MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
 
-		gl.glCullFace(GL11.GL_FRONT);
+		glCullFace(GL_FRONT);
 
-		gl.glMatrixMode(GL11.GL_MODELVIEW);
-		gl.glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 
-		gl.glRotatef(-90, 1, 0, 0); // put Z going up
-		gl.glRotatef(90, 0, 0, 1); // put Z going up
-		gl.glRotatef(-r_newrefdef.viewangles[2], 1, 0, 0);
-		gl.glRotatef(-r_newrefdef.viewangles[0], 0, 1, 0);
-		gl.glRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
-		gl.glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
+		glRotatef(-90, 1, 0, 0); // put Z going up
+		glRotatef(90, 0, 0, 1); // put Z going up
+		glRotatef(-r_newrefdef.viewangles[2], 1, 0, 0);
+		glRotatef(-r_newrefdef.viewangles[0], 0, 1, 0);
+		glRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
+		glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
-		gl.glGetFloat(GL11.GL_MODELVIEW_MATRIX, r_world_matrix);
+		glGetFloat(GL_MODELVIEW_MATRIX, r_world_matrix);
 		r_world_matrix.clear();
 
 		//
 		// set drawing parms
 		//
 		if (gl_cull.value != 0.0f)
-			gl.glEnable(GL11.GL_CULL_FACE);
+			glEnable(GL_CULL_FACE);
 		else
-			gl.glDisable(GL11.GL_CULL_FACE);
+			glDisable(GL_CULL_FACE);
 
-		gl.glDisable(GL11.GL_BLEND);
-		gl.glDisable(GL11.GL_ALPHA_TEST);
-		gl.glEnable(GL11.GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+		glDisable(GL_ALPHA_TEST);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	int trickframe = 0;
@@ -783,32 +765,32 @@ public abstract class Main extends Base {
 		if (gl_ztrick.value != 0.0f) {
 
 			if (gl_clear.value != 0.0f) {
-				gl.glClear(GL11.GL_COLOR_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT);
 			}
 
 			trickframe++;
 			if ((trickframe & 1) != 0) {
 				gldepthmin = 0;
 				gldepthmax = 0.49999f;
-				gl.glDepthFunc(GL11.GL_LEQUAL);
+				glDepthFunc(GL_LEQUAL);
 			}
 			else {
 				gldepthmin = 1;
 				gldepthmax = 0.5f;
-				gl.glDepthFunc(GL11.GL_GEQUAL);
+				glDepthFunc(GL_GEQUAL);
 			}
 		}
 		else {
 			if (gl_clear.value != 0.0f)
-				gl.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			else
-				gl.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+				glClear(GL_DEPTH_BUFFER_BIT);
 
 			gldepthmin = 0;
 			gldepthmax = 1;
-			gl.glDepthFunc(GL11.GL_LEQUAL);
+			glDepthFunc(GL_LEQUAL);
 		}
-		gl.glDepthRange(gldepthmin, gldepthmax);
+		glDepthRange(gldepthmin, gldepthmax);
 	}
 
 	/**
@@ -845,7 +827,7 @@ public abstract class Main extends Base {
 		R_PushDlights();
 
 		if (gl_finish.value != 0.0f)
-			gl.glFinish();
+			glFinish();
 
 		R_SetupFrame();
 
@@ -880,17 +862,17 @@ public abstract class Main extends Base {
 	 */
 	void R_SetGL2D() {
 		// set 2D virtual screen size
-		gl.glViewport(0, 0, vid.width, vid.height);
-		gl.glMatrixMode(GL11.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-		gl.glMatrixMode(GL11.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glDisable(GL11.GL_DEPTH_TEST);
-		gl.glDisable(GL11.GL_CULL_FACE);
-		gl.glDisable(GL11.GL_BLEND);
-		gl.glEnable(GL11.GL_ALPHA_TEST);
-		gl.glColor4f(1, 1, 1, 1);
+		glViewport(0, 0, vid.width, vid.height);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+		glEnable(GL_ALPHA_TEST);
+		glColor4f(1, 1, 1, 1);
 	}
 
 	// stack variable
@@ -1065,6 +1047,12 @@ public abstract class Main extends Base {
 
 	float[] r_turbsin = new float[256];
 
+    /**
+     * R_Init
+     */
+    protected boolean R_Init() {
+        return R_Init(0, 0);
+    }
 	/**
 	 * R_Init
 	 */
@@ -1103,13 +1091,13 @@ public abstract class Main extends Base {
 		/*
 		** get our various GL strings
 		*/
-		gl_config.vendor_string = gl.glGetString(GL11.GL_VENDOR);
+		gl_config.vendor_string = glGetString(GL_VENDOR);
 		VID.Printf(Defines.PRINT_ALL, "GL_VENDOR: " + gl_config.vendor_string + '\n');
-		gl_config.renderer_string = gl.glGetString(GL11.GL_RENDERER);
+		gl_config.renderer_string = glGetString(GL_RENDERER);
 		VID.Printf(Defines.PRINT_ALL, "GL_RENDERER: " + gl_config.renderer_string + '\n');
-		gl_config.version_string = gl.glGetString(GL11.GL_VERSION);
+		gl_config.version_string = glGetString(GL_VERSION);
 		VID.Printf(Defines.PRINT_ALL, "GL_VERSION: " + gl_config.version_string + '\n');
-		gl_config.extensions_string = gl.glGetString(GL11.GL_EXTENSIONS);
+		gl_config.extensions_string = glGetString(GL_EXTENSIONS);
 		VID.Printf(Defines.PRINT_ALL, "GL_EXTENSIONS: " + gl_config.extensions_string + '\n');
 		
 		gl_config.parseOpenGLVersion();
@@ -1264,8 +1252,8 @@ public abstract class Main extends Base {
 		if (gl_config.extensions_string.indexOf("GL_ARB_multitexture") >= 0) {
 			VID.Printf(Defines.PRINT_ALL, "...using GL_ARB_multitexture\n");
 			qglActiveTextureARB = true;
-			GL_TEXTURE0 = ARBMultitexture.GL_TEXTURE0_ARB;
-			GL_TEXTURE1 = ARBMultitexture.GL_TEXTURE1_ARB;
+			TEXTURE0 = GL_TEXTURE0_ARB;
+			TEXTURE1 = GL_TEXTURE1_ARB;
 		}
 		else {
 			VID.Printf(Defines.PRINT_ALL, "...GL_ARB_multitexture not found\n");
@@ -1281,12 +1269,12 @@ public abstract class Main extends Base {
 		R_InitParticleTexture();
 		Draw_InitLocal();
 
-		int err = gl.glGetError();
-		if (err != GL11.GL_NO_ERROR)
+		int err = glGetError();
+		if (err != GL_NO_ERROR)
 			VID.Printf(
 				Defines.PRINT_ALL,
 				"glGetError() = 0x%x\n\t%s\n",
-				new Vargs(2).add(err).add("" + gl.glGetString(err)));
+				new Vargs(2).add(err).add("" + glGetString(err)));
 
 		return true;
 	}
@@ -1366,17 +1354,17 @@ public abstract class Main extends Base {
 		/*
 		** go into 2D mode
 		*/
-		gl.glViewport(0, 0, vid.width, vid.height);
-		gl.glMatrixMode(GL11.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-		gl.glMatrixMode(GL11.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glDisable(GL11.GL_DEPTH_TEST);
-		gl.glDisable(GL11.GL_CULL_FACE);
-		gl.glDisable(GL11.GL_BLEND);
-		gl.glEnable(GL11.GL_ALPHA_TEST);
-		gl.glColor4f(1, 1, 1, 1);
+		glViewport(0, 0, vid.width, vid.height);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+		glEnable(GL_ALPHA_TEST);
+		glColor4f(1, 1, 1, 1);
 
 		/*
 		** draw buffer stuff
@@ -1386,9 +1374,9 @@ public abstract class Main extends Base {
 
 			if (gl_state.camera_separation == 0 || !gl_state.stereo_enabled) {
 				if (gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
-					gl.glDrawBuffer(GL11.GL_FRONT);
+					glDrawBuffer(GL_FRONT);
 				else
-					gl.glDrawBuffer(GL11.GL_BACK);
+					glDrawBuffer(GL_BACK);
 			}
 		}
 
@@ -1449,9 +1437,9 @@ public abstract class Main extends Base {
 		}
 		GL_SetTexturePalette(r_rawpalette);
 
-		gl.glClearColor(0, 0, 0, 0);
-		gl.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		gl.glClearColor(1f, 0f, 0.5f, 0.5f);
+		glClearColor(0, 0, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(1f, 0f, 0.5f, 0.5f);
 	}
 
 	static final int NUM_BEAM_SEGS = 6;
@@ -1498,9 +1486,9 @@ public abstract class Main extends Base {
 			Math3D.VectorAdd(start_points[i], direction, end_points[i]);
 		}
 
-		gl.glDisable(GL11.GL_TEXTURE_2D);
-		gl.glEnable(GL11.GL_BLEND);
-		gl.glDepthMask(false);
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glDepthMask(false);
 
 		float r = (d_8to24table[e.skinnum & 0xFF]) & 0xFF;
 		float g = (d_8to24table[e.skinnum & 0xFF] >> 8) & 0xFF;
@@ -1510,26 +1498,26 @@ public abstract class Main extends Base {
 		g *= 1 / 255.0f;
 		b *= 1 / 255.0f;
 
-		gl.glColor4f(r, g, b, e.alpha);
+		glColor4f(r, g, b, e.alpha);
 
-		gl.glBegin(GL11.GL_TRIANGLE_STRIP);
+		glBegin(GL_TRIANGLE_STRIP);
 		
 		float[] v;
 		
 		for (int i = 0; i < NUM_BEAM_SEGS; i++) {
 			v = start_points[i];
-			gl.glVertex3f(v[0], v[1], v[2]);
+			glVertex3f(v[0], v[1], v[2]);
 			v = end_points[i];
-			gl.glVertex3f(v[0], v[1], v[2]);
+			glVertex3f(v[0], v[1], v[2]);
 			v = start_points[(i + 1) % NUM_BEAM_SEGS];
-			gl.glVertex3f(v[0], v[1], v[2]);
+			glVertex3f(v[0], v[1], v[2]);
 			v = end_points[(i + 1) % NUM_BEAM_SEGS];
-			gl.glVertex3f(v[0], v[1], v[2]);
+			glVertex3f(v[0], v[1], v[2]);
 		}
-		gl.glEnd();
+		glEnd();
 
-		gl.glEnable(GL11.GL_TEXTURE_2D);
-		gl.glDisable(GL11.GL_BLEND);
-		gl.glDepthMask(true);
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
+		glDepthMask(true);
 	}
 }

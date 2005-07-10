@@ -2,7 +2,7 @@
  * Misc.java
  * Copyright (C) 2003
  *
- * $Id: Misc.java,v 1.8 2005-05-11 21:45:02 cawe Exp $
+ * $Id: Misc.java,v 1.8.6.1 2005-07-10 17:55:50 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -28,16 +28,12 @@ package jake2.render.lwjgl;
 import jake2.Defines;
 import jake2.client.VID;
 import jake2.qcommon.FS;
+import jake2.util.Lib;
 
 import java.io.*;
 import java.nio.FloatBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-
-import net.java.games.jogl.GL;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
 
 /**
  * Misc
@@ -162,7 +158,7 @@ public abstract class Misc extends Mesh {
 	        
 	        // change pixel alignment for reading
 	        if (vid.width % 4 != 0) {
-	            gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1); 
+	            glPixelStorei(GL_PACK_ALIGNMENT, 1); 
 	        }
 	        
 	        // OpenGL 1.2+ supports the GL_BGR color format
@@ -170,10 +166,10 @@ public abstract class Misc extends Mesh {
 	        // e.g.: 1.5.2 NVIDIA 66.29
 	        if (gl_config.getOpenGLVersion() >= 1.2f) {
 	            // read the BGR values into the image buffer
-	            gl.glReadPixels(0, 0, vid.width, vid.height, GL12.GL_BGR, GL.GL_UNSIGNED_BYTE, image);
+	            glReadPixels(0, 0, vid.width, vid.height, GL_BGR, GL_UNSIGNED_BYTE, image);
 	        } else {
 	            // read the RGB values into the image buffer
-	            gl.glReadPixels(0, 0, vid.width, vid.height, GL11.GL_RGB, GL.GL_UNSIGNED_BYTE, image);
+	            glReadPixels(0, 0, vid.width, vid.height, GL_RGB, GL_UNSIGNED_BYTE, image);
 		        // flip RGB to BGR
 		        byte tmp;
 		        for (i = TGA_HEADER_SIZE; i < fileLength; i += 3) {
@@ -183,7 +179,7 @@ public abstract class Misc extends Mesh {
 		        }
 	        }
 	        // reset to default alignment
-	        gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 4); 
+	        glPixelStorei(GL_PACK_ALIGNMENT, 4); 
 	        // close the file channel
 	        ch.close();
 	    } catch (IOException e) {
@@ -208,54 +204,54 @@ public abstract class Misc extends Mesh {
 	*/
 	void GL_SetDefaultState()
 	{
-		gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
+		glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
 		//gl.glClearColor(0, 0, 0, 0); // replaced with black
-		gl.glCullFace(GL11.GL_FRONT);
-		gl.glEnable(GL11.GL_TEXTURE_2D);
+		glCullFace(GL_FRONT);
+		glEnable(GL_TEXTURE_2D);
 
-		gl.glEnable(GL11.GL_ALPHA_TEST);
-		gl.glAlphaFunc(GL11.GL_GREATER, 0.666f);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.666f);
 
-		gl.glDisable (GL11.GL_DEPTH_TEST);
-		gl.glDisable (GL11.GL_CULL_FACE);
-		gl.glDisable (GL11.GL_BLEND);
+		glDisable (GL_DEPTH_TEST);
+		glDisable (GL_CULL_FACE);
+		glDisable (GL_BLEND);
 
-		gl.glColor4f (1,1,1,1);
+		glColor4f (1,1,1,1);
 
-		gl.glPolygonMode (GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-		gl.glShadeModel (GL11.GL_FLAT);
+		glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+		glShadeModel (GL_FLAT);
 
 		GL_TextureMode( gl_texturemode.string );
 		GL_TextureAlphaMode( gl_texturealphamode.string );
 		GL_TextureSolidMode( gl_texturesolidmode.string );
 
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-		gl.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		GL_TexEnv( GL11.GL_REPLACE );
+		GL_TexEnv( GL_REPLACE );
 
 		if ( qglPointParameterfEXT )
 		{
 			// float[] attenuations = { gl_particle_att_a.value, gl_particle_att_b.value, gl_particle_att_c.value };
-			FloatBuffer att_buffer=BufferUtils.createFloatBuffer(4);
+			FloatBuffer att_buffer=Lib.newFloatBuffer(4);
 			att_buffer.put(0,gl_particle_att_a.value);
 			att_buffer.put(1,gl_particle_att_b.value);
 			att_buffer.put(2,gl_particle_att_c.value);
 			
-			gl.glEnable( GL11.GL_POINT_SMOOTH );
-			gl.glPointParameterfEXT( EXTPointParameters.GL_POINT_SIZE_MIN_EXT, gl_particle_min_size.value );
-			gl.glPointParameterfEXT( EXTPointParameters.GL_POINT_SIZE_MAX_EXT, gl_particle_max_size.value );
-			gl.glPointParameterEXT( EXTPointParameters.GL_DISTANCE_ATTENUATION_EXT, att_buffer );
+			glEnable( GL_POINT_SMOOTH );
+			glPointParameterfEXT(GL_POINT_SIZE_MIN_EXT, gl_particle_min_size.value );
+			glPointParameterfEXT(GL_POINT_SIZE_MAX_EXT, gl_particle_max_size.value );
+			glPointParameterEXT(GL_DISTANCE_ATTENUATION_EXT, att_buffer );
 		}
 
 		if ( qglColorTableEXT && gl_ext_palettedtexture.value != 0.0f )
 		{
-			gl.glEnable( EXTSharedTexturePalette.GL_SHARED_TEXTURE_PALETTE_EXT );
+			glEnable(GL_SHARED_TEXTURE_PALETTE_EXT );
 
 			GL_SetTexturePalette( d_8to24table );
 		}
@@ -265,9 +261,9 @@ public abstract class Misc extends Mesh {
 		/*
 		 * vertex array extension
 		 */
-		gl.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		gl.glClientActiveTextureARB(GL_TEXTURE0);
-		gl.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glClientActiveTextureARB(TEXTURE0);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
 	void GL_UpdateSwapInterval()

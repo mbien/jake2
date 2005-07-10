@@ -2,7 +2,7 @@
  * Light.java
  * Copyright (C) 2003
  *
- * $Id: Light.java,v 1.4 2005-05-07 17:21:42 cawe Exp $
+ * $Id: Light.java,v 1.4.6.1 2005-07-10 17:55:50 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -38,8 +38,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import org.lwjgl.opengl.GL11;
-
 /**
  * Light
  *  
@@ -71,14 +69,14 @@ public abstract class Light extends Warp {
 
 		Math3D.VectorSubtract (light.origin, r_origin, v);
 
-		gl.glBegin (GL11.GL_TRIANGLE_FAN);
-		gl.glColor3f (light.color[0]*0.2f, light.color[1]*0.2f, light.color[2]*0.2f);
+		glBegin (GL_TRIANGLE_FAN);
+		glColor3f (light.color[0]*0.2f, light.color[1]*0.2f, light.color[2]*0.2f);
 		int i;
 		for (i=0 ; i<3 ; i++)
 			v[i] = light.origin[i] - vpn[i]*rad;
 		
-		gl.glVertex3f(v[0], v[1], v[2]);
-		gl.glColor3f (0,0,0);
+		glVertex3f(v[0], v[1], v[2]);
+		glColor3f (0,0,0);
 
 		int j;
 		float a;
@@ -88,9 +86,9 @@ public abstract class Light extends Warp {
 			for (j=0 ; j<3 ; j++)
 				v[j] = (float)(light.origin[j] + vright[j]*Math.cos(a)*rad
 					+ vup[j]*Math.sin(a)*rad);
-			gl.glVertex3f(v[0], v[1], v[2]);
+			glVertex3f(v[0], v[1], v[2]);
 		}
-		gl.glEnd ();
+		glEnd ();
 	}
 
 	/**
@@ -103,22 +101,22 @@ public abstract class Light extends Warp {
 
 		r_dlightframecount = r_framecount + 1;	// because the count hasn't
 												//  advanced yet for this frame
-		gl.glDepthMask(false);
-		gl.glDisable(GL11.GL_TEXTURE_2D);
-		gl.glShadeModel (GL11.GL_SMOOTH);
-		gl.glEnable (GL11.GL_BLEND);
-		gl.glBlendFunc (GL11.GL_ONE, GL11.GL_ONE);
+		glDepthMask(false);
+		glDisable(GL_TEXTURE_2D);
+		glShadeModel (GL_SMOOTH);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_ONE, GL_ONE);
 
 		for (int i=0 ; i<r_newrefdef.num_dlights ; i++)
 		{
 			R_RenderDlight(r_newrefdef.dlights[i]);
 		}
 
-		gl.glColor3f (1,1,1);
-		gl.glDisable(GL11.GL_BLEND);
-		gl.glEnable(GL11.GL_TEXTURE_2D);
-		gl.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glDepthMask(true);
+		glColor3f (1,1,1);
+		glDisable(GL_BLEND);
+		glEnable(GL_TEXTURE_2D);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDepthMask(true);
 	}
 
 

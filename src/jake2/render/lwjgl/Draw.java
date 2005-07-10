@@ -2,7 +2,7 @@
  * Draw.java
  * Copyright (C) 2003
  *
- * $Id: Draw.java,v 1.2 2004-12-14 12:56:59 cawe Exp $
+ * $Id: Draw.java,v 1.2.8.1 2005-07-10 17:55:50 cawe Exp $
  */ 
  /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -29,13 +29,11 @@ import jake2.Defines;
 import jake2.client.VID;
 import jake2.qcommon.Com;
 import jake2.render.image_t;
+import jake2.util.Lib;
 
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 
 /**
  * Draw
@@ -54,8 +52,8 @@ public abstract class Draw extends Image {
 		// load console characters (don't bilerp characters)
 		draw_chars = GL_FindImage("pics/conchars.pcx", it_pic);
 		GL_Bind(draw_chars.texnum);
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
 	/*
@@ -84,16 +82,16 @@ public abstract class Draw extends Image {
 
 		GL_Bind(draw_chars.texnum);
 
-		gl.glBegin (GL11.GL_QUADS);
-		gl.glTexCoord2f (fcol, frow);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (fcol + size, frow);
-		gl.glVertex2f (x+8, y);
-		gl.glTexCoord2f (fcol + size, frow + size);
-		gl.glVertex2f (x+8, y+8);
-		gl.glTexCoord2f (fcol, frow + size);
-		gl.glVertex2f (x, y+8);
-		gl.glEnd ();
+		glBegin (GL_QUADS);
+		glTexCoord2f (fcol, frow);
+		glVertex2f (x, y);
+		glTexCoord2f (fcol + size, frow);
+		glVertex2f (x+8, y);
+		glTexCoord2f (fcol + size, frow + size);
+		glVertex2f (x+8, y+8);
+		glTexCoord2f (fcol, frow + size);
+		glVertex2f (x, y+8);
+		glEnd ();
 	}
 
 
@@ -149,22 +147,22 @@ public abstract class Draw extends Image {
 			Scrap_Upload();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0) ) && !image.has_alpha)
-			gl.glDisable(GL11.GL_ALPHA_TEST);
+			glDisable(GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
-		gl.glBegin (GL11.GL_QUADS);
-		gl.glTexCoord2f (image.sl, image.tl);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (image.sh, image.tl);
-		gl.glVertex2f (x+w, y);
-		gl.glTexCoord2f (image.sh, image.th);
-		gl.glVertex2f (x+w, y+h);
-		gl.glTexCoord2f (image.sl, image.th);
-		gl.glVertex2f (x, y+h);
-		gl.glEnd ();
+		glBegin (GL_QUADS);
+		glTexCoord2f (image.sl, image.tl);
+		glVertex2f (x, y);
+		glTexCoord2f (image.sh, image.tl);
+		glVertex2f (x+w, y);
+		glTexCoord2f (image.sh, image.th);
+		glVertex2f (x+w, y+h);
+		glTexCoord2f (image.sl, image.th);
+		glVertex2f (x, y+h);
+		glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) !=0 ) ) && !image.has_alpha)
-			gl.glEnable(GL11.GL_ALPHA_TEST);
+			glEnable(GL_ALPHA_TEST);
 	}
 
 
@@ -187,23 +185,23 @@ public abstract class Draw extends Image {
 			Scrap_Upload();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) && !image.has_alpha)
-			gl.glDisable (GL11.GL_ALPHA_TEST);
+			glDisable (GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
 
-		gl.glBegin (GL11.GL_QUADS);
-		gl.glTexCoord2f (image.sl, image.tl);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (image.sh, image.tl);
-		gl.glVertex2f (x+image.width, y);
-		gl.glTexCoord2f (image.sh, image.th);
-		gl.glVertex2f (x+image.width, y+image.height);
-		gl.glTexCoord2f (image.sl, image.th);
-		gl.glVertex2f (x, y+image.height);
-		gl.glEnd ();
+		glBegin (GL_QUADS);
+		glTexCoord2f (image.sl, image.tl);
+		glVertex2f (x, y);
+		glTexCoord2f (image.sh, image.tl);
+		glVertex2f (x+image.width, y);
+		glTexCoord2f (image.sh, image.th);
+		glVertex2f (x+image.width, y+image.height);
+		glTexCoord2f (image.sl, image.th);
+		glVertex2f (x, y+image.height);
+		glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-			gl.glEnable (GL11.GL_ALPHA_TEST);
+			glEnable (GL_ALPHA_TEST);
 	}
 
 	/*
@@ -225,22 +223,22 @@ public abstract class Draw extends Image {
 		}
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-			gl.glDisable(GL11.GL_ALPHA_TEST);
+			glDisable(GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
-		gl.glBegin (GL11.GL_QUADS);
-		gl.glTexCoord2f(x/64.0f, y/64.0f);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f( (x+w)/64.0f, y/64.0f);
-		gl.glVertex2f(x+w, y);
-		gl.glTexCoord2f( (x+w)/64.0f, (y+h)/64.0f);
-		gl.glVertex2f(x+w, y+h);
-		gl.glTexCoord2f( x/64.0f, (y+h)/64.0f );
-		gl.glVertex2f (x, y+h);
-		gl.glEnd ();
+		glBegin (GL_QUADS);
+		glTexCoord2f(x/64.0f, y/64.0f);
+		glVertex2f (x, y);
+		glTexCoord2f( (x+w)/64.0f, y/64.0f);
+		glVertex2f(x+w, y);
+		glTexCoord2f( (x+w)/64.0f, (y+h)/64.0f);
+		glVertex2f(x+w, y+h);
+		glTexCoord2f( x/64.0f, (y+h)/64.0f );
+		glVertex2f (x, y+h);
+		glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-			gl.glEnable(GL11.GL_ALPHA_TEST);
+			glEnable(GL_ALPHA_TEST);
 	}
 
 
@@ -256,26 +254,26 @@ public abstract class Draw extends Image {
 		if ( colorIndex > 255)
 			Com.Error(Defines.ERR_FATAL, "Draw_Fill: bad color");
 
-		gl.glDisable(GL11.GL_TEXTURE_2D);
+		glDisable(GL_TEXTURE_2D);
 
 		int color = d_8to24table[colorIndex]; 
 
-		gl.glColor3ub(
+		glColor3ub(
 			(byte)((color >> 0) & 0xff), // r
 			(byte)((color >> 8) & 0xff), // g
 			(byte)((color >> 16) & 0xff) // b
 		);
 
-		gl.glBegin (GL11.GL_QUADS);
+		glBegin (GL_QUADS);
 
-		gl.glVertex2f(x,y);
-		gl.glVertex2f(x+w, y);
-		gl.glVertex2f(x+w, y+h);
-		gl.glVertex2f(x, y+h);
+		glVertex2f(x,y);
+		glVertex2f(x+w, y);
+		glVertex2f(x+w, y+h);
+		glVertex2f(x, y+h);
 
-		gl.glEnd();
-		gl.glColor3f(1,1,1);
-		gl.glEnable(GL11.GL_TEXTURE_2D);
+		glEnd();
+		glColor3f(1,1,1);
+		glEnable(GL_TEXTURE_2D);
 	}
 
 	//=============================================================================
@@ -286,26 +284,26 @@ public abstract class Draw extends Image {
 	================
 	*/
 	protected void Draw_FadeScreen()	{
-		gl.glEnable(GL11.GL_BLEND);
-		gl.glDisable(GL11.GL_TEXTURE_2D);
-		gl.glColor4f(0, 0, 0, 0.8f);
-		gl.glBegin(GL11.GL_QUADS);
+		glEnable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
+		glColor4f(0, 0, 0, 0.8f);
+		glBegin(GL_QUADS);
 
-		gl.glVertex2f(0,0);
-		gl.glVertex2f(vid.width, 0);
-		gl.glVertex2f(vid.width, vid.height);
-		gl.glVertex2f(0, vid.height);
+		glVertex2f(0,0);
+		glVertex2f(vid.width, 0);
+		glVertex2f(vid.width, vid.height);
+		glVertex2f(0, vid.height);
 
-		gl.glEnd();
-		gl.glColor4f(1,1,1,1);
-		gl.glEnable(GL11.GL_TEXTURE_2D);
-		gl.glDisable(GL11.GL_BLEND);
+		glEnd();
+		glColor4f(1,1,1,1);
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
 	}
 
 // ====================================================================
 
-	IntBuffer image32=BufferUtils.createIntBuffer(256*256);
-	ByteBuffer image8=BufferUtils.createByteBuffer(256*256);
+	IntBuffer image32=Lib.newIntBuffer(256*256);
+	ByteBuffer image8=Lib.newByteBuffer(256*256);
 	
 
 	/*
@@ -357,7 +355,7 @@ public abstract class Draw extends Image {
 					frac += fracstep;
 				}
 			}
-			gl.glTexImage2D (GL11.GL_TEXTURE_2D, 0, gl_tex_solid_format, 256, 256, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, image32);
+			glTexImage2D (GL_TEXTURE_2D, 0, gl_tex_solid_format, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image32);
 		}
 		else
 		{
@@ -381,34 +379,34 @@ public abstract class Draw extends Image {
 				}
 			}
 
-			gl.glTexImage2D( GL11.GL_TEXTURE_2D, 
+			glTexImage2D( GL_TEXTURE_2D, 
 						   0, 
 						   GL_COLOR_INDEX8_EXT, 
 						   256, 256, 
 						   0, 
-						   GL11.GL_COLOR_INDEX, 
-						   GL11.GL_UNSIGNED_BYTE, 
+						   GL_COLOR_INDEX, 
+						   GL_UNSIGNED_BYTE, 
 						   image8 );
 		}
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
-			gl.glDisable (GL11.GL_ALPHA_TEST);
+			glDisable (GL_ALPHA_TEST);
 
-		gl.glBegin (GL11.GL_QUADS);
-		gl.glTexCoord2f (0, 0);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (1, 0);
-		gl.glVertex2f (x+w, y);
-		gl.glTexCoord2f (1, t);
-		gl.glVertex2f (x+w, y+h);
-		gl.glTexCoord2f (0, t);
-		gl.glVertex2f (x, y+h);
-		gl.glEnd ();
+		glBegin (GL_QUADS);
+		glTexCoord2f (0, 0);
+		glVertex2f (x, y);
+		glTexCoord2f (1, 0);
+		glVertex2f (x+w, y);
+		glTexCoord2f (1, t);
+		glVertex2f (x+w, y+h);
+		glTexCoord2f (0, t);
+		glVertex2f (x, y+h);
+		glEnd ();
 
 		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
-			gl.glEnable (GL11.GL_ALPHA_TEST);
+			glEnable (GL_ALPHA_TEST);
 	}
 
 }

@@ -2,7 +2,7 @@
  * Mesh.java
  * Copyright (C) 2003
  *
- * $Id: Mesh.java,v 1.8 2005-06-08 21:27:10 cawe Exp $
+ * $Id: Mesh.java,v 1.8.4.1 2005-07-10 17:55:51 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -30,13 +30,11 @@ import jake2.client.VID;
 import jake2.client.entity_t;
 import jake2.qcommon.qfiles;
 import jake2.render.image_t;
+import jake2.util.Lib;
 import jake2.util.Math3D;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 
 /**
  * Mesh
@@ -114,9 +112,9 @@ public abstract class Mesh extends Light {
 		}
 	}
 
-	FloatBuffer colorArrayBuf = BufferUtils.createFloatBuffer(qfiles.MAX_VERTS * 4);
-	FloatBuffer vertexArrayBuf = BufferUtils.createFloatBuffer(qfiles.MAX_VERTS * 3);
-	FloatBuffer textureArrayBuf = BufferUtils.createFloatBuffer(qfiles.MAX_VERTS * 2);
+	FloatBuffer colorArrayBuf = Lib.newFloatBuffer(qfiles.MAX_VERTS * 4);
+	FloatBuffer vertexArrayBuf = Lib.newFloatBuffer(qfiles.MAX_VERTS * 3);
+	FloatBuffer textureArrayBuf = Lib.newFloatBuffer(qfiles.MAX_VERTS * 2);
 	boolean isFilled = false;
 	float[] tmpVec = {0, 0, 0};
 	float[][] vectors = {
@@ -151,7 +149,7 @@ public abstract class Mesh extends Light {
 
 		// PMM - added double shell
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
-			gl.glDisable( GL11.GL_TEXTURE_2D );
+			glDisable( GL_TEXTURE_2D );
 
 		float frontlerp = 1.0f - backlerp;
 
@@ -176,18 +174,18 @@ public abstract class Mesh extends Light {
 
 		GL_LerpVerts( paliashdr.num_xyz, ov, verts, move, frontv, backv );
 		
-		//gl.glEnableClientState( GL11.GL_VERTEX_ARRAY );
-		gl.glVertexPointer( 3, 0, vertexArrayBuf );
+		//gl.glEnableClientState( GL_VERTEX_ARRAY );
+		glVertexPointer( 3, 0, vertexArrayBuf );
 
 		// PMM - added double damage shell
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
 		{
-			gl.glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
+			glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
 		}
 		else
 		{
-			gl.glEnableClientState( GL11.GL_COLOR_ARRAY );
-			gl.glColorPointer( 4, 0, colorArrayBuf );
+			glEnableClientState( GL_COLOR_ARRAY );
+			glColorPointer( 4, 0, colorArrayBuf );
 
 			//
 			// pre light everything
@@ -207,9 +205,9 @@ public abstract class Mesh extends Light {
 			}
 		}
 
-		gl.glClientActiveTextureARB(GL_TEXTURE0);
-		gl.glTexCoordPointer( 2, 0, textureArrayBuf);
-		//gl.glEnableClientState( GL11.GL_TEXTURE_COORD_ARRAY);
+		glClientActiveTextureARB(TEXTURE0);
+		glTexCoordPointer( 2, 0, textureArrayBuf);
+		//gl.glEnableClientState( GL_TEXTURE_COORD_ARRAY);
 
 		int pos = 0;
 		int[] counts = paliashdr.counts;
@@ -233,9 +231,9 @@ public abstract class Mesh extends Light {
 				
 			srcIndexBuf = paliashdr.indexElements[j];
 			
-			mode = GL11.GL_TRIANGLE_STRIP;
+			mode = GL_TRIANGLE_STRIP;
 			if (count < 0) {
-				mode = GL11.GL_TRIANGLE_FAN;
+				mode = GL_TRIANGLE_FAN;
 				count = -count;
 			}
 			srcIndex = pos << 1;
@@ -246,15 +244,15 @@ public abstract class Mesh extends Light {
 				dstTextureCoords.put(++dstIndex, srcTextureCoords.get(++srcIndex));
 			}
 				
-			gl.glDrawElements(mode, srcIndexBuf);
+			glDrawElements(mode, srcIndexBuf);
 			pos += count;
 		}
 
 		// PMM - added double damage shell
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0 )
-			gl.glEnable( GL11.GL_TEXTURE_2D );
+			glEnable( GL_TEXTURE_2D );
 
-		gl.glDisableClientState( GL11.GL_COLOR_ARRAY );
+		glDisableClientState( GL_COLOR_ARRAY );
 	}
 			
 	private final float[] point = {0, 0, 0};
@@ -283,10 +281,10 @@ public abstract class Mesh extends Light {
 			if (count < 0)
 			{
 				count = -count;
-				gl.glBegin (GL11.GL_TRIANGLE_FAN);
+				glBegin (GL_TRIANGLE_FAN);
 			}
 			else
-				gl.glBegin (GL11.GL_TRIANGLE_STRIP);
+				glBegin (GL_TRIANGLE_STRIP);
 
 			do
 			{
@@ -298,13 +296,13 @@ public abstract class Mesh extends Light {
 				point[0] -= shadevector[0]*(point[2]+lheight);
 				point[1] -= shadevector[1]*(point[2]+lheight);
 				point[2] = height;
-				gl.glVertex3f(point[0], point[1], point[2]);
+				glVertex3f(point[0], point[1], point[2]);
 
 				orderIndex += 3;
 
 			} while (--count != 0);
 
-			gl.glEnd ();
+			glEnd ();
 		}	
 	}
 
@@ -580,21 +578,21 @@ public abstract class Mesh extends Light {
 		// draw all the triangles
 		//
 		if ( (currententity.flags & Defines.RF_DEPTHHACK) != 0) // hack the depth range to prevent view model from poking into walls
-			gl.glDepthRange(gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
+			glDepthRange(gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 
 		if ( (currententity.flags & Defines.RF_WEAPONMODEL) != 0 && (r_lefthand.value == 1.0f) )
 		{
-			gl.glMatrixMode( GL11.GL_PROJECTION );
-			gl.glPushMatrix();
-			gl.glLoadIdentity();
-			gl.glScalef( -1, 1, 1 );
+			glMatrixMode( GL_PROJECTION );
+			glPushMatrix();
+			glLoadIdentity();
+			glScalef( -1, 1, 1 );
 			MYgluPerspective( r_newrefdef.fov_y, ( float ) r_newrefdef.width / r_newrefdef.height,  4,  4096);
-			gl.glMatrixMode( GL11.GL_MODELVIEW );
+			glMatrixMode( GL_MODELVIEW );
 
-			gl.glCullFace( GL11.GL_BACK );
+			glCullFace( GL_BACK );
 		}
 
-		gl.glPushMatrix ();
+		glPushMatrix ();
 		e.angles[PITCH] = -e.angles[PITCH];	// sigh.
 		R_RotateForEntity (e);
 		e.angles[PITCH] = -e.angles[PITCH];	// sigh.
@@ -622,12 +620,12 @@ public abstract class Mesh extends Light {
 
 		// draw it
 
-		gl.glShadeModel (GL11.GL_SMOOTH);
+		glShadeModel (GL_SMOOTH);
 
-		GL_TexEnv( GL11.GL_MODULATE );
+		GL_TexEnv( GL_MODULATE );
 		if ( (currententity.flags & Defines.RF_TRANSLUCENT) != 0 )
 		{
-			gl.glEnable (GL11.GL_BLEND);
+			glEnable (GL_BLEND);
 		}
 
 
@@ -652,39 +650,39 @@ public abstract class Mesh extends Light {
 		
 		GL_DrawAliasFrameLerp(paliashdr, currententity.backlerp);
 
-		GL_TexEnv( GL11.GL_REPLACE );
-		gl.glShadeModel (GL11.GL_FLAT);
+		GL_TexEnv( GL_REPLACE );
+		glShadeModel (GL_FLAT);
 
-		gl.glPopMatrix ();
+		glPopMatrix ();
 
 		if ( ( currententity.flags & Defines.RF_WEAPONMODEL ) != 0 && ( r_lefthand.value == 1.0F ) )
 		{
-			gl.glMatrixMode( GL11.GL_PROJECTION );
-			gl.glPopMatrix();
-			gl.glMatrixMode( GL11.GL_MODELVIEW );
-			gl.glCullFace( GL11.GL_FRONT );
+			glMatrixMode( GL_PROJECTION );
+			glPopMatrix();
+			glMatrixMode( GL_MODELVIEW );
+			glCullFace( GL_FRONT );
 		}
 
 		if ( (currententity.flags & Defines.RF_TRANSLUCENT) != 0 )
 		{
-			gl.glDisable (GL11.GL_BLEND);
+			glDisable (GL_BLEND);
 		}
 
 		if ( (currententity.flags & Defines.RF_DEPTHHACK) != 0)
-			gl.glDepthRange (gldepthmin, gldepthmax);
+			glDepthRange (gldepthmin, gldepthmax);
 
 		if ( gl_shadows.value != 0.0f && (currententity.flags & (Defines.RF_TRANSLUCENT | Defines.RF_WEAPONMODEL)) == 0)
 		{
-			gl.glPushMatrix ();
+			glPushMatrix ();
 			R_RotateForEntity (e);
-			gl.glDisable (GL11.GL_TEXTURE_2D);
-			gl.glEnable (GL11.GL_BLEND);
-			gl.glColor4f (0,0,0,0.5f);
+			glDisable (GL_TEXTURE_2D);
+			glEnable (GL_BLEND);
+			glColor4f (0,0,0,0.5f);
 			GL_DrawAliasShadow (paliashdr, currententity.frame );
-			gl.glEnable (GL11.GL_TEXTURE_2D);
-			gl.glDisable (GL11.GL_BLEND);
-			gl.glPopMatrix ();
+			glEnable (GL_TEXTURE_2D);
+			glDisable (GL_BLEND);
+			glPopMatrix ();
 		}
-		gl.glColor4f (1,1,1,1);
+		glColor4f (1,1,1,1);
 	}
 }
