@@ -1,134 +1,142 @@
 package jake2.render;
 
-import jake2.render.lwjgl.LWJGLBase;
-
 import java.nio.*;
 
-public class DummyGL extends LWJGLBase {
+public class DummyGL implements QGL {
     
-    protected void glAlphaFunc(int func, float ref) {
+    private static QGL self = new DummyGL();
+    
+    private DummyGL() {
+        // singleton
+    }
+    
+    public static QGL getInstance() {
+        return self;
+    }
+    
+    public void glAlphaFunc(int func, float ref) {
         // do nothing
     }
 
-    protected void glBegin(int mode) {
+    public void glBegin(int mode) {
         // do nothing
     }
 
-    protected void glBindTexture(int target, int texture) {
+    public void glBindTexture(int target, int texture) {
         // do nothing
     }
 
-    protected void glBlendFunc(int sfactor, int dfactor) {
+    public void glBlendFunc(int sfactor, int dfactor) {
         // do nothing
     }
 
-    protected void glClear(int mask) {
+    public void glClear(int mask) {
         // do nothing
     }
 
-    protected void glClearColor(float red, float green, float blue, float alpha) {
+    public void glClearColor(float red, float green, float blue, float alpha) {
         // do nothing
     }
 
-    protected void glColor3f(float red, float green, float blue) {
+    public void glColor3f(float red, float green, float blue) {
         // do nothing
     }
 
-    protected void glColor3ub(byte red, byte green, byte blue) {
+    public void glColor3ub(byte red, byte green, byte blue) {
         // do nothing
     }
 
-    protected void glColor4f(float red, float green, float blue, float alpha) {
+    public void glColor4f(float red, float green, float blue, float alpha) {
         // do nothing
     }
 
-    protected void glColor4ub(byte red, byte green, byte blue, byte alpha) {
+    public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
         // do nothing
     }
 
-    protected void glColorPointer(int size, boolean unsigned, int stride,
+    public void glColorPointer(int size, boolean unsigned, int stride,
             ByteBuffer pointer) {
         // do nothing
     }
     
-    protected void glColorPointer(int size, int stride, FloatBuffer pointer) {
+    public void glColorPointer(int size, int stride, FloatBuffer pointer) {
         // do nothing
     }
 
-    protected void glCullFace(int mode) {
+    public void glCullFace(int mode) {
         // do nothing
     }
 
-    protected void glDeleteTextures(IntBuffer textures) {
+    public void glDeleteTextures(IntBuffer textures) {
         // do nothing
     }
 
-    protected void glDepthFunc(int func) {
+    public void glDepthFunc(int func) {
         // do nothing
     }
 
-    protected void glDepthMask(boolean flag) {
+    public void glDepthMask(boolean flag) {
         // do nothing
     }
 
-    protected void glDepthRange(double zNear, double zFar) {
+    public void glDepthRange(double zNear, double zFar) {
         // do nothing
     }
 
-    protected void glDisable(int cap) {
+    public void glDisable(int cap) {
         // do nothing
     }
 
-    protected void glDisableClientState(int cap) {
+    public void glDisableClientState(int cap) {
         // do nothing
     }
 
-    protected void glDrawArrays(int mode, int first, int count) {
+    public void glDrawArrays(int mode, int first, int count) {
         // do nothing
     }
 
-    protected void glDrawBuffer(int mode) {
+    public void glDrawBuffer(int mode) {
         // do nothing
     }
 
-    protected void glDrawElements(int mode, IntBuffer indices) {
+    public void glDrawElements(int mode, IntBuffer indices) {
         // do nothing
     }
 
-    protected void glEnable(int cap) {
+    public void glEnable(int cap) {
         // do nothing
     }
 
-    protected void glEnableClientState(int cap) {
+    public void glEnableClientState(int cap) {
         // do nothing
     }
 
-    protected void glEnd() {
+    public void glEnd() {
         // do nothing
     }
 
-    protected void glFinish() {
+    public void glFinish() {
         // do nothing
     }
 
-    protected void glFlush() {
+    public void glFlush() {
         // do nothing
     }
 
-    protected void glFrustum(double left, double right, double bottom,
+    public void glFrustum(double left, double right, double bottom,
             double top, double zNear, double zFar) {
         // do nothing
     }
 
-    protected int glGetError() {
+    public int glGetError() {
         return GL_NO_ERROR;
     }
 
-    protected void glGetFloat(int pname, FloatBuffer params) {
+    public void glGetFloat(int pname, FloatBuffer params) {
         // do nothing
     }
 
-    protected String glGetString(int name) {
+    public String glGetString(int name) {
         switch (name) {
         case GL_EXTENSIONS:
             return "GL_ARB_multitexture";
@@ -137,145 +145,161 @@ public class DummyGL extends LWJGLBase {
         }
     }
 
-    protected void glInterleavedArrays(int format, int stride,
+    public void glInterleavedArrays(int format, int stride,
             FloatBuffer pointer) {
         // do nothing
     }
 
-    protected void glLoadIdentity() {
+    public void glLoadIdentity() {
         // do nothing
     }
 
-    protected void glLoadMatrix(FloatBuffer m) {
+    public void glLoadMatrix(FloatBuffer m) {
         // do nothing
     }
 
-    protected void glMatrixMode(int mode) {
+    public void glMatrixMode(int mode) {
         // do nothing
     }
 
-    protected void glOrtho(double left, double right, double bottom,
+    public void glOrtho(double left, double right, double bottom,
             double top, double zNear, double zFar) {
         // do nothing
     }
 
-    protected void glPixelStorei(int pname, int param) {
+    public void glPixelStorei(int pname, int param) {
         // do nothing
     }
 
-    protected void glPointSize(float size) {
+    public void glPointSize(float size) {
         // do nothing
     }
 
-    protected void glPolygonMode(int face, int mode) {
+    public void glPolygonMode(int face, int mode) {
         // do nothing
     }
 
-    protected void glPopMatrix() {
+    public void glPopMatrix() {
         // do nothing
     }
 
-    protected void glPushMatrix() {
+    public void glPushMatrix() {
         // do nothing
     }
 
-    protected void glReadPixels(int x, int y, int width, int height,
+    public void glReadPixels(int x, int y, int width, int height,
             int format, int type, ByteBuffer pixels) {
         // do nothing
     }
 
-    protected void glRotatef(float angle, float x, float y, float z) {
+    public void glRotatef(float angle, float x, float y, float z) {
         // do nothing
     }
 
-    protected void glScalef(float x, float y, float z) {
+    public void glScalef(float x, float y, float z) {
         // do nothing
     }
 
-    protected void glScissor(int x, int y, int width, int height) {
+    public void glScissor(int x, int y, int width, int height) {
         // do nothing
     }
 
-    protected void glShadeModel(int mode) {
+    public void glShadeModel(int mode) {
         // do nothing
     }
 
-    protected void glTexCoord2f(float s, float t) {
+    public void glTexCoord2f(float s, float t) {
         // do nothing
     }
 
-    protected void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
         // do nothing
     }
 
-    protected void glTexEnvi(int target, int pname, int param) {
+    public void glTexEnvi(int target, int pname, int param) {
         // do nothing
     }
 
-    protected void glTexImage2D(int target, int level, int internalformat,
+    public void glTexImage2D(int target, int level, int internalformat,
             int width, int height, int border, int format, int type,
             ByteBuffer pixels) {
         // do nothing
     }
 
-    protected void glTexImage2D(int target, int level, int internalformat,
+    public void glTexImage2D(int target, int level, int internalformat,
             int width, int height, int border, int format, int type,
             IntBuffer pixels) {
         // do nothing
     }
 
-    protected void glTexParameterf(int target, int pname, float param) {
+    public void glTexParameterf(int target, int pname, float param) {
         // do nothing
     }
 
-    protected void glTexParameteri(int target, int pname, int param) {
+    public void glTexParameteri(int target, int pname, int param) {
         // do nothing
     }
 
-    protected void glTexSubImage2D(int target, int level, int xoffset,
+    public void glTexSubImage2D(int target, int level, int xoffset,
             int yoffset, int width, int height, int format, int type,
             IntBuffer pixels) {
         // do nothing
     }
 
-    protected void glTranslatef(float x, float y, float z) {
+    public void glTranslatef(float x, float y, float z) {
         // do nothing
     }
 
-    protected void glVertex2f(float x, float y) {
+    public void glVertex2f(float x, float y) {
         // do nothing
     }
 
-    protected void glVertex3f(float x, float y, float z) {
+    public void glVertex3f(float x, float y, float z) {
         // do nothing
     }
 
-    protected void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
         // do nothing
     }
 
-    protected void glViewport(int x, int y, int width, int height) {
+    public void glViewport(int x, int y, int width, int height) {
         // do nothing
     }
 
-    protected void glColorTable(int target, int internalFormat, int width,
+    public void glColorTable(int target, int internalFormat, int width,
             int format, int type, ByteBuffer data) {
         // do nothing
     }
 
-    protected void glActiveTextureARB(int texture) {
+    public void glActiveTextureARB(int texture) {
         // do nothing
     }
 
-    protected void glClientActiveTextureARB(int texture) {
+    public void glClientActiveTextureARB(int texture) {
         // do nothing
     }
 
-    protected void glPointParameterEXT(int pname, FloatBuffer pfParams) {
+    public void glPointParameterEXT(int pname, FloatBuffer pfParams) {
         // do nothing
     }
 
-    protected void glPointParameterfEXT(int pname, float param) {
+    public void glPointParameterfEXT(int pname, float param) {
+        // do nothing
+    }
+
+    public void glLockArraysEXT(int first, int count) {
+        // do nothing
+    }
+
+    public void glArrayElement(int index) {
+        // do nothing
+    }
+
+    public void glUnlockArraysEXT() {
+        // do nothing
+    }
+
+    public void glMultiTexCoord2f(int target, float s, float t) {
         // do nothing
     }
 
