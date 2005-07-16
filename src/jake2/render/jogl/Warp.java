@@ -2,7 +2,7 @@
  * Warp.java
  * Copyright (C) 2003
  *
- * $Id: Warp.java,v 1.9 2005-01-10 00:05:23 cawe Exp $
+ * $Id: Warp.java,v 1.9.6.1 2005-07-16 18:25:37 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -30,7 +30,6 @@ import jake2.Globals;
 import jake2.qcommon.Com;
 import jake2.render.*;
 import jake2.util.Math3D;
-import net.java.games.jogl.GL;
 
 /**
  * Warp
@@ -293,7 +292,7 @@ public abstract class Warp extends Model {
         for (bp = fa.polys; bp != null; bp = bp.next) {
             p = bp;
 
-            gl.glBegin(GL.GL_TRIANGLE_FAN);
+            gl.glBegin(GL_TRIANGLE_FAN);
             for (i = 0; i < p.numverts; i++) {
                 os = p.s1(i);
                 ot = p.t1(i);
@@ -605,7 +604,7 @@ public abstract class Warp extends Model {
 
             GL_Bind(sky_images[skytexorder[i]].texnum);
 
-            gl.glBegin(GL.GL_QUADS);
+            gl.glBegin(GL_QUADS);
             MakeSkyVec(skymins[0][i], skymins[1][i], i);
             MakeSkyVec(skymins[0][i], skymaxs[1][i], i);
             MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i);

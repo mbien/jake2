@@ -2,7 +2,7 @@
  * Draw.java
  * Copyright (C) 2003
  *
- * $Id: Draw.java,v 1.5 2004-07-16 10:11:35 cawe Exp $
+ * $Id: Draw.java,v 1.5.12.1 2005-07-16 18:25:37 cawe Exp $
  */ 
  /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -29,10 +29,11 @@ import jake2.Defines;
 import jake2.client.VID;
 import jake2.qcommon.Com;
 import jake2.render.image_t;
+import jake2.util.Lib;
 
 import java.awt.Dimension;
-
-import net.java.games.jogl.GL;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 /**
  * Draw
@@ -51,8 +52,8 @@ public abstract class Draw extends Image {
 		// load console characters (don't bilerp characters)
 		draw_chars = GL_FindImage("pics/conchars.pcx", it_pic);
 		GL_Bind(draw_chars.texnum);
-		gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-		gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
 
 	/*
@@ -81,7 +82,7 @@ public abstract class Draw extends Image {
 
 		GL_Bind(draw_chars.texnum);
 
-		gl.glBegin (GL.GL_QUADS);
+		gl.glBegin (GL_QUADS);
 		gl.glTexCoord2f (fcol, frow);
 		gl.glVertex2f (x, y);
 		gl.glTexCoord2f (fcol + size, frow);
@@ -146,10 +147,10 @@ public abstract class Draw extends Image {
 			Scrap_Upload();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0) ) && !image.has_alpha)
-			gl.glDisable(GL.GL_ALPHA_TEST);
+			gl.glDisable(GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
-		gl.glBegin (GL.GL_QUADS);
+		gl.glBegin (GL_QUADS);
 		gl.glTexCoord2f (image.sl, image.tl);
 		gl.glVertex2f (x, y);
 		gl.glTexCoord2f (image.sh, image.tl);
@@ -161,7 +162,7 @@ public abstract class Draw extends Image {
 		gl.glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) !=0 ) ) && !image.has_alpha)
-			gl.glEnable(GL.GL_ALPHA_TEST);
+			gl.glEnable(GL_ALPHA_TEST);
 	}
 
 
@@ -184,11 +185,11 @@ public abstract class Draw extends Image {
 			Scrap_Upload();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) && !image.has_alpha)
-			gl.glDisable (GL.GL_ALPHA_TEST);
+			gl.glDisable (GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
 
-		gl.glBegin (GL.GL_QUADS);
+		gl.glBegin (GL_QUADS);
 		gl.glTexCoord2f (image.sl, image.tl);
 		gl.glVertex2f (x, y);
 		gl.glTexCoord2f (image.sh, image.tl);
@@ -200,7 +201,7 @@ public abstract class Draw extends Image {
 		gl.glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-			gl.glEnable (GL.GL_ALPHA_TEST);
+			gl.glEnable (GL_ALPHA_TEST);
 	}
 
 	/*
@@ -222,10 +223,10 @@ public abstract class Draw extends Image {
 		}
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-			gl.glDisable(GL.GL_ALPHA_TEST);
+			gl.glDisable(GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
-		gl.glBegin (GL.GL_QUADS);
+		gl.glBegin (GL_QUADS);
 		gl.glTexCoord2f(x/64.0f, y/64.0f);
 		gl.glVertex2f (x, y);
 		gl.glTexCoord2f( (x+w)/64.0f, y/64.0f);
@@ -237,7 +238,7 @@ public abstract class Draw extends Image {
 		gl.glEnd ();
 
 		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-			gl.glEnable(GL.GL_ALPHA_TEST);
+			gl.glEnable(GL_ALPHA_TEST);
 	}
 
 
@@ -253,7 +254,7 @@ public abstract class Draw extends Image {
 		if ( colorIndex > 255)
 			Com.Error(Defines.ERR_FATAL, "Draw_Fill: bad color");
 
-		gl.glDisable(GL.GL_TEXTURE_2D);
+		gl.glDisable(GL_TEXTURE_2D);
 
 		int color = d_8to24table[colorIndex]; 
 
@@ -263,7 +264,7 @@ public abstract class Draw extends Image {
 			(byte)((color >> 16) & 0xff) // b
 		);
 
-		gl.glBegin (GL.GL_QUADS);
+		gl.glBegin (GL_QUADS);
 
 		gl.glVertex2f(x,y);
 		gl.glVertex2f(x+w, y);
@@ -272,7 +273,7 @@ public abstract class Draw extends Image {
 
 		gl.glEnd();
 		gl.glColor3f(1,1,1);
-		gl.glEnable(GL.GL_TEXTURE_2D);
+		gl.glEnable(GL_TEXTURE_2D);
 	}
 
 //	  =============================================================================
@@ -283,10 +284,10 @@ public abstract class Draw extends Image {
 	================
 	*/
 	protected void Draw_FadeScreen()	{
-		gl.glEnable(GL.GL_BLEND);
-		gl.glDisable(GL.GL_TEXTURE_2D);
+		gl.glEnable(GL_BLEND);
+		gl.glDisable(GL_TEXTURE_2D);
 		gl.glColor4f(0, 0, 0, 0.8f);
-		gl.glBegin(GL.GL_QUADS);
+		gl.glBegin(GL_QUADS);
 
 		gl.glVertex2f(0,0);
 		gl.glVertex2f(vid.width, 0);
@@ -295,12 +296,13 @@ public abstract class Draw extends Image {
 
 		gl.glEnd();
 		gl.glColor4f(1,1,1,1);
-		gl.glEnable(GL.GL_TEXTURE_2D);
-		gl.glDisable(GL.GL_BLEND);
+		gl.glEnable(GL_TEXTURE_2D);
+		gl.glDisable(GL_BLEND);
 	}
 
 // ====================================================================
-
+    IntBuffer image32=Lib.newIntBuffer(256*256);
+    ByteBuffer image8=Lib.newByteBuffer(256*256);
 
 	/*
 	=============
@@ -332,8 +334,8 @@ public abstract class Draw extends Image {
 
 		if ( !qglColorTableEXT )
 		{
-			int[] image32 = new int[256*256];
-			int destIndex = 0;
+			image32.clear();
+            int destIndex = 0;
 
 			for (i=0 ; i<trows ; i++)
 			{
@@ -346,15 +348,15 @@ public abstract class Draw extends Image {
 				frac = fracstep >> 1;
 				for (j=0 ; j<256 ; j++)
 				{
-					image32[destIndex + j] = r_rawpalette[data[sourceIndex + (frac>>16)] & 0xff];
+					image32.put(destIndex + j, r_rawpalette[data[sourceIndex + (frac>>16)] & 0xff]);
 					frac += fracstep;
 				}
 			}
-			gl.glTexImage2D (GL.GL_TEXTURE_2D, 0, gl_tex_solid_format, 256, 256, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, image32);
+			gl.glTexImage2D (GL_TEXTURE_2D, 0, gl_tex_solid_format, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image32);
 		}
 		else
 		{
-			byte[] image8 = new byte[256*256];
+			image8.clear();
 			int destIndex = 0;;
 
 			for (i=0 ; i<trows ; i++)
@@ -368,27 +370,27 @@ public abstract class Draw extends Image {
 				frac = fracstep >> 1;
 				for (j=0 ; j<256 ; j++)
 				{
-					image8[destIndex  + j] = data[sourceIndex + (frac>>16)];
+					image8.put(destIndex  + j, data[sourceIndex + (frac>>16)]);
 					frac += fracstep;
 				}
 			}
 
-			gl.glTexImage2D( GL.GL_TEXTURE_2D, 
+			gl.glTexImage2D( GL_TEXTURE_2D, 
 						   0, 
 						   GL_COLOR_INDEX8_EXT, 
 						   256, 256, 
 						   0, 
-						   GL.GL_COLOR_INDEX, 
-						   GL.GL_UNSIGNED_BYTE, 
+						   GL_COLOR_INDEX, 
+						   GL_UNSIGNED_BYTE, 
 						   image8 );
 		}
-		gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-		gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
-			gl.glDisable (GL.GL_ALPHA_TEST);
+			gl.glDisable (GL_ALPHA_TEST);
 
-		gl.glBegin (GL.GL_QUADS);
+		gl.glBegin (GL_QUADS);
 		gl.glTexCoord2f (0, 0);
 		gl.glVertex2f (x, y);
 		gl.glTexCoord2f (1, 0);
@@ -400,7 +402,7 @@ public abstract class Draw extends Image {
 		gl.glEnd ();
 
 		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
-			gl.glEnable (GL.GL_ALPHA_TEST);
+			gl.glEnable (GL_ALPHA_TEST);
 	}
 
 }

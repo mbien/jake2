@@ -2,7 +2,7 @@
  * Mesh.java
  * Copyright (C) 2003
  *
- * $Id: Mesh.java,v 1.10 2005-05-08 00:42:22 cawe Exp $
+ * $Id: Mesh.java,v 1.10.6.1 2005-07-16 18:25:37 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -30,12 +30,10 @@ import jake2.client.VID;
 import jake2.client.entity_t;
 import jake2.qcommon.qfiles;
 import jake2.render.image_t;
+import jake2.util.Lib;
 import jake2.util.Math3D;
 
 import java.nio.FloatBuffer;
-
-import net.java.games.jogl.GL;
-import net.java.games.jogl.util.BufferUtils;
 
 /**
  * Mesh
@@ -153,11 +151,9 @@ public abstract class Mesh extends Light {
         }
     }
 
-    FloatBuffer colorArrayBuf = BufferUtils
-            .newFloatBuffer(qfiles.MAX_VERTS * 4);
+    FloatBuffer colorArrayBuf = Lib.newFloatBuffer(qfiles.MAX_VERTS * 4);
 
-    FloatBuffer vertexArrayBuf = BufferUtils
-            .newFloatBuffer(qfiles.MAX_VERTS * 3);
+    FloatBuffer vertexArrayBuf = Lib.newFloatBuffer(qfiles.MAX_VERTS * 3);
 
     boolean isFilled = false;
 
@@ -212,7 +208,7 @@ public abstract class Mesh extends Light {
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
-            gl.glDisable(GL.GL_TEXTURE_2D);
+            gl.glDisable(GL_TEXTURE_2D);
 
         frontlerp = 1.0f - backlerp;
 
@@ -237,19 +233,19 @@ public abstract class Mesh extends Light {
         if (gl_vertex_arrays.value != 0.0f) {
             GL_LerpVerts(paliashdr.num_xyz, ov, v, move, frontv, backv);
 
-            gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
-            gl.glVertexPointer(3, GL.GL_FLOAT, 0, vertexArrayBuf);
+            gl.glEnableClientState(GL_VERTEX_ARRAY);
+            gl.glVertexPointer(3, 0, vertexArrayBuf);
 
             // PMM - added double damage shell
             if ((currententity.flags & (Defines.RF_SHELL_RED
                     | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                     | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
             	
-                gl.glDisableClientState(GL.GL_COLOR_ARRAY);
+                gl.glDisableClientState(GL_COLOR_ARRAY);
                 gl.glColor4f(shadelight[0], shadelight[1], shadelight[2], alpha);
             } else {
-                gl.glEnableClientState(GL.GL_COLOR_ARRAY);
-                gl.glColorPointer(4, GL.GL_FLOAT, 0, colorArrayBuf);
+                gl.glEnableClientState(GL_COLOR_ARRAY);
+                gl.glColorPointer(4, 0, colorArrayBuf);
 
                 //
                 // pre light everything
@@ -276,9 +272,9 @@ public abstract class Mesh extends Light {
                     break; // done
                 if (count < 0) {
                     count = -count;
-                    gl.glBegin(GL.GL_TRIANGLE_FAN);
+                    gl.glBegin(GL_TRIANGLE_FAN);
                 } else {
-                    gl.glBegin(GL.GL_TRIANGLE_STRIP);
+                    gl.glBegin(GL_TRIANGLE_STRIP);
                 }
 
                 // PMM - added double damage shell
@@ -328,9 +324,9 @@ public abstract class Mesh extends Light {
                     break; // done
                 if (count < 0) {
                     count = -count;
-                    gl.glBegin(GL.GL_TRIANGLE_FAN);
+                    gl.glBegin(GL_TRIANGLE_FAN);
                 } else {
-                    gl.glBegin(GL.GL_TRIANGLE_STRIP);
+                    gl.glBegin(GL_TRIANGLE_STRIP);
                 }
 
                 if ((currententity.flags & (Defines.RF_SHELL_RED
@@ -374,7 +370,7 @@ public abstract class Mesh extends Light {
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
-            gl.glEnable(GL.GL_TEXTURE_2D);
+            gl.glEnable(GL_TEXTURE_2D);
     }
 
     /*
@@ -403,9 +399,9 @@ public abstract class Mesh extends Light {
                 break; // done
             if (count < 0) {
                 count = -count;
-                gl.glBegin(GL.GL_TRIANGLE_FAN);
+                gl.glBegin(GL_TRIANGLE_FAN);
             } else
-                gl.glBegin(GL.GL_TRIANGLE_STRIP);
+                gl.glBegin(GL_TRIANGLE_STRIP);
 
             do {
                 // normals and vertexes come from the frame list
@@ -725,15 +721,15 @@ public abstract class Mesh extends Light {
 
         if ((currententity.flags & Defines.RF_WEAPONMODEL) != 0
                 && (r_lefthand.value == 1.0f)) {
-            gl.glMatrixMode(GL.GL_PROJECTION);
+            gl.glMatrixMode(GL_PROJECTION);
             gl.glPushMatrix();
             gl.glLoadIdentity();
             gl.glScalef(-1, 1, 1);
             MYgluPerspective(r_newrefdef.fov_y, (float) r_newrefdef.width
                     / r_newrefdef.height, 4, 4096);
-            gl.glMatrixMode(GL.GL_MODELVIEW);
+            gl.glMatrixMode(GL_MODELVIEW);
 
-            gl.glCullFace(GL.GL_BACK);
+            gl.glCullFace(GL_BACK);
         }
 
         gl.glPushMatrix();
@@ -759,11 +755,11 @@ public abstract class Mesh extends Light {
 
         // draw it
 
-        gl.glShadeModel(GL.GL_SMOOTH);
+        gl.glShadeModel(GL_SMOOTH);
 
-        GL_TexEnv(GL.GL_MODULATE);
+        GL_TexEnv(GL_MODULATE);
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0) {
-            gl.glEnable(GL.GL_BLEND);
+            gl.glEnable(GL_BLEND);
         }
 
         if ((currententity.frame >= paliashdr.num_frames)
@@ -788,21 +784,21 @@ public abstract class Mesh extends Light {
             currententity.backlerp = 0;
         GL_DrawAliasFrameLerp(paliashdr, currententity.backlerp);
 
-        GL_TexEnv(GL.GL_REPLACE);
-        gl.glShadeModel(GL.GL_FLAT);
+        GL_TexEnv(GL_REPLACE);
+        gl.glShadeModel(GL_FLAT);
 
         gl.glPopMatrix();
 
         if ((currententity.flags & Defines.RF_WEAPONMODEL) != 0
                 && (r_lefthand.value == 1.0F)) {
-            gl.glMatrixMode(GL.GL_PROJECTION);
+            gl.glMatrixMode(GL_PROJECTION);
             gl.glPopMatrix();
-            gl.glMatrixMode(GL.GL_MODELVIEW);
-            gl.glCullFace(GL.GL_FRONT);
+            gl.glMatrixMode(GL_MODELVIEW);
+            gl.glCullFace(GL_FRONT);
         }
 
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0) {
-            gl.glDisable(GL.GL_BLEND);
+            gl.glDisable(GL_BLEND);
         }
 
         if ((currententity.flags & Defines.RF_DEPTHHACK) != 0)
@@ -812,12 +808,12 @@ public abstract class Mesh extends Light {
                 && (currententity.flags & (Defines.RF_TRANSLUCENT | Defines.RF_WEAPONMODEL)) == 0) {
             gl.glPushMatrix();
             R_RotateForEntity(e);
-            gl.glDisable(GL.GL_TEXTURE_2D);
-            gl.glEnable(GL.GL_BLEND);
+            gl.glDisable(GL_TEXTURE_2D);
+            gl.glEnable(GL_BLEND);
             gl.glColor4f(0, 0, 0, 0.5f);
             GL_DrawAliasShadow(paliashdr, currententity.frame);
-            gl.glEnable(GL.GL_TEXTURE_2D);
-            gl.glDisable(GL.GL_BLEND);
+            gl.glEnable(GL_TEXTURE_2D);
+            gl.glDisable(GL_BLEND);
             gl.glPopMatrix();
         }
         gl.glColor4f(1, 1, 1, 1);

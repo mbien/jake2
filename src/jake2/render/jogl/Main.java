@@ -2,7 +2,7 @@
  * Main.java
  * Copyright (C) 2003
  *
- * $Id: Main.java,v 1.8 2005-05-07 18:23:26 cawe Exp $
+ * $Id: Main.java,v 1.8.6.1 2005-07-16 18:25:37 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -29,19 +29,13 @@ import jake2.Defines;
 import jake2.Globals;
 import jake2.client.*;
 import jake2.game.*;
-import jake2.game.cplane_t;
-import jake2.game.cvar_t;
 import jake2.qcommon.*;
 import jake2.render.*;
-import jake2.util.Math3D;
-import jake2.util.Vargs;
+import jake2.util.*;
 
 import java.awt.Dimension;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
-import net.java.games.jogl.GL;
-import net.java.games.jogl.Version;
 
 /**
  * Main
@@ -113,9 +107,6 @@ public abstract class Main extends Base {
 	====================================================================
 	*/
 
-	int GL_TEXTURE0 = GL.GL_TEXTURE0;
-	int GL_TEXTURE1 = GL.GL_TEXTURE1;
-
 	model_t r_worldmodel;
 
 	float gldepthmin, gldepthmax;
@@ -146,7 +137,7 @@ public abstract class Main extends Base {
 	float[] vright = { 0, 0, 0 };
 	float[] r_origin = { 0, 0, 0 };
 
-	float r_world_matrix[] = new float[16];
+	FloatBuffer r_world_matrix = Lib.newFloatBuffer(16);
 	float r_base_world_matrix[] = new float[16];
 
 	//
@@ -288,20 +279,20 @@ public abstract class Main extends Base {
 			alpha = e.alpha;
 
 		if (alpha != 1.0F)
-			gl.glEnable(GL.GL_BLEND);
+			gl.glEnable(GL_BLEND);
 
 		gl.glColor4f(1, 1, 1, alpha);
 
 		GL_Bind(currentmodel.skins[e.frame].texnum);
 
-		GL_TexEnv(GL.GL_MODULATE);
+		GL_TexEnv(GL_MODULATE);
 
 		if (alpha == 1.0)
-			gl.glEnable(GL.GL_ALPHA_TEST);
+			gl.glEnable(GL_ALPHA_TEST);
 		else
-			gl.glDisable(GL.GL_ALPHA_TEST);
+			gl.glDisable(GL_ALPHA_TEST);
 
-		gl.glBegin(GL.GL_QUADS);
+		gl.glBegin(GL_QUADS);
 
 		gl.glTexCoord2f(0, 1);
 		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
@@ -325,11 +316,11 @@ public abstract class Main extends Base {
 
 		gl.glEnd();
 
-		gl.glDisable(GL.GL_ALPHA_TEST);
-		GL_TexEnv(GL.GL_REPLACE);
+		gl.glDisable(GL_ALPHA_TEST);
+		GL_TexEnv(GL_REPLACE);
 
 		if (alpha != 1.0F)
-			gl.glDisable(GL.GL_BLEND);
+			gl.glDisable(GL_BLEND);
 
 		gl.glColor4f(1, 1, 1, 1);
 	}
@@ -357,14 +348,14 @@ public abstract class Main extends Base {
 		gl.glPushMatrix();
 		R_RotateForEntity(currententity);
 
-		gl.glDisable(GL.GL_TEXTURE_2D);
+		gl.glDisable(GL_TEXTURE_2D);
 		gl.glColor3f(shadelight[0], shadelight[1], shadelight[2]);
 
-		// this replaces the TRIANGLE_FAN
-		glut.glutWireCube(gl, 20);
+//		// this replaces the TRIANGLE_FAN
+//		glut.glutWireCube(gl, 20);
 
-		/*
-			gl.glBegin(GL.GL_TRIANGLE_FAN);
+		
+		gl.glBegin(GL_TRIANGLE_FAN);
 		gl.glVertex3f(0, 0, -16);
 		int i;
 		for (i=0 ; i<=4 ; i++) {
@@ -372,16 +363,16 @@ public abstract class Main extends Base {
 		}
 		gl.glEnd();
 		
-		gl.glBegin(GL.GL_TRIANGLE_FAN);
+		gl.glBegin(GL_TRIANGLE_FAN);
 		gl.glVertex3f (0, 0, 16);
 		for (i=4 ; i>=0 ; i--) {
 			gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
 		}
 		gl.glEnd();
-		*/
+        
 		gl.glColor3f(1, 1, 1);
 		gl.glPopMatrix();
-		gl.glEnable(GL.GL_TEXTURE_2D);
+		gl.glEnable(GL_TEXTURE_2D);
 	}
 
 	/*
@@ -480,10 +471,10 @@ public abstract class Main extends Base {
 		
 		GL_Bind(r_particletexture.texnum);
 		gl.glDepthMask(false); // no z buffering
-		gl.glEnable(GL.GL_BLEND);
-		GL_TexEnv(GL.GL_MODULATE);
+		gl.glEnable(GL_BLEND);
+		GL_TexEnv(GL_MODULATE);
 		
-		gl.glBegin(GL.GL_TRIANGLES);
+		gl.glBegin(GL_TRIANGLES);
 
 		FloatBuffer sourceVertices = particle_t.vertexArray;
 		IntBuffer sourceColors = particle_t.colorArray;
@@ -519,10 +510,10 @@ public abstract class Main extends Base {
 		}
 		gl.glEnd();
 		
-		gl.glDisable(GL.GL_BLEND);
+		gl.glDisable(GL_BLEND);
 		gl.glColor4f(1, 1, 1, 1);
 		gl.glDepthMask(true); // back to normal Z buffering
-		GL_TexEnv(GL.GL_REPLACE);
+		GL_TexEnv(GL_REPLACE);
 	}
 
 	/*
@@ -534,25 +525,25 @@ public abstract class Main extends Base {
 
 		if (gl_ext_pointparameters.value != 0.0f && qglPointParameterfEXT) {
 
-			gl.glEnableClientState(GL.GL_VERTEX_ARRAY);
-			gl.glVertexPointer(3, GL.GL_FLOAT, 0, particle_t.vertexArray);
-			gl.glEnableClientState(GL.GL_COLOR_ARRAY);
-			gl.glColorPointer(4, GL.GL_UNSIGNED_BYTE, 0, particle_t.colorArray);
+			gl.glEnableClientState(GL_VERTEX_ARRAY);
+			gl.glVertexPointer(3, 0, particle_t.vertexArray);
+			gl.glEnableClientState(GL_COLOR_ARRAY);
+			gl.glColorPointer(4, true, 0, particle_t.getColorAsByteBuffer());
 			
 			gl.glDepthMask(false);
-			gl.glEnable(GL.GL_BLEND);
-			gl.glDisable(GL.GL_TEXTURE_2D);
+			gl.glEnable(GL_BLEND);
+			gl.glDisable(GL_TEXTURE_2D);
 			gl.glPointSize(gl_particle_size.value);
 			
-			gl.glDrawArrays(GL.GL_POINTS, 0, r_newrefdef.num_particles);
+			gl.glDrawArrays(GL_POINTS, 0, r_newrefdef.num_particles);
 			
-			gl.glDisableClientState(GL.GL_COLOR_ARRAY);
-			gl.glDisableClientState(GL.GL_VERTEX_ARRAY);
+			gl.glDisableClientState(GL_COLOR_ARRAY);
+			gl.glDisableClientState(GL_VERTEX_ARRAY);
 
-			gl.glDisable(GL.GL_BLEND);
+			gl.glDisable(GL_BLEND);
 			gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			gl.glDepthMask(true);
-			gl.glEnable(GL.GL_TEXTURE_2D);
+			gl.glEnable(GL_TEXTURE_2D);
 
 		}
 		else {
@@ -572,10 +563,10 @@ public abstract class Main extends Base {
 		if (v_blend[3] == 0.0f)
 			return;
 
-		gl.glDisable(GL.GL_ALPHA_TEST);
-		gl.glEnable(GL.GL_BLEND);
-		gl.glDisable(GL.GL_DEPTH_TEST);
-		gl.glDisable(GL.GL_TEXTURE_2D);
+		gl.glDisable(GL_ALPHA_TEST);
+		gl.glEnable(GL_BLEND);
+		gl.glDisable(GL_DEPTH_TEST);
+		gl.glDisable(GL_TEXTURE_2D);
 
 		gl.glLoadIdentity();
 
@@ -585,7 +576,7 @@ public abstract class Main extends Base {
 
 		gl.glColor4f(v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 
-		gl.glBegin(GL.GL_QUADS);
+		gl.glBegin(GL_QUADS);
 
 		gl.glVertex3f(10, 100, 100);
 		gl.glVertex3f(10, -100, 100);
@@ -593,9 +584,9 @@ public abstract class Main extends Base {
 		gl.glVertex3f(10, 100, -100);
 		gl.glEnd();
 
-		gl.glDisable(GL.GL_BLEND);
-		gl.glEnable(GL.GL_TEXTURE_2D);
-		gl.glEnable(GL.GL_ALPHA_TEST);
+		gl.glDisable(GL_BLEND);
+		gl.glEnable(GL_TEXTURE_2D);
+		gl.glEnable(GL_ALPHA_TEST);
 
 		gl.glColor4f(1, 1, 1, 1);
 	}
@@ -683,16 +674,16 @@ public abstract class Main extends Base {
 
 		// clear out the portion of the screen that the NOWORLDMODEL defines
 		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0) {
-			gl.glEnable(GL.GL_SCISSOR_TEST);
+			gl.glEnable(GL_SCISSOR_TEST);
 			gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 			gl.glScissor(
 				r_newrefdef.x,
 				vid.height - r_newrefdef.height - r_newrefdef.y,
 				r_newrefdef.width,
 				r_newrefdef.height);
-			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+			gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			gl.glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
-			gl.glDisable(GL.GL_SCISSOR_TEST);
+			gl.glDisable(GL_SCISSOR_TEST);
 		}
 	}
 
@@ -737,13 +728,13 @@ public abstract class Main extends Base {
 		// set up projection matrix
 		//
 		screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
-		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
 
-		gl.glCullFace(GL.GL_FRONT);
+		gl.glCullFace(GL_FRONT);
 
-		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
 
 		gl.glRotatef(-90, 1, 0, 0); // put Z going up
@@ -753,19 +744,20 @@ public abstract class Main extends Base {
 		gl.glRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
 		gl.glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
-		gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, r_world_matrix);
+		gl.glGetFloat(GL_MODELVIEW_MATRIX, r_world_matrix);
+        r_world_matrix.clear();
 
 		//
 		// set drawing parms
 		//
 		if (gl_cull.value != 0.0f)
-			gl.glEnable(GL.GL_CULL_FACE);
+			gl.glEnable(GL_CULL_FACE);
 		else
-			gl.glDisable(GL.GL_CULL_FACE);
+			gl.glDisable(GL_CULL_FACE);
 
-		gl.glDisable(GL.GL_BLEND);
-		gl.glDisable(GL.GL_ALPHA_TEST);
-		gl.glEnable(GL.GL_DEPTH_TEST);
+		gl.glDisable(GL_BLEND);
+		gl.glDisable(GL_ALPHA_TEST);
+		gl.glEnable(GL_DEPTH_TEST);
 	}
 
 	/*
@@ -779,30 +771,30 @@ public abstract class Main extends Base {
 		if (gl_ztrick.value != 0.0f) {
 
 			if (gl_clear.value != 0.0f) {
-				gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+				gl.glClear(GL_COLOR_BUFFER_BIT);
 			}
 
 			trickframe++;
 			if ((trickframe & 1) != 0) {
 				gldepthmin = 0;
 				gldepthmax = 0.49999f;
-				gl.glDepthFunc(GL.GL_LEQUAL);
+				gl.glDepthFunc(GL_LEQUAL);
 			}
 			else {
 				gldepthmin = 1;
 				gldepthmax = 0.5f;
-				gl.glDepthFunc(GL.GL_GEQUAL);
+				gl.glDepthFunc(GL_GEQUAL);
 			}
 		}
 		else {
 			if (gl_clear.value != 0.0f)
-				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+				gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			else
-				gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+				gl.glClear(GL_DEPTH_BUFFER_BIT);
 
 			gldepthmin = 0;
 			gldepthmax = 1;
-			gl.glDepthFunc(GL.GL_LEQUAL);
+			gl.glDepthFunc(GL_LEQUAL);
 		}
 		gl.glDepthRange(gldepthmin, gldepthmax);
 	}
@@ -874,15 +866,15 @@ public abstract class Main extends Base {
 	void R_SetGL2D() {
 		// set 2D virtual screen size
 		gl.glViewport(0, 0, vid.width, vid.height);
-		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glDisable(GL.GL_DEPTH_TEST);
-		gl.glDisable(GL.GL_CULL_FACE);
-		gl.glDisable(GL.GL_BLEND);
-		gl.glEnable(GL.GL_ALPHA_TEST);
+		gl.glDisable(GL_DEPTH_TEST);
+		gl.glDisable(GL_CULL_FACE);
+		gl.glDisable(GL_BLEND);
+		gl.glEnable(GL_ALPHA_TEST);
 		gl.glColor4f(1, 1, 1, 1);
 	}
 
@@ -1105,18 +1097,18 @@ public abstract class Main extends Base {
 
 	protected boolean R_Init2() {
 		VID.MenuInit();
-
+        
 		/*
 		** get our various GL strings
 		*/
-		VID.Printf(Defines.PRINT_ALL, "JOGL_VERSION: " + Version.getVersion() + '\n');
-		gl_config.vendor_string = gl.glGetString(GL.GL_VENDOR);
+//		VID.Printf(Defines.PRINT_ALL, "JOGL_VERSION: " + Version.getVersion() + '\n');
+		gl_config.vendor_string = gl.glGetString(GL_VENDOR);
 		VID.Printf(Defines.PRINT_ALL, "GL_VENDOR: " + gl_config.vendor_string + '\n');
-		gl_config.renderer_string = gl.glGetString(GL.GL_RENDERER);
+		gl_config.renderer_string = gl.glGetString(GL_RENDERER);
 		VID.Printf(Defines.PRINT_ALL, "GL_RENDERER: " + gl_config.renderer_string + '\n');
-		gl_config.version_string = gl.glGetString(GL.GL_VERSION);
+		gl_config.version_string = gl.glGetString(GL_VERSION);
 		VID.Printf(Defines.PRINT_ALL, "GL_VERSION: " + gl_config.version_string + '\n');
-		gl_config.extensions_string = gl.glGetString(GL.GL_EXTENSIONS);
+		gl_config.extensions_string = gl.glGetString(GL_EXTENSIONS);
 		VID.Printf(Defines.PRINT_ALL, "GL_EXTENSIONS: " + gl_config.extensions_string + '\n');
 		
 		gl_config.parseOpenGLVersion();
@@ -1279,8 +1271,8 @@ public abstract class Main extends Base {
 				//			 qglClientActiveTextureARB = ( void * ) qwglGetProcAddress( "glClientActiveTextureARB" );
 				qglActiveTextureARB = true;
 				qglMTexCoord2fSGIS = true;
-				GL_TEXTURE0 = GL.GL_TEXTURE0_ARB;
-				GL_TEXTURE1 = GL.GL_TEXTURE1_ARB;
+//				GL_TEXTURE0 = GL_TEXTURE0_ARB;
+//				GL_TEXTURE1 = GL_TEXTURE1_ARB;
 				Cvar.SetValue("r_fullbright", 1);
 			}
 			else {
@@ -1304,8 +1296,8 @@ public abstract class Main extends Base {
 				qglSelectTextureSGIS = true;
 				qglMTexCoord2fSGIS = true;
 				Cvar.SetValue("r_fullbright", 1);
-				//			 //GL_TEXTURE0 = GL.GL_TEXTURE0_SGIS;
-				//			 //GL_TEXTURE1 = GL.GL_TEXTURE1_SGIS;
+				//			 //GL_TEXTURE0 = GL_TEXTURE0_SGIS;
+				//			 //GL_TEXTURE1 = GL_TEXTURE1_SGIS;
 			} else {
 				VID.Printf(Defines.PRINT_ALL, "...ignoring GL_SGIS_multitexture\n");
 				Cvar.SetValue("r_fullbright", 0);
@@ -1325,7 +1317,7 @@ public abstract class Main extends Base {
 		Draw_InitLocal();
 
 		int err = gl.glGetError();
-		if (err != GL.GL_NO_ERROR)
+		if (err != GL_NO_ERROR)
 			VID.Printf(
 				Defines.PRINT_ALL,
 				"glGetError() = 0x%x\n\t%s\n",
@@ -1371,7 +1363,7 @@ public abstract class Main extends Base {
 			// FIXME: only restart if CDS is required
 			cvar_t ref;
 
-			ref = Cvar.Get("vid_ref", "jogl", 0);
+			ref = Cvar.Get("vid_ref", "lwjgl", 0);
 			ref.modified = true;
 		}
 
@@ -1414,15 +1406,15 @@ public abstract class Main extends Base {
 		** go into 2D mode
 		*/
 		gl.glViewport(0, 0, vid.width, vid.height);
-		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glDisable(GL.GL_DEPTH_TEST);
-		gl.glDisable(GL.GL_CULL_FACE);
-		gl.glDisable(GL.GL_BLEND);
-		gl.glEnable(GL.GL_ALPHA_TEST);
+		gl.glDisable(GL_DEPTH_TEST);
+		gl.glDisable(GL_CULL_FACE);
+		gl.glDisable(GL_BLEND);
+		gl.glEnable(GL_ALPHA_TEST);
 		gl.glColor4f(1, 1, 1, 1);
 
 		/*
@@ -1433,9 +1425,9 @@ public abstract class Main extends Base {
 
 			if (gl_state.camera_separation == 0 || !gl_state.stereo_enabled) {
 				if (gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
-					gl.glDrawBuffer(GL.GL_FRONT);
+					gl.glDrawBuffer(GL_FRONT);
 				else
-					gl.glDrawBuffer(GL.GL_BACK);
+					gl.glDrawBuffer(GL_BACK);
 			}
 		}
 
@@ -1499,7 +1491,7 @@ public abstract class Main extends Base {
 		GL_SetTexturePalette(r_rawpalette);
 
 		gl.glClearColor(0, 0, 0, 0);
-		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		gl.glClear(GL_COLOR_BUFFER_BIT);
 		gl.glClearColor(1f, 0f, 0.5f, 0.5f);
 	}
 
@@ -1552,8 +1544,8 @@ public abstract class Main extends Base {
 			Math3D.VectorAdd(start_points[i], direction, end_points[i]);
 		}
 
-		gl.glDisable(GL.GL_TEXTURE_2D);
-		gl.glEnable(GL.GL_BLEND);
+		gl.glDisable(GL_TEXTURE_2D);
+		gl.glEnable(GL_BLEND);
 		gl.glDepthMask(false);
 
 		r = (d_8to24table[e.skinnum & 0xFF]) & 0xFF;
@@ -1566,7 +1558,7 @@ public abstract class Main extends Base {
 
 		gl.glColor4f(r, g, b, e.alpha);
 
-		gl.glBegin(GL.GL_TRIANGLE_STRIP);
+		gl.glBegin(GL_TRIANGLE_STRIP);
 		
 		float[] v;
 		
@@ -1582,8 +1574,8 @@ public abstract class Main extends Base {
 		}
 		gl.glEnd();
 
-		gl.glEnable(GL.GL_TEXTURE_2D);
-		gl.glDisable(GL.GL_BLEND);
+		gl.glEnable(GL_TEXTURE_2D);
+		gl.glDisable(GL_BLEND);
 		gl.glDepthMask(true);
 	}
 

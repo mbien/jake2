@@ -2,7 +2,7 @@
  * Base.java
  * Copyright (C) 2003
  *
- * $Id: Base.java,v 1.2 2004-07-15 14:37:34 hzi Exp $
+ * $Id: Base.java,v 1.2.12.1 2005-07-16 18:25:37 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,17 +25,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.jogl;
 
-import jake2.render.JoglBase;
-import net.java.games.jogl.GL;
+import jake2.client.viddef_t;
+import jake2.game.cvar_t;
+import jake2.render.*;
+
+import java.awt.Dimension;
 
 /**
  * Base
  *  
  * @author cwei
  */
-public abstract class Base extends JoglBase {
+public abstract class Base implements QGLConst {
 	
-	static final int GL_COLOR_INDEX8_EXT = GL.GL_COLOR_INDEX;
+	static final int GL_COLOR_INDEX8_EXT = GL_COLOR_INDEX;
 	static final String REF_VERSION = "GL 0.01";
 
 	// up / down
@@ -229,67 +232,44 @@ public abstract class Base extends JoglBase {
 	static final int GL_RENDERER_MCD = 0x01000000;
 	static final int GL_RENDERER_OTHER = 0x80000000;
 
+    /*
+     * base members
+     */
 
-//	typedef struct
-//	{
-//		int         renderer;
-//		const char *renderer_string;
-//		const char *vendor_string;
-//		const char *version_string;
-//		const char *extensions_string;
-//
-//		qboolean	allow_cds;
-//	} glconfig_t;
-//
-//	typedef struct
-//	{
-//		float inverse_intensity;
-//		qboolean fullscreen;
-//
-//		int     prev_mode;
-//
-//		unsigned char *d_16to8table;
-//
-//		int lightmap_textures;
-//
-//		int	currenttextures[2];
-//		int currenttmu;
-//
-//		float camera_separation;
-//		qboolean stereo_enabled;
-//
-//		unsigned char originalRedGammaTable[256];
-//		unsigned char originalGreenGammaTable[256];
-//		unsigned char originalBlueGammaTable[256];
-//	} glstate_t;
-//
-//	/*
-//	====================================================================
-//
-//	IMPORTED FUNCTIONS
-//
-//	====================================================================
-//	*/
-//
-//	extern	refimport_t	ri;
-//
-//
-//	/*
-//	====================================================================
-//
-//	IMPLEMENTATION SPECIFIC FUNCTIONS
-//
-//	====================================================================
-//	*/
-//
-//	void		GLimp_BeginFrame( float camera_separation );
-//	void		GLimp_EndFrame( void );
-//	int 		GLimp_Init( void *hinstance, void *hWnd );
-//	void		GLimp_Shutdown( void );
-//	int     	GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen );
-//	void		GLimp_AppActivate( qboolean active );
-//	void		GLimp_EnableLogging( qboolean enable );
-//	void		GLimp_LogNewFrame( void );
-//
+    protected viddef_t vid = new viddef_t();
+
+    protected cvar_t vid_fullscreen;
+    
+    protected QGL gl = LwjglGL.getInstance();//DummyGL.getInstance();
+
+    // enum rserr_t
+    protected static final int rserr_ok = 0;
+
+    protected static final int rserr_invalid_fullscreen = 1;
+
+    protected static final int rserr_invalid_mode = 2;
+
+    protected static final int rserr_unknown = 3;
+
+    protected abstract int GLimp_SetMode(Dimension dim, int mode,
+            boolean fullscreen);
+
+    protected abstract void GLimp_Shutdown();
+
+    protected void GLimp_BeginFrame(float camera_separation) {
+        // do nothing
+    }
+
+    protected void GLimp_AppActivate(boolean activate) {
+        // do nothing
+    }
+
+    protected void GLimp_EnableLogging(boolean enable) {
+        // do nothing
+    }
+
+    protected void GLimp_LogNewFrame() {
+        // do nothing
+    }
 
 }
