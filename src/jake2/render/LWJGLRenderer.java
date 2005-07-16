@@ -2,7 +2,7 @@
  * LWJGLRenderer.java
  * Copyright (C) 2004
  *
- * $Id: LWJGLRenderer.java,v 1.3.6.1 2005-07-10 17:57:34 cawe Exp $
+ * $Id: LWJGLRenderer.java,v 1.3.6.2 2005-07-16 18:01:36 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -39,7 +39,7 @@ import java.awt.Dimension;
  * 
  * @author dsanders/cwei
  */
-final class LWJGLRenderer extends LwjglGL implements refexport_t, Ref {
+final class LWJGLRenderer extends LWJGLBase implements refexport_t, Ref {
 	
 	private LWJGLKBD kbd=new LWJGLKBD();
 	
