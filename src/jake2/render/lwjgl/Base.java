@@ -2,7 +2,7 @@
  * Base.java
  * Copyright (C) 2003
  *
- * $Id: Base.java,v 1.4.4.1 2005-07-10 17:55:51 cawe Exp $
+ * $Id: Base.java,v 1.4.4.2 2005-07-16 18:22:37 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -27,7 +27,7 @@ package jake2.render.lwjgl;
 
 import jake2.client.viddef_t;
 import jake2.game.cvar_t;
-import jake2.render.QGL;
+import jake2.render.*;
 
 import java.awt.Dimension;
 
@@ -36,7 +36,7 @@ import java.awt.Dimension;
  * 
  * @author dsanders/cwei
  */
-public abstract class Base extends QGL {
+public abstract class Base implements QGLConst {
 
     static final int GL_COLOR_INDEX8_EXT = GL_COLOR_INDEX;
 
@@ -163,6 +163,8 @@ public abstract class Base extends QGL {
     protected viddef_t vid = new viddef_t();
 
     protected cvar_t vid_fullscreen;
+    
+    protected QGL gl = LwjglGL.getInstance(); //DummyGL.getInstance();
 
     // enum rserr_t
     protected static final int rserr_ok = 0;

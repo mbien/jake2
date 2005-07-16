@@ -2,7 +2,7 @@
  * Misc.java
  * Copyright (C) 2003
  *
- * $Id: Misc.java,v 1.8.6.1 2005-07-10 17:55:50 cawe Exp $
+ * $Id: Misc.java,v 1.8.6.2 2005-07-16 18:22:37 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -158,7 +158,7 @@ public abstract class Misc extends Mesh {
 	        
 	        // change pixel alignment for reading
 	        if (vid.width % 4 != 0) {
-	            glPixelStorei(GL_PACK_ALIGNMENT, 1); 
+	            gl.glPixelStorei(GL_PACK_ALIGNMENT, 1); 
 	        }
 	        
 	        // OpenGL 1.2+ supports the GL_BGR color format
@@ -166,10 +166,10 @@ public abstract class Misc extends Mesh {
 	        // e.g.: 1.5.2 NVIDIA 66.29
 	        if (gl_config.getOpenGLVersion() >= 1.2f) {
 	            // read the BGR values into the image buffer
-	            glReadPixels(0, 0, vid.width, vid.height, GL_BGR, GL_UNSIGNED_BYTE, image);
+	            gl.glReadPixels(0, 0, vid.width, vid.height, GL_BGR, GL_UNSIGNED_BYTE, image);
 	        } else {
 	            // read the RGB values into the image buffer
-	            glReadPixels(0, 0, vid.width, vid.height, GL_RGB, GL_UNSIGNED_BYTE, image);
+	            gl.glReadPixels(0, 0, vid.width, vid.height, GL_RGB, GL_UNSIGNED_BYTE, image);
 		        // flip RGB to BGR
 		        byte tmp;
 		        for (i = TGA_HEADER_SIZE; i < fileLength; i += 3) {
@@ -179,7 +179,7 @@ public abstract class Misc extends Mesh {
 		        }
 	        }
 	        // reset to default alignment
-	        glPixelStorei(GL_PACK_ALIGNMENT, 4); 
+	        gl.glPixelStorei(GL_PACK_ALIGNMENT, 4); 
 	        // close the file channel
 	        ch.close();
 	    } catch (IOException e) {
@@ -204,34 +204,34 @@ public abstract class Misc extends Mesh {
 	*/
 	void GL_SetDefaultState()
 	{
-		glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
-		//gl.glClearColor(0, 0, 0, 0); // replaced with black
-		glCullFace(GL_FRONT);
-		glEnable(GL_TEXTURE_2D);
+		gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
+		//gl.gl.glClearColor(0, 0, 0, 0); // replaced with black
+		gl.glCullFace(GL_FRONT);
+		gl.glEnable(GL_TEXTURE_2D);
 
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER, 0.666f);
+		gl.glEnable(GL_ALPHA_TEST);
+		gl.glAlphaFunc(GL_GREATER, 0.666f);
 
-		glDisable (GL_DEPTH_TEST);
-		glDisable (GL_CULL_FACE);
-		glDisable (GL_BLEND);
+		gl.glDisable (GL_DEPTH_TEST);
+		gl.glDisable (GL_CULL_FACE);
+		gl.glDisable (GL_BLEND);
 
-		glColor4f (1,1,1,1);
+		gl.glColor4f (1,1,1,1);
 
-		glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-		glShadeModel (GL_FLAT);
+		gl.glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+		gl.glShadeModel (GL_FLAT);
 
 		GL_TextureMode( gl_texturemode.string );
 		GL_TextureAlphaMode( gl_texturealphamode.string );
 		GL_TextureSolidMode( gl_texturesolidmode.string );
 
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		gl.glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		GL_TexEnv( GL_REPLACE );
 
@@ -243,15 +243,15 @@ public abstract class Misc extends Mesh {
 			att_buffer.put(1,gl_particle_att_b.value);
 			att_buffer.put(2,gl_particle_att_c.value);
 			
-			glEnable( GL_POINT_SMOOTH );
-			glPointParameterfEXT(GL_POINT_SIZE_MIN_EXT, gl_particle_min_size.value );
-			glPointParameterfEXT(GL_POINT_SIZE_MAX_EXT, gl_particle_max_size.value );
-			glPointParameterEXT(GL_DISTANCE_ATTENUATION_EXT, att_buffer );
+			gl.glEnable( GL_POINT_SMOOTH );
+			gl.glPointParameterfEXT(GL_POINT_SIZE_MIN_EXT, gl_particle_min_size.value );
+			gl.glPointParameterfEXT(GL_POINT_SIZE_MAX_EXT, gl_particle_max_size.value );
+			gl.glPointParameterEXT(GL_DISTANCE_ATTENUATION_EXT, att_buffer );
 		}
 
 		if ( qglColorTableEXT && gl_ext_palettedtexture.value != 0.0f )
 		{
-			glEnable(GL_SHARED_TEXTURE_PALETTE_EXT );
+			gl.glEnable(GL_SHARED_TEXTURE_PALETTE_EXT );
 
 			GL_SetTexturePalette( d_8to24table );
 		}
@@ -261,9 +261,9 @@ public abstract class Misc extends Mesh {
 		/*
 		 * vertex array extension
 		 */
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glClientActiveTextureARB(TEXTURE0);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		gl.glEnableClientState(GL_VERTEX_ARRAY);
+		gl.glClientActiveTextureARB(TEXTURE0);
+		gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
 	void GL_UpdateSwapInterval()
@@ -274,7 +274,7 @@ public abstract class Misc extends Mesh {
 			if ( !gl_state.stereo_enabled ) 
 			{
 				if (qwglSwapIntervalEXT) {
-					// ((WGL)gl).wglSwapIntervalEXT((int)gl_swapinterval.value);
+					// ((WGL)gl).wgl.glSwapIntervalEXT((int)gl_swapinterval.value);
 				}
 			}
 		}

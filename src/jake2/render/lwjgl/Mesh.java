@@ -2,7 +2,7 @@
  * Mesh.java
  * Copyright (C) 2003
  *
- * $Id: Mesh.java,v 1.8.4.1 2005-07-10 17:55:51 cawe Exp $
+ * $Id: Mesh.java,v 1.8.4.2 2005-07-16 18:22:37 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -149,7 +149,7 @@ public abstract class Mesh extends Light {
 
 		// PMM - added double shell
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
-			glDisable( GL_TEXTURE_2D );
+			gl.glDisable( GL_TEXTURE_2D );
 
 		float frontlerp = 1.0f - backlerp;
 
@@ -174,18 +174,18 @@ public abstract class Mesh extends Light {
 
 		GL_LerpVerts( paliashdr.num_xyz, ov, verts, move, frontv, backv );
 		
-		//gl.glEnableClientState( GL_VERTEX_ARRAY );
-		glVertexPointer( 3, 0, vertexArrayBuf );
+		//gl.gl.glEnableClientState( GL_VERTEX_ARRAY );
+		gl.glVertexPointer( 3, 0, vertexArrayBuf );
 
 		// PMM - added double damage shell
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
 		{
-			glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
+			gl.glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
 		}
 		else
 		{
-			glEnableClientState( GL_COLOR_ARRAY );
-			glColorPointer( 4, 0, colorArrayBuf );
+			gl.glEnableClientState( GL_COLOR_ARRAY );
+			gl.glColorPointer( 4, 0, colorArrayBuf );
 
 			//
 			// pre light everything
@@ -205,9 +205,9 @@ public abstract class Mesh extends Light {
 			}
 		}
 
-		glClientActiveTextureARB(TEXTURE0);
-		glTexCoordPointer( 2, 0, textureArrayBuf);
-		//gl.glEnableClientState( GL_TEXTURE_COORD_ARRAY);
+		gl.glClientActiveTextureARB(TEXTURE0);
+		gl.glTexCoordPointer( 2, 0, textureArrayBuf);
+		//gl.gl.glEnableClientState( GL_TEXTURE_COORD_ARRAY);
 
 		int pos = 0;
 		int[] counts = paliashdr.counts;
@@ -244,15 +244,15 @@ public abstract class Mesh extends Light {
 				dstTextureCoords.put(++dstIndex, srcTextureCoords.get(++srcIndex));
 			}
 				
-			glDrawElements(mode, srcIndexBuf);
+			gl.glDrawElements(mode, srcIndexBuf);
 			pos += count;
 		}
 
 		// PMM - added double damage shell
 		if ( (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0 )
-			glEnable( GL_TEXTURE_2D );
+			gl.glEnable( GL_TEXTURE_2D );
 
-		glDisableClientState( GL_COLOR_ARRAY );
+		gl.glDisableClientState( GL_COLOR_ARRAY );
 	}
 			
 	private final float[] point = {0, 0, 0};
@@ -281,10 +281,10 @@ public abstract class Mesh extends Light {
 			if (count < 0)
 			{
 				count = -count;
-				glBegin (GL_TRIANGLE_FAN);
+				gl.glBegin (GL_TRIANGLE_FAN);
 			}
 			else
-				glBegin (GL_TRIANGLE_STRIP);
+				gl.glBegin (GL_TRIANGLE_STRIP);
 
 			do
 			{
@@ -296,13 +296,13 @@ public abstract class Mesh extends Light {
 				point[0] -= shadevector[0]*(point[2]+lheight);
 				point[1] -= shadevector[1]*(point[2]+lheight);
 				point[2] = height;
-				glVertex3f(point[0], point[1], point[2]);
+				gl.glVertex3f(point[0], point[1], point[2]);
 
 				orderIndex += 3;
 
 			} while (--count != 0);
 
-			glEnd ();
+			gl.glEnd ();
 		}	
 	}
 
@@ -578,21 +578,21 @@ public abstract class Mesh extends Light {
 		// draw all the triangles
 		//
 		if ( (currententity.flags & Defines.RF_DEPTHHACK) != 0) // hack the depth range to prevent view model from poking into walls
-			glDepthRange(gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
+			gl.glDepthRange(gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 
 		if ( (currententity.flags & Defines.RF_WEAPONMODEL) != 0 && (r_lefthand.value == 1.0f) )
 		{
-			glMatrixMode( GL_PROJECTION );
-			glPushMatrix();
-			glLoadIdentity();
-			glScalef( -1, 1, 1 );
+			gl.glMatrixMode( GL_PROJECTION );
+			gl.glPushMatrix();
+			gl.glLoadIdentity();
+			gl.glScalef( -1, 1, 1 );
 			MYgluPerspective( r_newrefdef.fov_y, ( float ) r_newrefdef.width / r_newrefdef.height,  4,  4096);
-			glMatrixMode( GL_MODELVIEW );
+			gl.glMatrixMode( GL_MODELVIEW );
 
-			glCullFace( GL_BACK );
+			gl.glCullFace( GL_BACK );
 		}
 
-		glPushMatrix ();
+		gl.glPushMatrix ();
 		e.angles[PITCH] = -e.angles[PITCH];	// sigh.
 		R_RotateForEntity (e);
 		e.angles[PITCH] = -e.angles[PITCH];	// sigh.
@@ -620,12 +620,12 @@ public abstract class Mesh extends Light {
 
 		// draw it
 
-		glShadeModel (GL_SMOOTH);
+		gl.glShadeModel (GL_SMOOTH);
 
 		GL_TexEnv( GL_MODULATE );
 		if ( (currententity.flags & Defines.RF_TRANSLUCENT) != 0 )
 		{
-			glEnable (GL_BLEND);
+			gl.glEnable (GL_BLEND);
 		}
 
 
@@ -651,38 +651,38 @@ public abstract class Mesh extends Light {
 		GL_DrawAliasFrameLerp(paliashdr, currententity.backlerp);
 
 		GL_TexEnv( GL_REPLACE );
-		glShadeModel (GL_FLAT);
+		gl.glShadeModel (GL_FLAT);
 
-		glPopMatrix ();
+		gl.glPopMatrix ();
 
 		if ( ( currententity.flags & Defines.RF_WEAPONMODEL ) != 0 && ( r_lefthand.value == 1.0F ) )
 		{
-			glMatrixMode( GL_PROJECTION );
-			glPopMatrix();
-			glMatrixMode( GL_MODELVIEW );
-			glCullFace( GL_FRONT );
+			gl.glMatrixMode( GL_PROJECTION );
+			gl.glPopMatrix();
+			gl.glMatrixMode( GL_MODELVIEW );
+			gl.glCullFace( GL_FRONT );
 		}
 
 		if ( (currententity.flags & Defines.RF_TRANSLUCENT) != 0 )
 		{
-			glDisable (GL_BLEND);
+			gl.glDisable (GL_BLEND);
 		}
 
 		if ( (currententity.flags & Defines.RF_DEPTHHACK) != 0)
-			glDepthRange (gldepthmin, gldepthmax);
+			gl.glDepthRange (gldepthmin, gldepthmax);
 
 		if ( gl_shadows.value != 0.0f && (currententity.flags & (Defines.RF_TRANSLUCENT | Defines.RF_WEAPONMODEL)) == 0)
 		{
-			glPushMatrix ();
+			gl.glPushMatrix ();
 			R_RotateForEntity (e);
-			glDisable (GL_TEXTURE_2D);
-			glEnable (GL_BLEND);
-			glColor4f (0,0,0,0.5f);
+			gl.glDisable (GL_TEXTURE_2D);
+			gl.glEnable (GL_BLEND);
+			gl.glColor4f (0,0,0,0.5f);
 			GL_DrawAliasShadow (paliashdr, currententity.frame );
-			glEnable (GL_TEXTURE_2D);
-			glDisable (GL_BLEND);
-			glPopMatrix ();
+			gl.glEnable (GL_TEXTURE_2D);
+			gl.glDisable (GL_BLEND);
+			gl.glPopMatrix ();
 		}
-		glColor4f (1,1,1,1);
+		gl.glColor4f (1,1,1,1);
 	}
 }

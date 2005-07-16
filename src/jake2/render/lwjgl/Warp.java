@@ -2,7 +2,7 @@
  * Warp.java
  * Copyright (C) 2003
  *
- * $Id: Warp.java,v 1.5.6.1 2005-07-10 17:55:50 cawe Exp $
+ * $Id: Warp.java,v 1.5.6.2 2005-07-16 18:22:37 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -288,7 +288,7 @@ public abstract class Warp extends Model {
         for (bp = fa.polys; bp != null; bp = bp.next) {
             p = bp;
 
-            glBegin(GL_TRIANGLE_FAN);
+            gl.glBegin(GL_TRIANGLE_FAN);
             for (i = 0; i < p.numverts; i++) {
                 os = p.s1(i);
                 ot = p.t1(i);
@@ -302,10 +302,10 @@ public abstract class Warp extends Model {
                         + Warp.SIN[(int) ((os * 0.125f + rdt) * TURBSCALE) & 255];
                 t *= (1.0f / 64);
 
-                glTexCoord2f(s, t);
-                glVertex3f(p.x(i), p.y(i), p.z(i));
+                gl.glTexCoord2f(s, t);
+                gl.glVertex3f(p.x(i), p.y(i), p.z(i));
             }
-            glEnd();
+            gl.glEnd();
         }
 	}
 
@@ -610,8 +610,8 @@ public abstract class Warp extends Model {
 			t = sky_max;
 
 		t = 1.0f - t;
-		glTexCoord2f (s, t);
-		glVertex3f(v1[0], v1[1], v1[2]);
+		gl.glTexCoord2f (s, t);
+		gl.glVertex3f(v1[0], v1[1], v1[2]);
 	}
 
 	int[] skytexorder = {0,2,1,3,4,5};
@@ -633,9 +633,9 @@ public abstract class Warp extends Model {
 				return;		// nothing visible
 		}
 
-		glPushMatrix ();
-		glTranslatef (r_origin[0], r_origin[1], r_origin[2]);
-		glRotatef (r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
+		gl.glPushMatrix ();
+		gl.glTranslatef (r_origin[0], r_origin[1], r_origin[2]);
+		gl.glRotatef (r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
 
 		for (i=0 ; i<6 ; i++)
 		{
@@ -653,14 +653,14 @@ public abstract class Warp extends Model {
 
 			GL_Bind(sky_images[skytexorder[i]].texnum);
 
-			glBegin(GL_QUADS);
+			gl.glBegin(GL_QUADS);
 			MakeSkyVec(skymins[0][i], skymins[1][i], i);
 			MakeSkyVec(skymins[0][i], skymaxs[1][i], i);
 			MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i);
 			MakeSkyVec(skymaxs[0][i], skymins[1][i], i);
-			glEnd ();
+			gl.glEnd ();
 		}
-		glPopMatrix ();
+		gl.glPopMatrix ();
 	}
 
 	// 3dstudio environment map names
