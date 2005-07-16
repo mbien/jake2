@@ -6,7 +6,17 @@ import java.nio.*;
 
 import org.lwjgl.util.GL;
 
-public class LwjglGL extends LWJGLBase {
+public class LwjglGL implements QGL {
+    
+    private static QGL self = new LwjglGL();
+    
+    private LwjglGL() {
+        // singleton
+    }
+    
+    public static QGL getInstance() {
+        return self;
+    }
     
     public final void glAlphaFunc(int func, float ref) {
         GL.glAlphaFunc(func, ref);
@@ -277,6 +287,22 @@ public class LwjglGL extends LWJGLBase {
 
     public final void glPointParameterfEXT(int pname, float param) {
         GL.glPointParameterfEXT(pname, param);
+    }
+
+    public final void glLockArraysEXT(int first, int count) {
+        GL.glLockArraysEXT(first, count);
+    }
+
+    public final void glArrayElement(int index) {
+        GL.glArrayElement(index);
+    }
+
+    public final void glUnlockArraysEXT() {
+        GL.glUnlockArraysEXT();
+    }
+
+    public final void glMultiTexCoord2f(int target, float s, float t) {
+        GL.glMultiTexCoord2f(target, s, t);
     }
 
 }
