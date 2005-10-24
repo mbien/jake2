@@ -2,7 +2,7 @@
  * JoglCommon.java
  * Copyright (C) 2004
  * 
- * $Id: JoglBase.java,v 1.15.2.2 2005-10-24 22:46:04 cawe Exp $
+ * $Id: JoglBase.java,v 1.15.2.3 2005-10-24 22:50:22 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -46,7 +46,7 @@ import net.java.games.jogl.util.GLUT;
 /**
  * JoglCommon
  */
-public abstract class JoglBase extends jake2.render.fastjogl.Misc implements GLEventListener {
+public abstract class JoglBase extends jake2.render.jogl.Misc implements GLEventListener {
 
 	// IMPORTED FUNCTIONS
 	protected GraphicsDevice device;
