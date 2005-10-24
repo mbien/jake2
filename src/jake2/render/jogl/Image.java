@@ -2,7 +2,7 @@
  * Image.java
  * Copyright (C) 2003
  *
- * $Id: Image.java,v 1.6.12.1 2005-07-16 18:25:37 cawe Exp $
+ * $Id: Image.java,v 1.6.12.2 2005-10-24 21:02:27 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -1143,7 +1143,7 @@ public abstract class Image extends Main {
                                 GL_UNSIGNED_BYTE, paletted_texture);
                     } else {
                         tex.clear();
-                        tex.put(data).flip();
+                        tex.put(data, 0, scaled_width * scaled_height).flip();
                         gl.glTexImage2D(GL_TEXTURE_2D, 0, comp,
                                 scaled_width, scaled_height, 0, GL_RGBA,
                                 GL_UNSIGNED_BYTE, tex);
@@ -1170,7 +1170,7 @@ public abstract class Image extends Main {
                         GL_UNSIGNED_BYTE, paletted_texture);
             } else {
                 tex.clear();
-                tex.put(scaled).flip();
+                tex.put(scaled, 0, scaled_width * scaled_height).flip();
                 gl.glTexImage2D(GL_TEXTURE_2D, 0, comp, scaled_width,
                         scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex);
             }
@@ -1200,7 +1200,7 @@ public abstract class Image extends Main {
                                 GL_UNSIGNED_BYTE, paletted_texture);
                     } else {
                         tex.clear();
-                        tex.put(scaled).flip();
+                        tex.put(scaled, 0, scaled_width * scaled_height).flip();
                         gl.glTexImage2D(GL_TEXTURE_2D, miplevel, comp,
                                 scaled_width, scaled_height, 0, GL_RGBA,
                                 GL_UNSIGNED_BYTE, tex);
