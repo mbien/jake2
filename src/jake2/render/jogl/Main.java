@@ -2,7 +2,7 @@
  * Main.java
  * Copyright (C) 2003
  *
- * $Id: Main.java,v 1.8.6.1 2005-07-16 18:25:37 cawe Exp $
+ * $Id: Main.java,v 1.8.6.2 2005-10-24 22:38:21 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -1069,6 +1069,10 @@ public abstract class Main extends Base {
 	*/
 	float[] r_turbsin = new float[256];
 
+    protected boolean R_Init() {
+        return R_Init(0, 0);
+    }
+    
 	protected boolean R_Init(int vid_xpos, int vid_ypos) {
 
 		assert(Warp.SIN.length == 256) : "warpsin table bug";
