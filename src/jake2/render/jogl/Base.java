@@ -2,7 +2,7 @@
  * Base.java
  * Copyright (C) 2003
  *
- * $Id: Base.java,v 1.2.12.1 2005-07-16 18:25:37 cawe Exp $
+ * $Id: Base.java,v 1.2.12.2 2005-10-24 22:48:15 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -240,7 +240,7 @@ public abstract class Base implements QGLConst {
 
     protected cvar_t vid_fullscreen;
     
-    protected QGL gl = LwjglGL.getInstance();//DummyGL.getInstance();
+    protected QGL gl = JoglGL.getInstance();//DummyGL.getInstance();
 
     // enum rserr_t
     protected static final int rserr_ok = 0;
