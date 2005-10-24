@@ -2,7 +2,7 @@
  * Light.java
  * Copyright (C) 2003
  *
- * $Id: Light.java,v 1.7.12.1 2005-07-16 18:25:37 cawe Exp $
+ * $Id: Light.java,v 1.7.12.2 2005-10-24 21:00:57 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -590,7 +590,7 @@ public abstract class Light extends Warp {
 
         if (monolightmap == '0') {
             for (i = 0; i < tmax; i++, destp += stride) {
-                for (j = 0; j < smax; j++, destp++) {
+                for (j = 0; j < smax; j++) {
 
                     r = (int) bl[blp++];
                     g = (int) bl[blp++];
@@ -637,13 +637,13 @@ public abstract class Light extends Warp {
                     g &= 0xFF;
                     b &= 0xFF;
                     a &= 0xFF;
-                    dest.put(destp, (a << 24) | (b << 16) | (g << 8)
+                    dest.put(destp++, (a << 24) | (b << 16) | (g << 8)
                             | (r << 0));
                 }
             }
         } else {
             for (i = 0; i < tmax; i++, destp += stride) {
-                for (j = 0; j < smax; j++, destp++) {
+                for (j = 0; j < smax; j++) {
 
                     r = (int) bl[blp++];
                     g = (int) bl[blp++];
@@ -715,7 +715,7 @@ public abstract class Light extends Warp {
                     g &= 0xFF;
                     b &= 0xFF;
                     a &= 0xFF;
-                    dest.put(destp, (a << 24) | (b << 16) | (g << 8)
+                    dest.put(destp++, (a << 24) | (b << 16) | (g << 8)
                             | (r << 0));
                 }
             }
