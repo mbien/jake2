@@ -2,7 +2,7 @@
  * Surf.java
  * Copyright (C) 2003
  *
- * $Id: Surf.java,v 1.10 2005-06-08 21:27:09 cawe Exp $
+ * $Id: Surf.java,v 1.10.4.1 2005-10-24 22:41:12 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -37,9 +37,6 @@ import jake2.util.Math3D;
 import java.nio.*;
 import java.util.Arrays;
 
-import net.java.games.jogl.GL;
-import net.java.games.jogl.util.BufferUtils;
-
 /**
  * Surf
  * 
@@ -68,7 +65,7 @@ public abstract class Surf extends Draw {
 
     int c_visible_textures;
 
-    static final int GL_LIGHTMAP_FORMAT = GL.GL_RGBA;
+    static final int GL_LIGHTMAP_FORMAT = GL_RGBA;
 
     static class gllightmapstate_t {
         int internal_format;
@@ -152,7 +149,7 @@ public abstract class Surf extends Draw {
      * ================ DrawGLPoly ================
      */
     void DrawGLPoly(glpoly_t p) {
-        gl.glDrawArrays(GL.GL_POLYGON, p.pos, p.numverts);
+        gl.glDrawArrays(GL_POLYGON, p.pos, p.numverts);
     }
 
     //	  ============
@@ -168,7 +165,7 @@ public abstract class Surf extends Draw {
             scroll = -64.0f;
 
         p.beginScrolling(scroll);
-        gl.glDrawArrays(GL.GL_POLYGON, p.pos, p.numverts);
+        gl.glDrawArrays(GL_POLYGON, p.pos, p.numverts);
         p.endScrolling();
     }
 
@@ -182,15 +179,15 @@ public abstract class Surf extends Draw {
          if (gl_showtris.value == 0)
             return;
 
-        gl.glDisable(GL.GL_TEXTURE_2D);
-        gl.glDisable(GL.GL_DEPTH_TEST);
+        gl.glDisable(GL_TEXTURE_2D);
+        gl.glDisable(GL_DEPTH_TEST);
         gl.glColor4f(1, 1, 1, 1);
 
         for (int i = 0; i < MAX_LIGHTMAPS; i++) {
              for (msurface_t surf = gl_lms.lightmap_surfaces[i]; surf != null; surf = surf.lightmapchain) {
                 for (glpoly_t p = surf.polys; p != null; p = p.chain) {
                     for (int j = 2; j < p.numverts; j++) {
-                        gl.glBegin(GL.GL_LINE_STRIP);
+                        gl.glBegin(GL_LINE_STRIP);
 						gl.glVertex3f(p.x(0), p.y(0), p.z(0));
 						gl.glVertex3f(p.x(j-1), p.y(j-1), p.z(j-1));
 						gl.glVertex3f(p.x(j), p.y(j), p.z(j));
@@ -201,8 +198,8 @@ public abstract class Surf extends Draw {
             }
         }
 
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glEnable(GL.GL_TEXTURE_2D);
+        gl.glEnable(GL_DEPTH_TEST);
+        gl.glEnable(GL_TEXTURE_2D);
     }
 
     private IntBuffer temp2 = Lib
@@ -224,17 +221,17 @@ public abstract class Surf extends Draw {
             GL_Bind(image.texnum);
 
             // warp texture, no lightmaps
-            GL_TexEnv(GL.GL_MODULATE);
+            GL_TexEnv(GL_MODULATE);
             gl.glColor4f(gl_state.inverse_intensity,
                     gl_state.inverse_intensity, gl_state.inverse_intensity,
                     1.0F);
             EmitWaterPolys(fa);
-            GL_TexEnv(GL.GL_REPLACE);
+            GL_TexEnv(GL_REPLACE);
 
             return;
         } else {
             GL_Bind(image.texnum);
-            GL_TexEnv(GL.GL_REPLACE);
+            GL_TexEnv(GL_REPLACE);
         }
 
         //	  ======
@@ -288,8 +285,8 @@ public abstract class Surf extends Draw {
 
                 GL_Bind(gl_state.lightmap_textures + fa.lightmaptexturenum);
 
-                gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, fa.light_s, fa.light_t,
-                        smax, tmax, GL_LIGHTMAP_FORMAT, GL.GL_UNSIGNED_BYTE,
+                gl.glTexSubImage2D(GL_TEXTURE_2D, 0, fa.light_s, fa.light_t,
+                        smax, tmax, GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE,
                         temp2);
 
                 fa.lightmapchain = gl_lms.lightmap_surfaces[fa.lightmaptexturenum];
@@ -318,16 +315,16 @@ public abstract class Surf extends Draw {
         //
         // go back to the world matrix
         //
-        gl.glLoadMatrixf(r_world_matrix);
+        gl.glLoadMatrix(r_world_matrix);
 
-        gl.glEnable(GL.GL_BLEND);
-        GL_TexEnv(GL.GL_MODULATE);
+        gl.glEnable(GL_BLEND);
+        GL_TexEnv(GL_MODULATE);
 
         // the textures are prescaled up for a better lighting range,
         // so scale it back down
         intens = gl_state.inverse_intensity;
 
-        gl.glInterleavedArrays(GL.GL_T2F_V3F, Polygon.BYTE_STRIDE,
+        gl.glInterleavedArrays(GL_T2F_V3F, Polygon.BYTE_STRIDE,
                 globalPolygonInterleavedBuf);
 
         for (s = r_alpha_surfaces; s != null; s = s.texturechain) {
@@ -348,9 +345,9 @@ public abstract class Surf extends Draw {
                 DrawGLPoly(s.polys);
         }
 
-        GL_TexEnv(GL.GL_REPLACE);
+        GL_TexEnv(GL_REPLACE);
         gl.glColor4f(1, 1, 1, 1);
-        gl.glDisable(GL.GL_BLEND);
+        gl.glDisable(GL_BLEND);
 
         r_alpha_surfaces = null;
     }
@@ -398,7 +395,7 @@ public abstract class Surf extends Draw {
             image.texturechain = null;
         }
 
-        GL_TexEnv(GL.GL_REPLACE);
+        GL_TexEnv(GL_REPLACE);
     }
 
     // direct buffer
@@ -459,9 +456,9 @@ public abstract class Surf extends Draw {
 
                 lmtex = surf.lightmaptexturenum;
 
-                gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, surf.light_s,
+                gl.glTexSubImage2D(GL_TEXTURE_2D, 0, surf.light_s,
                         surf.light_t, smax, tmax, GL_LIGHTMAP_FORMAT,
-                        GL.GL_UNSIGNED_BYTE, temp);
+                        GL_UNSIGNED_BYTE, temp);
 
             } else {
                 smax = (surf.extents[0] >> 4) + 1;
@@ -473,9 +470,9 @@ public abstract class Surf extends Draw {
 
                 lmtex = 0;
 
-                gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, surf.light_s,
+                gl.glTexSubImage2D(GL_TEXTURE_2D, 0, surf.light_s,
                         surf.light_t, smax, tmax, GL_LIGHTMAP_FORMAT,
-                        GL.GL_UNSIGNED_BYTE, temp);
+                        GL_UNSIGNED_BYTE, temp);
 
             }
 
@@ -496,12 +493,12 @@ public abstract class Surf extends Draw {
 
                 for (p = surf.polys; p != null; p = p.chain) {
                     p.beginScrolling(scroll);
-                    gl.glDrawArrays(GL.GL_POLYGON, p.pos, p.numverts);
+                    gl.glDrawArrays(GL_POLYGON, p.pos, p.numverts);
                     p.endScrolling();
                 }
             } else {
                 for (p = surf.polys; p != null; p = p.chain) {
-                    gl.glDrawArrays(GL.GL_POLYGON, p.pos, p.numverts);
+                    gl.glDrawArrays(GL_POLYGON, p.pos, p.numverts);
                 }
             }
             // PGM
@@ -524,14 +521,14 @@ public abstract class Surf extends Draw {
 
                 for (p = surf.polys; p != null; p = p.chain) {
                     p.beginScrolling(scroll);
-                    gl.glDrawArrays(GL.GL_POLYGON, p.pos, p.numverts);
+                    gl.glDrawArrays(GL_POLYGON, p.pos, p.numverts);
                     p.endScrolling();
                 }
             } else {
                 // PGM
                 //  ==========
                 for (p = surf.polys; p != null; p = p.chain) {
-                    gl.glDrawArrays(GL.GL_POLYGON, p.pos, p.numverts);
+                    gl.glDrawArrays(GL_POLYGON, p.pos, p.numverts);
                 }
 
                 // ==========
@@ -568,9 +565,9 @@ public abstract class Surf extends Draw {
         //psurf = surfaces[psurfp];
 
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0) {
-            gl.glEnable(GL.GL_BLEND);
+            gl.glEnable(GL_BLEND);
             gl.glColor4f(1, 1, 1, 0.25f);
-            GL_TexEnv(GL.GL_MODULATE);
+            GL_TexEnv(GL_MODULATE);
         }
 
         //
@@ -601,9 +598,9 @@ public abstract class Surf extends Draw {
         }
 
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0) {
-            gl.glDisable(GL.GL_BLEND);
+            gl.glDisable(GL_BLEND);
             gl.glColor4f(1, 1, 1, 1);
-            GL_TexEnv(GL.GL_REPLACE);
+            GL_TexEnv(GL_REPLACE);
         }
     }
 
@@ -673,19 +670,19 @@ public abstract class Surf extends Draw {
 
         GL_EnableMultitexture(true);
         GL_SelectTexture(GL_TEXTURE0);
-        GL_TexEnv(GL.GL_REPLACE);
-        gl.glInterleavedArrays(GL.GL_T2F_V3F, Polygon.BYTE_STRIDE,
+        GL_TexEnv(GL_REPLACE);
+        gl.glInterleavedArrays(GL_T2F_V3F, Polygon.BYTE_STRIDE,
                 globalPolygonInterleavedBuf);
         GL_SelectTexture(GL_TEXTURE1);
-        GL_TexEnv(GL.GL_MODULATE);
-        gl.glTexCoordPointer(2, GL.GL_FLOAT, Polygon.BYTE_STRIDE,
+        GL_TexEnv(GL_MODULATE);
+        gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE,
                 globalPolygonTexCoord1Buf);
-        gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+        gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
         R_DrawInlineBModel();
 
         gl.glClientActiveTextureARB(GL_TEXTURE1);
-        gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+        gl.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
         GL_EnableMultitexture(false);
 
@@ -850,23 +847,23 @@ public abstract class Surf extends Draw {
         GL_EnableMultitexture(true);
 
         GL_SelectTexture(GL_TEXTURE0);
-        GL_TexEnv(GL.GL_REPLACE);
-        gl.glInterleavedArrays(GL.GL_T2F_V3F, Polygon.BYTE_STRIDE,
+        GL_TexEnv(GL_REPLACE);
+        gl.glInterleavedArrays(GL_T2F_V3F, Polygon.BYTE_STRIDE,
                 globalPolygonInterleavedBuf);
         GL_SelectTexture(GL_TEXTURE1);
-        gl.glTexCoordPointer(2, GL.GL_FLOAT, Polygon.BYTE_STRIDE,
+        gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE,
                 globalPolygonTexCoord1Buf);
-        gl.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+        gl.glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
         if (gl_lightmap.value != 0)
-            GL_TexEnv(GL.GL_REPLACE);
+            GL_TexEnv(GL_REPLACE);
         else
-            GL_TexEnv(GL.GL_MODULATE);
+            GL_TexEnv(GL_MODULATE);
 
         R_RecursiveWorldNode(r_worldmodel.nodes[0]); // root node
 
         gl.glClientActiveTextureARB(GL_TEXTURE1);
-        gl.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+        gl.glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
         GL_EnableMultitexture(false);
 
@@ -978,10 +975,10 @@ public abstract class Surf extends Draw {
         }
 
         GL_Bind(gl_state.lightmap_textures + texture);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER,
-                GL.GL_LINEAR);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
-                GL.GL_LINEAR);
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        gl_lms.lightmap_buffer.rewind();
 
         if (dynamic) {
             int i;
@@ -991,18 +988,18 @@ public abstract class Surf extends Draw {
                     height = gl_lms.allocated[i];
             }
 
-            gl.glTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, height,
-                    GL_LIGHTMAP_FORMAT, GL.GL_UNSIGNED_BYTE,
+            gl.glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, height,
+                    GL_LIGHTMAP_FORMAT, GL_UNSIGNED_BYTE,
                     gl_lms.lightmap_buffer);
         } else {
-            gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, gl_lms.internal_format,
+            gl.glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format,
                     BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT,
-                    GL.GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
+                    GL_UNSIGNED_BYTE, gl_lms.lightmap_buffer);
             if (++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS)
                 Com.Error(Defines.ERR_DROP,
                         "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n");
 
-            //debugLightmap(gl_lms.lightmap_buffer, 128, 128, 4);
+            // debugLightmap(gl_lms.lightmap_buffer, 128, 128, 4);
 
         }
     }
@@ -1152,7 +1149,7 @@ public abstract class Surf extends Draw {
 
     lightstyle_t[] lightstyles;
 
-    IntBuffer dummy = BufferUtils.newIntBuffer(128 * 128);
+    IntBuffer dummy = Lib.newIntBuffer(128 * 128);
 
     /*
      * ================== GL_BeginBuildingLightmaps
@@ -1218,9 +1215,9 @@ public abstract class Surf extends Draw {
         else if (format == 'C') {
             gl_lms.internal_format = gl_tex_alpha_format;
         } else if (format == 'I') {
-            gl_lms.internal_format = GL.GL_INTENSITY8;
+            gl_lms.internal_format = GL_INTENSITY8;
         } else if (format == 'L') {
-            gl_lms.internal_format = GL.GL_LUMINANCE8;
+            gl_lms.internal_format = GL_LUMINANCE8;
         } else {
             gl_lms.internal_format = gl_tex_solid_format;
         }
@@ -1229,13 +1226,13 @@ public abstract class Surf extends Draw {
          * * initialize the dynamic lightmap texture
          */
         GL_Bind(gl_state.lightmap_textures + 0);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER,
-                GL.GL_LINEAR);
-        gl.glTexParameterf(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
-                GL.GL_LINEAR);
-        gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, gl_lms.internal_format,
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                GL_LINEAR);
+        gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                GL_LINEAR);
+        gl.glTexImage2D(GL_TEXTURE_2D, 0, gl_lms.internal_format,
                 BLOCK_WIDTH, BLOCK_HEIGHT, 0, GL_LIGHTMAP_FORMAT,
-                GL.GL_UNSIGNED_BYTE, dummy);
+                GL_UNSIGNED_BYTE, dummy);
     }
 
     /*

@@ -2,7 +2,7 @@
  * Base.java
  * Copyright (C) 2003
  *
- * $Id: Base.java,v 1.3 2005-06-08 20:43:07 cawe Exp $
+ * $Id: Base.java,v 1.3.4.1 2005-10-24 22:41:12 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,17 +25,20 @@
  */
 package jake2.render.fastjogl;
 
-import jake2.render.JoglBase;
-import net.java.games.jogl.GL;
+import jake2.client.viddef_t;
+import jake2.game.cvar_t;
+import jake2.render.*;
+
+import java.awt.Dimension;
 
 /**
  * Base
  * 
  * @author cwei
  */
-public abstract class Base extends JoglBase {
+public abstract class Base implements QGLConst {
     
-    static final int GL_COLOR_INDEX8_EXT = GL.GL_COLOR_INDEX;
+    static final int GL_COLOR_INDEX8_EXT = GL_COLOR_INDEX;
     
     static final String REF_VERSION = "GL 0.01";
     
@@ -152,4 +155,45 @@ public abstract class Base extends JoglBase {
     static final int GL_RENDERER_MCD = 0x01000000;
     
     static final int GL_RENDERER_OTHER = 0x80000000;
+    
+    /*
+     * base members
+     */
+
+    protected viddef_t vid = new viddef_t();
+
+    protected cvar_t vid_fullscreen;
+    
+//    protected QGL gl = JoglGL.getInstance(); //DummyGL.getInstance();
+    protected QGL gl = LwjglGL.getInstance(); //DummyGL.getInstance();
+
+    // enum rserr_t
+    protected static final int rserr_ok = 0;
+
+    protected static final int rserr_invalid_fullscreen = 1;
+
+    protected static final int rserr_invalid_mode = 2;
+
+    protected static final int rserr_unknown = 3;
+
+    protected abstract int GLimp_SetMode(Dimension dim, int mode,
+            boolean fullscreen);
+
+    protected abstract void GLimp_Shutdown();
+
+    protected void GLimp_BeginFrame(float camera_separation) {
+        // do nothing
+    }
+
+    protected void GLimp_AppActivate(boolean activate) {
+        // do nothing
+    }
+
+    protected void GLimp_EnableLogging(boolean enable) {
+        // do nothing
+    }
+
+    protected void GLimp_LogNewFrame() {
+        // do nothing
+    }
 }

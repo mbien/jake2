@@ -2,7 +2,7 @@
  * Model.java
  * Copyright (C) 2003
  *
- * $Id: Model.java,v 1.12 2005-05-15 16:06:15 cawe Exp $
+ * $Id: Model.java,v 1.12.6.1 2005-10-24 22:41:11 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -31,14 +31,11 @@ import jake2.game.cplane_t;
 import jake2.game.cvar_t;
 import jake2.qcommon.*;
 import jake2.render.*;
-import jake2.util.Math3D;
-import jake2.util.Vargs;
+import jake2.util.*;
 
 import java.nio.*;
 import java.util.Arrays;
 import java.util.Vector;
-
-import net.java.games.jogl.util.BufferUtils;
 
 /**
  * Model
@@ -1195,11 +1192,9 @@ public abstract class Model extends Surf {
      */
     static final int MODEL_BUFFER_SIZE = 50000;
 
-    static FloatBuffer globalModelTextureCoordBuf = BufferUtils
-            .newFloatBuffer(MODEL_BUFFER_SIZE * 2);
+    static FloatBuffer globalModelTextureCoordBuf = Lib.newFloatBuffer(MODEL_BUFFER_SIZE * 2);
 
-    static IntBuffer globalModelVertexIndexBuf = BufferUtils
-            .newIntBuffer(MODEL_BUFFER_SIZE);
+    static IntBuffer globalModelVertexIndexBuf = Lib.newIntBuffer(MODEL_BUFFER_SIZE);
 
     void precompileGLCmds(qfiles.dmdl_t model) {
         model.textureCoordBuf = globalModelTextureCoordBuf.slice();

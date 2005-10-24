@@ -2,7 +2,7 @@
  * Light.java
  * Copyright (C) 2003
  *
- * $Id: Light.java,v 1.12 2005-05-07 17:17:48 cawe Exp $
+ * $Id: Light.java,v 1.12.6.1 2005-10-24 22:41:12 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -38,8 +38,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
-import net.java.games.jogl.GL;
-
 /**
  * Light
  * 
@@ -65,7 +63,7 @@ public abstract class Light extends Warp {
         float[] v = Vec3Cache.get();
         Math3D.VectorSubtract(light.origin, r_origin, v);
 
-        gl.glBegin(GL.GL_TRIANGLE_FAN);
+        gl.glBegin(GL_TRIANGLE_FAN);
         gl.glColor3f(light.color[0] * 0.2f, light.color[1] * 0.2f,
                 light.color[2] * 0.2f);
         for (int i = 0; i < 3; i++)
@@ -95,19 +93,19 @@ public abstract class Light extends Warp {
         r_dlightframecount = r_framecount + 1; // because the count hasn't
         //  advanced yet for this frame
         gl.glDepthMask(false);
-        gl.glDisable(GL.GL_TEXTURE_2D);
-        gl.glShadeModel(GL.GL_SMOOTH);
-        gl.glEnable(GL.GL_BLEND);
-        gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE);
+        gl.glDisable(GL_TEXTURE_2D);
+        gl.glShadeModel(GL_SMOOTH);
+        gl.glEnable(GL_BLEND);
+        gl.glBlendFunc(GL_ONE, GL_ONE);
 
         for (int i = 0; i < r_newrefdef.num_dlights; i++) {
             R_RenderDlight(r_newrefdef.dlights[i]);
         }
 
         gl.glColor3f(1, 1, 1);
-        gl.glDisable(GL.GL_BLEND);
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glDisable(GL_BLEND);
+        gl.glEnable(GL_TEXTURE_2D);
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         gl.glDepthMask(true);
     }
 
@@ -606,8 +604,6 @@ public abstract class Light extends Warp {
 
         if (monolightmap == '0') {
             for (i = 0; i < tmax; i++, destp += stride) {
-                //dest.position(destp);
-
                 for (j = 0; j < smax; j++) {
 
                     r = (int) bl[blp++];
@@ -657,8 +653,6 @@ public abstract class Light extends Warp {
             }
         } else {
             for (i = 0; i < tmax; i++, destp += stride) {
-                //dest.position(destp);
-
                 for (j = 0; j < smax; j++) {
 
                     r = (int) bl[blp++];
