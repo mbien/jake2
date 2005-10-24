@@ -2,7 +2,7 @@
  * JoglCommon.java
  * Copyright (C) 2004
  * 
- * $Id: JoglBase.java,v 1.15.2.1 2005-07-10 17:57:34 cawe Exp $
+ * $Id: JoglBase.java,v 1.15.2.2 2005-10-24 22:46:04 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -30,7 +30,6 @@ import jake2.Defines;
 import jake2.client.VID;
 import jake2.qcommon.Cbuf;
 import jake2.qcommon.xcommand_t;
-import jake2.render.lwjgl.Misc;
 import jake2.sys.JOGLKBD;
 
 import java.awt.*;
@@ -47,7 +46,7 @@ import net.java.games.jogl.util.GLUT;
 /**
  * JoglCommon
  */
-public abstract class JoglBase extends Misc implements GLEventListener {
+public abstract class JoglBase extends jake2.render.fastjogl.Misc implements GLEventListener {
 
 	// IMPORTED FUNCTIONS
 	protected GraphicsDevice device;
@@ -55,7 +54,6 @@ public abstract class JoglBase extends Misc implements GLEventListener {
 	protected GLCanvas canvas;
 	JFrame window;
 
-	GL gl;
 	GLU glu;
 	GLUT glut = new GLUT();
 
@@ -70,8 +68,8 @@ public abstract class JoglBase extends Misc implements GLEventListener {
 		public void execute() {
 			// only used for the first run (initialization)
 			// clear the screen
-			glClearColor(0, 0, 0, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			gl.glClearColor(0, 0, 0, 0);
+			gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			//
 			// check the post init process
@@ -297,7 +295,7 @@ public abstract class JoglBase extends Misc implements GLEventListener {
 	}
 
 	protected void GLimp_EndFrame() {
-		glFlush();
+		gl.glFlush();
 		canvas.swapBuffers();
 	}
 
@@ -321,7 +319,7 @@ public abstract class JoglBase extends Misc implements GLEventListener {
 	* @see net.java.games.jogl.GLEventListener#init(net.java.games.jogl.GLDrawable)
 	*/
 	public void init(GLDrawable drawable) {
-		this.gl = drawable.getGL();
+		((JoglGL)gl).setGL(drawable.getGL());
 		this.glu = drawable.getGLU();
 
 		// this is a hack to run R_init() in gl context
@@ -332,8 +330,8 @@ public abstract class JoglBase extends Misc implements GLEventListener {
 	 * @see net.java.games.jogl.GLEventListener#display(net.java.games.jogl.GLDrawable)
 	 */
 	public void display(GLDrawable drawable) {
-		this.gl = drawable.getGL();
-		this.glu = drawable.getGLU();
+        ((JoglGL)gl).setGL(drawable.getGL());
+        this.glu = drawable.getGLU();
 		
 		contextInUse = true;
 		callback.execute();

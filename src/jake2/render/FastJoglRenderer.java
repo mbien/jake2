@@ -2,7 +2,7 @@
  * FastJoglRenderer.java
  * Copyright (C) 2003
  *
- * $Id: FastJoglRenderer.java,v 1.4.8.1 2005-07-10 17:57:34 cawe Exp $
+ * $Id: FastJoglRenderer.java,v 1.4.8.2 2005-10-24 22:46:04 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -39,7 +39,7 @@ import java.awt.Dimension;
  * 
  * @author cwei
  */
-final class FastJoglRenderer extends JoglGL implements refexport_t, Ref {
+final class FastJoglRenderer extends JoglBase implements refexport_t, Ref {
 	
 	private JOGLKBD kbd=new JOGLKBD();
 	

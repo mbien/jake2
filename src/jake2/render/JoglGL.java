@@ -2,277 +2,310 @@ package jake2.render;
 
 import java.nio.*;
 
-public class JoglGL extends JoglBase {
+import net.java.games.jogl.GL;
+
+public class JoglGL implements QGL {
     
-    protected void glAlphaFunc(int func, float ref) {
-        gl.glAlphaFunc(func, ref);
+    private static QGL self = new JoglGL();
+    private GL jogl;
+    
+    private JoglGL() {
+        // singleton
+    }
+    
+    void setGL(GL context) {
+        this.jogl = context;
+    }
+    
+    public static QGL getInstance() {
+        return self;
+    }
+    
+    public void glAlphaFunc(int func, float ref) {
+        jogl.glAlphaFunc(func, ref);
     }
 
-    protected void glBegin(int mode) {
-        gl.glBegin(mode);
+    public void glBegin(int mode) {
+        jogl.glBegin(mode);
     }
 
-    protected void glBindTexture(int target, int texture) {
-        gl.glBindTexture(target, texture);
+    public void glBindTexture(int target, int texture) {
+        jogl.glBindTexture(target, texture);
     }
 
-    protected void glBlendFunc(int sfactor, int dfactor) {
-        gl.glBlendFunc(sfactor, dfactor);
+    public void glBlendFunc(int sfactor, int dfactor) {
+        jogl.glBlendFunc(sfactor, dfactor);
     }
 
-    protected void glClear(int mask) {
-        gl.glClear(mask);
+    public void glClear(int mask) {
+        jogl.glClear(mask);
     }
 
-    protected void glClearColor(float red, float green, float blue, float alpha) {
-        gl.glClearColor(red, green, blue, alpha);
+    public void glClearColor(float red, float green, float blue, float alpha) {
+        jogl.glClearColor(red, green, blue, alpha);
     }
 
-    protected void glColor3f(float red, float green, float blue) {
-        gl.glColor3f(red, green, blue);
+    public void glColor3f(float red, float green, float blue) {
+        jogl.glColor3f(red, green, blue);
     }
 
-    protected void glColor3ub(byte red, byte green, byte blue) {
-        gl.glColor3ub(red, green, blue);
+    public void glColor3ub(byte red, byte green, byte blue) {
+        jogl.glColor3ub(red, green, blue);
     }
 
-    protected void glColor4f(float red, float green, float blue, float alpha) {
-        gl.glColor4f(red, green, blue, alpha);
+    public void glColor4f(float red, float green, float blue, float alpha) {
+        jogl.glColor4f(red, green, blue, alpha);
     }
 
-    protected void glColor4ub(byte red, byte green, byte blue, byte alpha) {
-        gl.glColor4ub(red, green, blue, alpha);
+    public void glColor4ub(byte red, byte green, byte blue, byte alpha) {
+        jogl.glColor4ub(red, green, blue, alpha);
     }
 
-    protected void glColorPointer(int size, boolean unsigned, int stride,
+    public void glColorPointer(int size, boolean unsigned, int stride,
             ByteBuffer pointer) {
-        gl.glColorPointer(size, GL_UNSIGNED_BYTE, stride, pointer);
+        jogl.glColorPointer(size, GL_UNSIGNED_BYTE, stride, pointer);
     }
     
-    protected void glColorPointer(int size, int stride, FloatBuffer pointer) {
-        gl.glColorPointer(size, GL_FLOAT, stride, pointer);
+    public void glColorPointer(int size, int stride, FloatBuffer pointer) {
+        jogl.glColorPointer(size, GL_FLOAT, stride, pointer);
     }
 
-    protected void glCullFace(int mode) {
-        gl.glCullFace(mode);
+    public void glCullFace(int mode) {
+        jogl.glCullFace(mode);
     }
 
-    protected void glDeleteTextures(IntBuffer textures) {
-        gl.glDeleteTextures(textures.limit(), textures);
+    public void glDeleteTextures(IntBuffer textures) {
+        jogl.glDeleteTextures(textures.limit(), textures);
     }
 
-    protected void glDepthFunc(int func) {
-        gl.glDepthFunc(func);
+    public void glDepthFunc(int func) {
+        jogl.glDepthFunc(func);
     }
 
-    protected void glDepthMask(boolean flag) {
-        gl.glDepthMask(flag);
+    public void glDepthMask(boolean flag) {
+        jogl.glDepthMask(flag);
     }
 
-    protected void glDepthRange(double zNear, double zFar) {
-        gl.glDepthRange(zNear, zFar);
+    public void glDepthRange(double zNear, double zFar) {
+        jogl.glDepthRange(zNear, zFar);
     }
 
-    protected void glDisable(int cap) {
-        gl.glDisable(cap);
+    public void glDisable(int cap) {
+        jogl.glDisable(cap);
     }
 
-    protected void glDisableClientState(int cap) {
-        gl.glDisableClientState(cap);
+    public void glDisableClientState(int cap) {
+        jogl.glDisableClientState(cap);
     }
 
-    protected void glDrawArrays(int mode, int first, int count) {
-        gl.glDrawArrays(mode, first, count);
+    public void glDrawArrays(int mode, int first, int count) {
+        jogl.glDrawArrays(mode, first, count);
     }
 
-    protected void glDrawBuffer(int mode) {
-        gl.glDrawBuffer(mode);
+    public void glDrawBuffer(int mode) {
+        jogl.glDrawBuffer(mode);
     }
 
-    protected void glDrawElements(int mode, IntBuffer indices) {
-        gl.glDrawElements(mode, indices.limit(), GL_UNSIGNED_INT, indices);
+    public void glDrawElements(int mode, IntBuffer indices) {
+        jogl.glDrawElements(mode, indices.limit(), GL_UNSIGNED_INT, indices);
     }
 
-    protected void glEnable(int cap) {
-        gl.glEnable(cap);
+    public void glEnable(int cap) {
+        jogl.glEnable(cap);
     }
 
-    protected void glEnableClientState(int cap) {
-        gl.glEnableClientState(cap);
+    public void glEnableClientState(int cap) {
+        jogl.glEnableClientState(cap);
     }
 
-    protected void glEnd() {
-        gl.glEnd();
+    public void glEnd() {
+        jogl.glEnd();
     }
 
-    protected void glFinish() {
-        gl.glFinish();
+    public void glFinish() {
+        jogl.glFinish();
     }
 
-    protected void glFlush() {
-        gl.glFlush();
+    public void glFlush() {
+        jogl.glFlush();
     }
 
-    protected void glFrustum(double left, double right, double bottom,
+    public void glFrustum(double left, double right, double bottom,
             double top, double zNear, double zFar) {
-        gl.glFrustum(left, right, bottom, top, zNear, zFar);
+        jogl.glFrustum(left, right, bottom, top, zNear, zFar);
     }
 
-    protected int glGetError() {
-        return gl.glGetError();
+    public int glGetError() {
+        return jogl.glGetError();
     }
 
-    protected void glGetFloat(int pname, FloatBuffer params) {
-        gl.glGetFloatv(pname, params);
+    public void glGetFloat(int pname, FloatBuffer params) {
+        jogl.glGetFloatv(pname, params);
     }
 
-    protected String glGetString(int name) {
-        return gl.glGetString(name);
+    public String glGetString(int name) {
+        return jogl.glGetString(name);
     }
 
-    protected void glInterleavedArrays(int format, int stride,
+    public void glInterleavedArrays(int format, int stride,
             FloatBuffer pointer) {
-        gl.glInterleavedArrays(format, stride, pointer);
+        jogl.glInterleavedArrays(format, stride, pointer);
     }
 
-    protected void glLoadIdentity() {
-        gl.glLoadIdentity();
+    public void glLoadIdentity() {
+        jogl.glLoadIdentity();
     }
 
-    protected void glLoadMatrix(FloatBuffer m) {
-        gl.glLoadMatrixf(m);
+    public void glLoadMatrix(FloatBuffer m) {
+        jogl.glLoadMatrixf(m);
     }
 
-    protected void glMatrixMode(int mode) {
-        gl.glMatrixMode(mode);
+    public void glMatrixMode(int mode) {
+        jogl.glMatrixMode(mode);
     }
 
-    protected void glOrtho(double left, double right, double bottom,
+    public void glOrtho(double left, double right, double bottom,
             double top, double zNear, double zFar) {
-        gl.glOrtho(left, right, bottom, top, zNear, zFar);
+        jogl.glOrtho(left, right, bottom, top, zNear, zFar);
     }
 
-    protected void glPixelStorei(int pname, int param) {
-        gl.glPixelStorei(pname, param);
+    public void glPixelStorei(int pname, int param) {
+        jogl.glPixelStorei(pname, param);
     }
 
-    protected void glPointSize(float size) {
-        gl.glPointSize(size);
+    public void glPointSize(float size) {
+        jogl.glPointSize(size);
     }
 
-    protected void glPolygonMode(int face, int mode) {
-        gl.glPolygonMode(face, mode);
+    public void glPolygonMode(int face, int mode) {
+        jogl.glPolygonMode(face, mode);
     }
 
-    protected void glPopMatrix() {
-        gl.glPopMatrix();
+    public void glPopMatrix() {
+        jogl.glPopMatrix();
     }
 
-    protected void glPushMatrix() {
-        gl.glPushMatrix();
+    public void glPushMatrix() {
+        jogl.glPushMatrix();
     }
 
-    protected void glReadPixels(int x, int y, int width, int height,
+    public void glReadPixels(int x, int y, int width, int height,
             int format, int type, ByteBuffer pixels) {
-        gl.glReadPixels(x, y, width, height, format, type, pixels);
+        jogl.glReadPixels(x, y, width, height, format, type, pixels);
     }
 
-    protected void glRotatef(float angle, float x, float y, float z) {
-        gl.glRotatef(angle, x, y, z);
+    public void glRotatef(float angle, float x, float y, float z) {
+        jogl.glRotatef(angle, x, y, z);
     }
 
-    protected void glScalef(float x, float y, float z) {
-        gl.glScalef(x, y, z);
+    public void glScalef(float x, float y, float z) {
+        jogl.glScalef(x, y, z);
     }
 
-    protected void glScissor(int x, int y, int width, int height) {
-        gl.glScissor(x, y, width, height);
+    public void glScissor(int x, int y, int width, int height) {
+        jogl.glScissor(x, y, width, height);
     }
 
-    protected void glShadeModel(int mode) {
-        gl.glShadeModel(mode);
+    public void glShadeModel(int mode) {
+        jogl.glShadeModel(mode);
     }
 
-    protected void glTexCoord2f(float s, float t) {
-        gl.glTexCoord2f(s, t);
+    public void glTexCoord2f(float s, float t) {
+        jogl.glTexCoord2f(s, t);
     }
 
-    protected void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
-        gl.glTexCoordPointer(size, GL_FLOAT, stride, pointer);
+    public void glTexCoordPointer(int size, int stride, FloatBuffer pointer) {
+        jogl.glTexCoordPointer(size, GL_FLOAT, stride, pointer);
     }
 
-    protected void glTexEnvi(int target, int pname, int param) {
-        gl.glTexEnvi(target, pname, param);
+    public void glTexEnvi(int target, int pname, int param) {
+        jogl.glTexEnvi(target, pname, param);
     }
 
-    protected void glTexImage2D(int target, int level, int internalformat,
+    public void glTexImage2D(int target, int level, int internalformat,
             int width, int height, int border, int format, int type,
             ByteBuffer pixels) {
-        gl.glTexImage2D(target, level, internalformat, width, height, border,
+        jogl.glTexImage2D(target, level, internalformat, width, height, border,
                 format, type, pixels);
     }
 
-    protected void glTexImage2D(int target, int level, int internalformat,
+    public void glTexImage2D(int target, int level, int internalformat,
             int width, int height, int border, int format, int type,
             IntBuffer pixels) {
-        gl.glTexImage2D(target, level, internalformat, width, height, border,
+        jogl.glTexImage2D(target, level, internalformat, width, height, border,
                 format, type, pixels);
     }
 
-    protected void glTexParameterf(int target, int pname, float param) {
-        gl.glTexParameterf(target, pname, param);
+    public void glTexParameterf(int target, int pname, float param) {
+        jogl.glTexParameterf(target, pname, param);
     }
 
-    protected void glTexParameteri(int target, int pname, int param) {
-        gl.glTexParameteri(target, pname, param);
+    public void glTexParameteri(int target, int pname, int param) {
+        jogl.glTexParameteri(target, pname, param);
     }
 
-    protected void glTexSubImage2D(int target, int level, int xoffset,
+    public void glTexSubImage2D(int target, int level, int xoffset,
             int yoffset, int width, int height, int format, int type,
             IntBuffer pixels) {
-        gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height,
+        jogl.glTexSubImage2D(target, level, xoffset, yoffset, width, height,
                 format, type, pixels);
     }
 
-    protected void glTranslatef(float x, float y, float z) {
-        gl.glTranslatef(x, y, z);
+    public void glTranslatef(float x, float y, float z) {
+        jogl.glTranslatef(x, y, z);
     }
 
-    protected void glVertex2f(float x, float y) {
-        gl.glVertex2f(x, y);
+    public void glVertex2f(float x, float y) {
+        jogl.glVertex2f(x, y);
     }
 
-    protected void glVertex3f(float x, float y, float z) {
-        gl.glVertex3f(x, y, z);
+    public void glVertex3f(float x, float y, float z) {
+        jogl.glVertex3f(x, y, z);
     }
 
-    protected void glVertexPointer(int size, int stride, FloatBuffer pointer) {
-        gl.glVertexPointer(size, GL_FLOAT, stride, pointer);
+    public void glVertexPointer(int size, int stride, FloatBuffer pointer) {
+        jogl.glVertexPointer(size, GL_FLOAT, stride, pointer);
     }
 
-    protected void glViewport(int x, int y, int width, int height) {
-        gl.glViewport(x, y, width, height);
+    public void glViewport(int x, int y, int width, int height) {
+        jogl.glViewport(x, y, width, height);
     }
 
-    protected void glColorTable(int target, int internalFormat, int width,
+    public void glColorTable(int target, int internalFormat, int width,
             int format, int type, ByteBuffer data) {
-        gl.glColorTable(target, internalFormat, width, format, type, data);
+        jogl.glColorTable(target, internalFormat, width, format, type, data);
     }
 
-    protected void glActiveTextureARB(int texture) {
-        gl.glActiveTextureARB(texture);
+    public void glActiveTextureARB(int texture) {
+        jogl.glActiveTextureARB(texture);
     }
 
-    protected void glClientActiveTextureARB(int texture) {
-        gl.glClientActiveTextureARB(texture);
+    public void glClientActiveTextureARB(int texture) {
+        jogl.glClientActiveTextureARB(texture);
     }
 
-    protected void glPointParameterEXT(int pname, FloatBuffer pfParams) {
-        gl.glPointParameterfvEXT(pname, pfParams);
+    public void glPointParameterEXT(int pname, FloatBuffer pfParams) {
+        jogl.glPointParameterfvEXT(pname, pfParams);
     }
 
-    protected void glPointParameterfEXT(int pname, float param) {
-        gl.glPointParameterfEXT(pname, param);
+    public void glPointParameterfEXT(int pname, float param) {
+        jogl.glPointParameterfEXT(pname, param);
     }
+    public void glLockArraysEXT(int first, int count) {
+        jogl.glLockArraysEXT(first, count);
+    }
+
+    public void glArrayElement(int index) {
+        jogl.glArrayElement(index);
+    }
+
+    public void glUnlockArraysEXT() {
+        jogl.glUnlockArraysEXT();
+    }
+    
+    public void glMultiTexCoord2f(int target, float s, float t) {
+        jogl.glMultiTexCoord2f(target, s, t);
+    }
+
 
 }
