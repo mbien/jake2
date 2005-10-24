@@ -2,7 +2,7 @@
  * LWJGLBase.java
  * Copyright (C) 2004
  * 
- * $Id: LWJGLBase.java,v 1.2.6.2 2005-07-16 18:22:37 cawe Exp $
+ * $Id: LWJGLBase.java,v 1.2.6.3 2005-10-24 22:47:28 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -42,7 +42,7 @@ import org.lwjgl.opengl.DisplayMode;
  * 
  * @author dsanders/cwei
  */
-public abstract class LWJGLBase extends jake2.render.lwjgl.Misc {
+public abstract class LWJGLBase extends jake2.render.fastjogl.Misc {
 	// IMPORTED FUNCTIONS
 	protected DisplayMode oldDisplayMode; 
 
