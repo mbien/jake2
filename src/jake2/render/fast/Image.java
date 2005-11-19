@@ -2,7 +2,7 @@
  * Image.java
  * Copyright (C) 2003
  *
- * $Id: Image.java,v 1.1.2.1 2005-11-15 00:06:43 cawe Exp $
+ * $Id: Image.java,v 1.1.2.2 2005-11-19 23:46:30 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -39,7 +39,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.nio.*;
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Image
@@ -1456,6 +1456,8 @@ public abstract class Image extends Main {
 
 		return image;
 	}
+    
+    Map imageCache = new HashMap(MAX_GLTEXTURES);
 
 	/*
 	===============
@@ -1465,29 +1467,16 @@ public abstract class Image extends Main {
 	===============
 	*/
 	image_t GL_FindImage(String name, int type) {
-		image_t image = null;
-
-//		// TODO loest das grossschreibungs problem
-//		name = name.toLowerCase();
-//		// bughack for bad strings (fuck \0)
-//		int index = name.indexOf('\0');
-//		if (index != -1) 
-//			name = name.substring(0, index);
 
 		if (name == null || name.length() < 5)
-			return null; //	Com.Error (ERR_DROP, "GL_FindImage: NULL name");
-		//	Com.Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
-
-		// look for it
-		for (int i = 0; i < numgltextures; i++)
-		{
-			image = gltextures[i];
-			if (name.equals(image.name))
-	        {
-	             image.registration_sequence = registration_sequence;
-	             return image;
-	        }
-		}
+			return null;
+        
+        // look for it
+        image_t image = (image_t) imageCache.get(name);
+        if (image != null) {
+            image.registration_sequence = registration_sequence;
+            return image;
+        }
 
 		//
 		// load the pic from disk
@@ -1519,7 +1508,8 @@ public abstract class Image extends Main {
 			image = GL_LoadPic(name, pic, dim.width, dim.height, type, 32);
 
 		}
-
+		
+        imageCache.put(image.name, image);
 		return image;
 	}
 
@@ -1563,10 +1553,11 @@ public abstract class Image extends Main {
 				continue;
 
 			// free it
-			// TODO jogl bug
 			texnumBuffer.clear();
 			texnumBuffer.put(0,image.texnum);
 			gl.glDeleteTextures(texnumBuffer);
+            
+            imageCache.remove(image.name);
 			image.clear();
 		}
 	}
@@ -1672,11 +1663,13 @@ public abstract class Image extends Main {
 			
 			if (image.registration_sequence == 0)
 	   			continue; // free image_t slot
+            
 			// free it
-			// TODO jogl bug
 			texnumBuffer.clear();
 			texnumBuffer.put(0,image.texnum);
 			gl.glDeleteTextures(texnumBuffer);
+            
+            imageCache.remove(image.name);
 	  		image.clear();
 		}
 	}
