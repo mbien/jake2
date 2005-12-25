@@ -2,7 +2,7 @@
  * S.java
  * Copyright (C) 2003
  * 
- * $Id: S.java,v 1.11 2005-05-26 16:56:33 hzi Exp $
+ * $Id: S.java,v 1.11.4.1 2005-12-25 18:11:21 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -30,6 +30,7 @@ import jake2.game.cvar_t;
 import jake2.qcommon.Com;
 import jake2.qcommon.Cvar;
 
+import java.nio.ByteBuffer;
 import java.util.Vector;
 
 /**
@@ -41,7 +42,10 @@ public class S {
 	static cvar_t s_impl;
 	
 	static Vector drivers = new Vector(3);
-	 
+	
+	/** 
+	 * Searches for and initializes all known sound drivers.
+	 */
 	static {	    
 			// dummy driver (no sound)
 			try {	    
@@ -72,6 +76,9 @@ public class S {
 		
 	};
 	
+	/**
+	 * Registers a new Sound Implementor.
+	 */
 	public static void register(Sound driver) {
 		if (driver == null) {
 			throw new IllegalArgumentException("Sound implementation can't be null");
@@ -81,6 +88,9 @@ public class S {
 		}
 	}
 	
+	/**
+	 * Switches to the specific sound driver.
+	 */
 	public static void useDriver(String driverName) {
 		Sound driver = null;
 		int count = drivers.size();
@@ -95,6 +105,9 @@ public class S {
 		impl = (Sound)drivers.lastElement();
 	}
 	
+	/**
+	 * Initializes the sound module.
+	 */
 	public static void Init() {
 		
 		Com.Printf("\n------- sound initialization -------\n");
@@ -131,82 +144,68 @@ public class S {
 		impl.Shutdown();
 	}
 	
-	/*
-	=====================
-	S_BeginRegistration
-	=====================
-	*/
+	/**
+	 * Called before the sounds are to be loaded and registered.
+	 */
 	public static void BeginRegistration() {
 		impl.BeginRegistration();		
 	}
 	
-	/*
-	=====================
-	S_RegisterSound
-	=====================
-	*/
+	/**
+	 * Registers and loads a sound.
+	 */
 	public static sfx_t RegisterSound(String sample) {
 		return impl.RegisterSound(sample);
 	}
 	
-	/*
-	=====================
-	S_EndRegistration
-	=====================
-	*/
+	/**
+	 * Called after all sounds are registered and loaded.
+	 */
 	public static void EndRegistration() {
 		impl.EndRegistration();
 	}
 	
-	/*
-	==================
-	S_StartLocalSound
-	==================
-	*/
+	/**
+	 * Starts a local sound.
+	 */
 	public static void StartLocalSound(String sound) {
 		impl.StartLocalSound(sound);		
 	}
 	
-	/*
-	====================
-	S_StartSound
-
-	Validates the parms and ques the sound up
-	if pos is NULL, the sound will be dynamically sourced from the entity
-	Entchannel 0 will never override a playing sound
-	====================
-	*/
+	/** 
+	 * StartSound - Validates the parms and ques the sound up
+	 * if pos is NULL, the sound will be dynamically sourced from the entity
+	 * Entchannel 0 will never override a playing sound
+	 */
 	public static void StartSound(float[] origin, int entnum, int entchannel, sfx_t sfx, float fvol, float attenuation, float timeofs) {
 		impl.StartSound(origin, entnum, entchannel, sfx, fvol, attenuation, timeofs);
 	}
 
-	/*
-	============
-	S_Update
-
-	Called once each time through the main loop
-	============
-	*/
+	/**
+	 * Updates the sound renderer according to the changes in the environment,
+	 * called once each time through the main loop.
+	 */
 	public static void Update(float[] origin, float[] forward, float[] right, float[] up) {
 		impl.Update(origin, forward, right, up);
 	}
 
-	/*
-	============
-	S_RawSamples
-	 
-	Cinematic streaming and voice over network
-	============
-	*/
-	public static void RawSamples(int samples, int rate, int width, int channels, byte[] data) {
+	/**
+	 * Cinematic streaming and voice over network.
+	 */
+	public static void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data) {
 		impl.RawSamples(samples, rate, width, channels, data);
 	}
+    
+	/**
+	 * Switches off the sound streaming.
+	 */ 
+    public static void disableStreaming() {
+        impl.disableStreaming();
+    }
 
-	/*
-	==================
-	S_StopAllSounds
-	==================
-	*/
+	/**
+	 * Stops all sounds. 
+	 */
 	public static void StopAllSounds() {
 		impl.StopAllSounds();
 	}
@@ -215,11 +214,24 @@ public class S {
 		return impl.getName();
 	}
 	
+	/**
+	 * Returns a string array containing all sound driver names.
+	 */
 	public static String[] getDriverNames() {
 		String[] names = new String[drivers.size()];
 		for (int i = 0; i < names.length; i++) {
 			names[i] = ((Sound)drivers.get(i)).getName();
 		}
 		return names;
+	}
+	
+	/**
+	 * This is used, when resampling to this default sampling rate is activated 
+	 * in the wavloader. It is placed here that sound implementors can override 
+	 * this one day.
+	 */
+	public static int getDefaultSampleRate()
+	{
+		return 44100;
 	}
 }

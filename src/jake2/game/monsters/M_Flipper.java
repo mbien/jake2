@@ -19,15 +19,15 @@
  */
 
 // Created on 13.11.2003 by RST.
-// $Id: M_Flipper.java,v 1.2 2005-02-06 18:48:17 salomo Exp $
+// $Id: M_Flipper.java,v 1.2.6.1 2005-12-25 18:15:10 cawe Exp $
 package jake2.game.monsters;
 
 import jake2.Defines;
+import jake2.game.*;
 import jake2.game.EntDieAdapter;
 import jake2.game.EntInteractAdapter;
 import jake2.game.EntPainAdapter;
 import jake2.game.EntThinkAdapter;
-import jake2.game.Fire;
 import jake2.game.GameAI;
 import jake2.game.GameBase;
 import jake2.game.GameUtil;
@@ -386,6 +386,7 @@ public class M_Flipper {
             FRAME_flphor01, flipper_frames_stand, null);
 
     static EntThinkAdapter flipper_stand = new EntThinkAdapter() {
+    	public String getID() { return "flipper_stand"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = flipper_move_stand;
             return true;
@@ -429,6 +430,7 @@ public class M_Flipper {
             FRAME_flpver29, flipper_frames_run, null);
 
     static EntThinkAdapter flipper_run_loop = new EntThinkAdapter() {
+    	public String getID() { return "flipper_run_loop"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = flipper_move_run_loop;
             return true;
@@ -447,6 +449,7 @@ public class M_Flipper {
             FRAME_flpver06, flipper_frames_run_start, flipper_run_loop);
 
     static EntThinkAdapter flipper_run = new EntThinkAdapter() {
+    	public String getID() { return "flipper_run"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = flipper_move_run_start;
             return true;
@@ -484,6 +487,7 @@ public class M_Flipper {
             FRAME_flphor24, flipper_frames_walk, null);
 
     static EntThinkAdapter flipper_walk = new EntThinkAdapter() {
+    	public String getID() { return "flipper_walk"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = flipper_move_walk;
             return true;
@@ -501,6 +505,7 @@ public class M_Flipper {
             FRAME_flphor05, flipper_frames_start_run, null);
 
     static EntThinkAdapter flipper_start_run = new EntThinkAdapter() {
+    	public String getID() { return "flipper_start_run"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = flipper_move_start_run;
             return true;
@@ -528,16 +533,18 @@ public class M_Flipper {
             FRAME_flppn205, flipper_frames_pain1, flipper_run);
 
     static EntThinkAdapter flipper_bite = new EntThinkAdapter() {
+    	public String getID() { return "flipper_bite"; }
         public boolean think(edict_t self) {
             float[] aim = { 0, 0, 0 };
 
             Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, 0, 0);
-            Fire.fire_hit(self, aim, 5, 0);
+            GameWeapon.fire_hit(self, aim, 5, 0);
             return true;
         }
     };
 
     static EntThinkAdapter flipper_preattack = new EntThinkAdapter() {
+    	public String getID() { return "flipper_preattack"; }
 
         public boolean think(edict_t self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_chomp, 1,
@@ -572,6 +579,7 @@ public class M_Flipper {
             FRAME_flpbit20, flipper_frames_attack, flipper_run);
 
     static EntThinkAdapter flipper_melee = new EntThinkAdapter() {
+    	public String getID() { return "flipper_melee"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = flipper_move_attack;
             return true;
@@ -579,6 +587,7 @@ public class M_Flipper {
     };
 
     static EntPainAdapter flipper_pain = new EntPainAdapter() {
+    	public String getID() { return "flipper_pain"; }
         public void pain(edict_t self, edict_t other, float kick, int damage) {
             int n;
 
@@ -608,6 +617,7 @@ public class M_Flipper {
     };
 
     static EntThinkAdapter flipper_dead = new EntThinkAdapter() {
+    	public String getID() { return "flipper_dead"; }
         public boolean think(edict_t self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
@@ -681,6 +691,7 @@ public class M_Flipper {
             FRAME_flpdth56, flipper_frames_death, flipper_dead);
 
     static EntInteractAdapter flipper_sight = new EntInteractAdapter() {
+    	public String getID() { return "flipper_sight"; }
         public boolean interact(edict_t self, edict_t other) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
                     Defines.ATTN_NORM, 0);
@@ -689,6 +700,7 @@ public class M_Flipper {
     };
 
     static EntDieAdapter flipper_die = new EntDieAdapter() {
+    	public String getID() { return "flipper_die"; }
 
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
@@ -701,13 +713,13 @@ public class M_Flipper {
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
                 for (n = 0; n < 2; n++)
-                    GameAI.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
+                    GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
                 for (n = 0; n < 2; n++)
-                    GameAI.ThrowGib(self,
+                    GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
                             Defines.GIB_ORGANIC);
-                GameAI.ThrowHead(self, "models/objects/gibs/sm_meat/tris.md2",
+                GameMisc.ThrowHead(self, "models/objects/gibs/sm_meat/tris.md2",
                         damage, Defines.GIB_ORGANIC);
                 self.deadflag = Defines.DEAD_DEAD;
                 return;

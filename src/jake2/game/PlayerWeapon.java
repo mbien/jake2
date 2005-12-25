@@ -19,7 +19,9 @@
  */
 
 // Created on 16.11.2003 by RST.
-// $Id: GamePWeapon.java,v 1.8 2005-02-19 21:18:15 salomo Exp $
+
+// $Id: PlayerWeapon.java,v 1.2.2.2 2005-12-25 18:11:20 cawe Exp $
+
 package jake2.game;
 
 import jake2.Defines;
@@ -29,9 +31,10 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
-public class GamePWeapon {
+public class PlayerWeapon {
 
     public static EntThinkAdapter Weapon_Grenade = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_Grenade"; }
 
         public boolean think(edict_t ent) {
             if ((ent.client.newweapon != null)
@@ -143,6 +146,7 @@ public class GamePWeapon {
      */
 
     public static EntThinkAdapter weapon_grenadelauncher_fire = new EntThinkAdapter() {
+    	public String getID() { return "weapon_grenadelauncher_fire"; }
 
         public boolean think(edict_t ent) {
             float[] offset = { 0, 0, 0 };
@@ -163,7 +167,7 @@ public class GamePWeapon {
             Math3D.VectorScale(forward, -2, ent.client.kick_origin);
             ent.client.kick_angles[0] = -1;
 
-            Fire.fire_grenade(ent, start, forward, damage, 600, 2.5f, radius);
+            GameWeapon.fire_grenade(ent, start, forward, damage, 600, 2.5f, radius);
 
             GameBase.gi.WriteByte(Defines.svc_muzzleflash);
             GameBase.gi.WriteShort(ent.index);
@@ -172,7 +176,7 @@ public class GamePWeapon {
 
             ent.client.ps.gunframe++;
 
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
@@ -182,6 +186,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_GrenadeLauncher = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_GrenadeLauncher"; }
 
         public boolean think(edict_t ent) {
 
@@ -203,6 +208,7 @@ public class GamePWeapon {
      */
 
     public static EntThinkAdapter Weapon_RocketLauncher_Fire = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_RocketLauncher_Fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -228,7 +234,7 @@ public class GamePWeapon {
             Math3D.VectorSet(offset, 8, 8, ent.viewheight - 8);
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
-            Fire.fire_rocket(ent, start, forward, damage, 650, damage_radius,
+            GameWeapon.fire_rocket(ent, start, forward, damage, 650, damage_radius,
                     radius_damage);
 
             // send muzzle flash
@@ -240,7 +246,7 @@ public class GamePWeapon {
 
             ent.client.ps.gunframe++;
 
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
@@ -250,6 +256,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_RocketLauncher = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_RocketLauncher"; }
 
         public boolean think(edict_t ent) {
 
@@ -263,6 +270,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_Blaster_Fire = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_Blaster_Fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -280,6 +288,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_Blaster = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_Blaster"; }
 
         public boolean think(edict_t ent) {
 
@@ -293,6 +302,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_HyperBlaster_Fire = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_HyperBlaster_Fire"; }
 
         public boolean think(edict_t ent) {
             float rotation;
@@ -363,6 +373,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_HyperBlaster = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_HyperBlaster"; }
         public boolean think(edict_t ent) {
 
             int pause_frames[] = { 0 };
@@ -375,6 +386,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_Machinegun = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_Machinegun"; }
         public boolean think(edict_t ent) {
 
             int pause_frames[] = { 23, 45, 0 };
@@ -387,6 +399,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_Chaingun = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_Chaingun"; }
         public boolean think(edict_t ent) {
 
             int pause_frames[] = { 38, 43, 51, 61, 0 };
@@ -408,6 +421,7 @@ public class GamePWeapon {
      */
 
     public static EntThinkAdapter weapon_shotgun_fire = new EntThinkAdapter() {
+    	public String getID() { return "weapon_shotgun_fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -437,11 +451,11 @@ public class GamePWeapon {
             }
 
             if (GameBase.deathmatch.value != 0)
-                Fire.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
+                GameWeapon.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
                         Defines.DEFAULT_DEATHMATCH_SHOTGUN_COUNT,
                         Defines.MOD_SHOTGUN);
             else
-                Fire.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
+                GameWeapon.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
                         Defines.DEFAULT_SHOTGUN_COUNT, Defines.MOD_SHOTGUN);
 
             // send muzzle flash
@@ -452,7 +466,7 @@ public class GamePWeapon {
             GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
@@ -462,6 +476,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_Shotgun = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_Shotgun"; }
         public boolean think(edict_t ent) {
             int pause_frames[] = { 22, 28, 34, 0 };
             int fire_frames[] = { 8, 9, 0 };
@@ -473,6 +488,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter weapon_supershotgun_fire = new EntThinkAdapter() {
+    	public String getID() { return "weapon_supershotgun_fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -501,13 +517,13 @@ public class GamePWeapon {
             v[Defines.YAW] = ent.client.v_angle[Defines.YAW] - 5;
             v[Defines.ROLL] = ent.client.v_angle[Defines.ROLL];
             Math3D.AngleVectors(v, forward, null, null);
-            Fire.fire_shotgun(ent, start, forward, damage, kick,
+            GameWeapon.fire_shotgun(ent, start, forward, damage, kick,
                     Defines.DEFAULT_SHOTGUN_HSPREAD,
                     Defines.DEFAULT_SHOTGUN_VSPREAD,
                     Defines.DEFAULT_SSHOTGUN_COUNT / 2, Defines.MOD_SSHOTGUN);
             v[Defines.YAW] = ent.client.v_angle[Defines.YAW] + 5;
             Math3D.AngleVectors(v, forward, null, null);
-            Fire.fire_shotgun(ent, start, forward, damage, kick,
+            GameWeapon.fire_shotgun(ent, start, forward, damage, kick,
                     Defines.DEFAULT_SHOTGUN_HSPREAD,
                     Defines.DEFAULT_SHOTGUN_VSPREAD,
                     Defines.DEFAULT_SSHOTGUN_COUNT / 2, Defines.MOD_SSHOTGUN);
@@ -520,7 +536,7 @@ public class GamePWeapon {
             GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index] -= 2;
@@ -530,6 +546,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_SuperShotgun = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_SuperShotgun"; }
         public boolean think(edict_t ent) {
 
             int pause_frames[] = { 29, 42, 57, 0 };
@@ -549,6 +566,7 @@ public class GamePWeapon {
      * ======================================================================
      */
     public static EntThinkAdapter weapon_railgun_fire = new EntThinkAdapter() {
+    	public String getID() { return "weapon_railgun_fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -580,7 +598,7 @@ public class GamePWeapon {
             Math3D.VectorSet(offset, 0, 7, ent.viewheight - 8);
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
-            Fire.fire_rail(ent, start, forward, damage, kick);
+            GameWeapon.fire_rail(ent, start, forward, damage, kick);
 
             // send muzzle flash
             GameBase.gi.WriteByte(Defines.svc_muzzleflash);
@@ -590,7 +608,7 @@ public class GamePWeapon {
             GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
@@ -600,6 +618,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_Railgun = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_Railgun"; }
 
         public boolean think(edict_t ent) {
 
@@ -620,6 +639,7 @@ public class GamePWeapon {
      */
 
     public static EntThinkAdapter weapon_bfg_fire = new EntThinkAdapter() {
+    	public String getID() { return "weapon_bfg_fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -643,7 +663,7 @@ public class GamePWeapon {
 
                 ent.client.ps.gunframe++;
 
-                GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+                PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
                 return true;
             }
 
@@ -669,11 +689,11 @@ public class GamePWeapon {
             Math3D.VectorSet(offset, 8, 8, ent.viewheight - 8);
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
-            Fire.fire_bfg(ent, start, forward, damage, 400, damage_radius);
+            GameWeapon.fire_bfg(ent, start, forward, damage, 400, damage_radius);
 
             ent.client.ps.gunframe++;
 
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index] -= 50;
@@ -683,6 +703,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Weapon_BFG = new EntThinkAdapter() {
+    	public String getID() { return "Weapon_BFG"; }
         public boolean think(edict_t ent) {
 
             Weapon_Generic(ent, 8, 32, 55, 58, pause_frames, fire_frames,
@@ -695,57 +716,16 @@ public class GamePWeapon {
 
     public static byte is_silenced;
 
-    public static EntInteractAdapter Pickup_Weapon = new EntInteractAdapter() {
-        public boolean interact(edict_t ent, edict_t other) {
-            int index;
-            gitem_t ammo;
-
-            index = GameUtil.ITEM_INDEX(ent.item);
-
-            if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
-                    && 0 != other.client.pers.inventory[index]) {
-                if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM)))
-                    return false; // leave the weapon for others to pickup
-            }
-
-            other.client.pers.inventory[index]++;
-
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)) {
-                // give them some ammo with it
-                ammo = GameUtil.FindItem(ent.item.ammo);
-                if (((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
-                    GameAI.Add_Ammo(other, ammo, 1000);
-                else
-                    GameAI.Add_Ammo(other, ammo, ammo.quantity);
-
-                if (0 == (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM)) {
-                    if (GameBase.deathmatch.value != 0) {
-                        if (((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0)
-                            ent.flags |= Defines.FL_RESPAWN;
-                        else
-                            GameUtil.SetRespawn(ent, 30);
-                    }
-                    if (GameBase.coop.value != 0)
-                        ent.flags |= Defines.FL_RESPAWN;
-                }
-            }
-
-            if (other.client.pers.weapon != ent.item
-                    && (other.client.pers.inventory[index] == 1)
-                    && (0 == GameBase.deathmatch.value || other.client.pers.weapon == GameUtil
-                            .FindItem("blaster")))
-                other.client.newweapon = ent.item;
-
-            return true;
-        }
-    };
 
     /*
-     * ================ Use_Weapon
+     * ================ 
+     * Use_Weapon
      * 
-     * Make the weapon ready if there is ammo ================
+     * Make the weapon ready if there is ammo 
+     * ================
      */
     public static ItemUseAdapter Use_Weapon = new ItemUseAdapter() {
+    	public String getID() { return "Use_Weapon"; }
 
         public void use(edict_t ent, gitem_t item) {
             int ammo_index;
@@ -758,8 +738,8 @@ public class GamePWeapon {
             if (item.ammo != null && 0 == GameBase.g_select_empty.value
                     && 0 == (item.flags & Defines.IT_AMMO)) {
                 
-                ammo_item = GameUtil.FindItem(item.ammo);
-                ammo_index = GameUtil.ITEM_INDEX(ammo_item);
+                ammo_item = GameItems.FindItem(item.ammo);
+                ammo_index = GameItems.ITEM_INDEX(ammo_item);
 
                 if (0 == ent.client.pers.inventory[ammo_index]) {
                     GameBase.gi.cprintf(ent, Defines.PRINT_HIGH, "No "
@@ -782,17 +762,20 @@ public class GamePWeapon {
     };
 
     /*
-     * ================ Drop_Weapon ================
+     * ================ 
+     * Drop_Weapon 
+     * ================
      */
 
     public static ItemDropAdapter Drop_Weapon = new ItemDropAdapter() {
+    	public String getID() { return "Drop_Weapon"; }
         public void drop(edict_t ent, gitem_t item) {
             int index;
 
             if (0 != ((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY))
                 return;
 
-            index = GameUtil.ITEM_INDEX(item);
+            index = GameItems.ITEM_INDEX(item);
             // see if we're already using it
             if (((item == ent.client.pers.weapon) || (item == ent.client.newweapon))
                     && (ent.client.pers.inventory[index] == 1)) {
@@ -801,7 +784,7 @@ public class GamePWeapon {
                 return;
             }
 
-            GameUtil.Drop_Item(ent, item);
+            GameItems.Drop_Item(ent, item);
             ent.client.pers.inventory[index]--;
         }
     };
@@ -815,6 +798,7 @@ public class GamePWeapon {
      */
 
     public static EntThinkAdapter Machinegun_Fire = new EntThinkAdapter() {
+    	public String getID() { return "Machinegun_Fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -876,7 +860,7 @@ public class GamePWeapon {
             Math3D.VectorSet(offset, 0, 8, ent.viewheight - 8);
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
-            Fire.fire_bullet(ent, start, forward, damage, kick,
+            GameWeapon.fire_bullet(ent, start, forward, damage, kick,
                     Defines.DEFAULT_BULLET_HSPREAD,
                     Defines.DEFAULT_BULLET_VSPREAD, Defines.MOD_MACHINEGUN);
 
@@ -886,7 +870,7 @@ public class GamePWeapon {
             GameBase.gi.WriteByte(Defines.MZ_MACHINEGUN | is_silenced);
             GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
@@ -906,6 +890,7 @@ public class GamePWeapon {
     };
 
     public static EntThinkAdapter Chaingun_Fire = new EntThinkAdapter() {
+    	public String getID() { return "Chaingun_Fire"; }
 
         public boolean think(edict_t ent) {
 
@@ -1005,7 +990,7 @@ public class GamePWeapon {
                 P_ProjectSource(ent.client, ent.s.origin, offset, forward,
                         right, start);
 
-                Fire.fire_bullet(ent, start, forward, damage, kick,
+                GameWeapon.fire_bullet(ent, start, forward, damage, kick,
                         Defines.DEFAULT_BULLET_HSPREAD,
                         Defines.DEFAULT_BULLET_VSPREAD, Defines.MOD_CHAINGUN);
             }
@@ -1018,7 +1003,7 @@ public class GamePWeapon {
                     | is_silenced);
             GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
-            GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
 
             if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index] -= shots;
@@ -1030,6 +1015,52 @@ public class GamePWeapon {
     public static int pause_frames[] = { 39, 45, 50, 55, 0 };
 
     public static int fire_frames[] = { 9, 17, 0 };
+
+    public static EntInteractAdapter Pickup_Weapon = new EntInteractAdapter() {
+    	public String getID() { return "Pickup_Weapon"; }
+        public boolean interact(edict_t ent, edict_t other) {
+            int index;
+            gitem_t ammo;
+    
+            index = GameItems.ITEM_INDEX(ent.item);
+    
+            if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
+                    && 0 != other.client.pers.inventory[index]) {
+                if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM)))
+                    return false; // leave the weapon for others to pickup
+            }
+    
+            other.client.pers.inventory[index]++;
+    
+            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)) {
+                // give them some ammo with it
+                ammo = GameItems.FindItem(ent.item.ammo);
+                if (((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
+                    GameItems.Add_Ammo(other, ammo, 1000);
+                else
+                    GameItems.Add_Ammo(other, ammo, ammo.quantity);
+    
+                if (0 == (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM)) {
+                    if (GameBase.deathmatch.value != 0) {
+                        if (((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0)
+                            ent.flags |= Defines.FL_RESPAWN;
+                        else
+                            GameItems.SetRespawn(ent, 30);
+                    }
+                    if (GameBase.coop.value != 0)
+                        ent.flags |= Defines.FL_RESPAWN;
+                }
+            }
+    
+            if (other.client.pers.weapon != ent.item
+                    && (other.client.pers.inventory[index] == 1)
+                    && (0 == GameBase.deathmatch.value || other.client.pers.weapon == GameItems
+                            .FindItem("blaster")))
+                other.client.newweapon = ent.item;
+    
+            return true;
+        }
+    };
 
     public static void P_ProjectSource(gclient_t client, float[] point,
             float[] distance, float[] forward, float[] right, float[] result) {
@@ -1044,7 +1075,8 @@ public class GamePWeapon {
     }
 
     /*
-     * =============== ChangeWeapon
+     * =============== 
+     * ChangeWeapon
      * 
      * The old weapon has been dropped all the way, so make the new one current
      * ===============
@@ -1076,7 +1108,7 @@ public class GamePWeapon {
         if (ent.client.pers.weapon != null
                 && ent.client.pers.weapon.ammo != null)
             
-            ent.client.ammo_index = GameUtil.ITEM_INDEX(GameUtil
+            ent.client.ammo_index = GameItems.ITEM_INDEX(GameItems
                     .FindItem(ent.client.pers.weapon.ammo));
         else
             ent.client.ammo_index = 0;
@@ -1103,58 +1135,62 @@ public class GamePWeapon {
     }
 
     /*
-     * ================= NoAmmoWeaponChange =================
+     * ================= 
+     * NoAmmoWeaponChange 
+     * =================
      */
     public static void NoAmmoWeaponChange(edict_t ent) {
-        if (0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("slugs"))]
-                && 0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+                && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                         .FindItem("railgun"))]) {
-            ent.client.newweapon = GameUtil.FindItem("railgun");
+            ent.client.newweapon = GameItems.FindItem("railgun");
             return;
         }
-        if (0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("cells"))]
-                && 0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+                && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                         .FindItem("hyperblaster"))]) {
-            ent.client.newweapon = GameUtil.FindItem("hyperblaster");
+            ent.client.newweapon = GameItems.FindItem("hyperblaster");
             return;
         }
-        if (0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("bullets"))]
-                && 0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+                && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                         .FindItem("chaingun"))]) {
-            ent.client.newweapon = GameUtil.FindItem("chaingun");
+            ent.client.newweapon = GameItems.FindItem("chaingun");
             return;
         }
-        if (0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("bullets"))]
-                && 0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+                && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                         .FindItem("machinegun"))]) {
-            ent.client.newweapon = GameUtil.FindItem("machinegun");
+            ent.client.newweapon = GameItems.FindItem("machinegun");
             return;
         }
-        if (ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+        if (ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("shells"))] > 1
-                && 0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+                && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                         .FindItem("super shotgun"))]) {
-            ent.client.newweapon = GameUtil.FindItem("super shotgun");
+            ent.client.newweapon = GameItems.FindItem("super shotgun");
             return;
         }
-        if (0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+        if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("shells"))]
-                && 0 != ent.client.pers.inventory[GameUtil.ITEM_INDEX(GameUtil
+                && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                         .FindItem("shotgun"))]) {
-            ent.client.newweapon = GameUtil.FindItem("shotgun");
+            ent.client.newweapon = GameItems.FindItem("shotgun");
             return;
         }
-        ent.client.newweapon = GameUtil.FindItem("blaster");
+        ent.client.newweapon = GameItems.FindItem("blaster");
     }
 
     /*
-     * ================= Think_Weapon
+     * ================= 
+     * Think_Weapon
      * 
-     * Called by ClientBeginServerFrame and ClientThink =================
+     * Called by ClientBeginServerFrame and ClientThink 
+     * =================
      */
     public static void Think_Weapon(edict_t ent) {
         // if just died, put the weapon away
@@ -1176,7 +1212,8 @@ public class GamePWeapon {
     }
 
     /*
-     * ================ Weapon_Generic
+     * ================ 
+     * Weapon_Generic
      * 
      * A generic function to handle the basics of weapon thinking
      * ================
@@ -1342,7 +1379,7 @@ public class GamePWeapon {
         timer = ent.client.grenade_time - GameBase.level.time;
         speed = (int) (Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
                 * ((Defines.GRENADE_MAXSPEED - Defines.GRENADE_MINSPEED) / Defines.GRENADE_TIMER));
-        Fire.fire_grenade2(ent, start, forward, damage, speed, timer, radius,
+        GameWeapon.fire_grenade2(ent, start, forward, damage, speed, timer, radius,
                 held);
 
         if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
@@ -1394,7 +1431,7 @@ public class GamePWeapon {
         Math3D.VectorScale(forward, -2, ent.client.kick_origin);
         ent.client.kick_angles[0] = -1;
 
-        Fire.fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
+        GameWeapon.fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
 
         // send muzzle flash
         GameBase.gi.WriteByte(Defines.svc_muzzleflash);
@@ -1405,6 +1442,71 @@ public class GamePWeapon {
             GameBase.gi.WriteByte(Defines.MZ_BLASTER | is_silenced);
         GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
-        GameWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+        PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+    }
+
+    /*
+     * =============== 
+     * PlayerNoise
+     * 
+     * Each player can have two noise objects associated with it: a personal
+     * noise (jumping, pain, weapon firing), and a weapon target noise (bullet
+     * wall impacts)
+     * 
+     * Monsters that don't directly see the player can move to a noise in hopes
+     * of seeing the player from there. 
+     * ===============
+     */
+    static void PlayerNoise(edict_t who, float[] where, int type) {
+        edict_t noise;
+    
+        if (type == Defines.PNOISE_WEAPON) {
+            if (who.client.silencer_shots > 0) {
+                who.client.silencer_shots--;
+                return;
+            }
+        }
+    
+        if (GameBase.deathmatch.value != 0)
+            return;
+    
+        if ((who.flags & Defines.FL_NOTARGET) != 0)
+            return;
+    
+        if (who.mynoise == null) {
+            noise = GameUtil.G_Spawn();
+            noise.classname = "player_noise";
+            Math3D.VectorSet(noise.mins, -8, -8, -8);
+            Math3D.VectorSet(noise.maxs, 8, 8, 8);
+            noise.owner = who;
+            noise.svflags = Defines.SVF_NOCLIENT;
+            who.mynoise = noise;
+    
+            noise = GameUtil.G_Spawn();
+            noise.classname = "player_noise";
+            Math3D.VectorSet(noise.mins, -8, -8, -8);
+            Math3D.VectorSet(noise.maxs, 8, 8, 8);
+            noise.owner = who;
+            noise.svflags = Defines.SVF_NOCLIENT;
+            who.mynoise2 = noise;
+        }
+    
+        if (type == Defines.PNOISE_SELF || type == Defines.PNOISE_WEAPON) {
+            noise = who.mynoise;
+            GameBase.level.sound_entity = noise;
+            GameBase.level.sound_entity_framenum = GameBase.level.framenum;
+        } 
+        else // type == PNOISE_IMPACT
+        {
+            noise = who.mynoise2;
+            GameBase.level.sound2_entity = noise;
+            GameBase.level.sound2_entity_framenum = GameBase.level.framenum;
+        }
+    
+        Math3D.VectorCopy(where, noise.s.origin);
+        Math3D.VectorSubtract(where, noise.maxs, noise.absmin);
+        Math3D.VectorAdd(where, noise.maxs, noise.absmax);
+        noise.teleport_time = GameBase.level.time;
+        GameBase.gi.linkentity(noise);
     }
 }

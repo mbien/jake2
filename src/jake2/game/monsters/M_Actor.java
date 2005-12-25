@@ -19,10 +19,11 @@
  */
 
 // Created on 11.11.2003 by RST.
-// $Id: M_Actor.java,v 1.2 2005-02-06 18:48:32 salomo Exp $
+// $Id: M_Actor.java,v 1.2.6.1 2005-12-25 18:15:09 cawe Exp $
 package jake2.game.monsters;
 
 import jake2.Defines;
+import jake2.game.*;
 import jake2.game.EntDieAdapter;
 import jake2.game.EntPainAdapter;
 import jake2.game.EntThinkAdapter;
@@ -1013,6 +1014,7 @@ public class M_Actor {
             "Adrianator", "Rambear", "Titus", "Bitterman" };
 
     static EntThinkAdapter actor_stand = new EntThinkAdapter() {
+        public String getID() { return "actor_stand";}
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = actor_move_stand;
 
@@ -1087,6 +1089,7 @@ public class M_Actor {
             actor_frames_walk, null);
 
     static EntThinkAdapter actor_walk = new EntThinkAdapter() {
+        public String getID() { return "actor_walk";}
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = actor_move_walk;
             return true;
@@ -1111,6 +1114,7 @@ public class M_Actor {
             actor_frames_run, null);
 
     static EntThinkAdapter actor_run = new EntThinkAdapter() {
+        public String getID() { return "actor_run";}
         public boolean think(edict_t self) {
             if ((GameBase.level.time < self.pain_debounce_time)
                     && (self.enemy == null)) {
@@ -1201,6 +1205,7 @@ public class M_Actor {
             "Check your targets" };
 
     static EntPainAdapter actor_pain = new EntPainAdapter() {
+        public String getID() { return "actor_pain";}
         public void pain(edict_t self, edict_t other, float kick, int damage) {
 
             int n;
@@ -1246,6 +1251,7 @@ public class M_Actor {
     };
 
     static EntThinkAdapter actor_dead = new EntThinkAdapter() {
+        public String getID() { return "actor_dead";}
         public boolean think(edict_t self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
@@ -1288,6 +1294,7 @@ public class M_Actor {
             FRAME_death213, actor_frames_death2, actor_dead);
 
     static EntDieAdapter actor_die = new EntDieAdapter() {
+        public String getID() { return "actor_die";}
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
             int n;
@@ -1297,13 +1304,13 @@ public class M_Actor {
                 //		 gi.sound (self, CHAN_VOICE, actor.sound_gib, 1, ATTN_NORM,
                 // 0);
                 for (n = 0; n < 2; n++)
-                    GameAI.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
+                    GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
-                    GameAI.ThrowGib(self,
+                    GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
                             Defines.GIB_ORGANIC);
-                GameAI.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
+                GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
                         damage, Defines.GIB_ORGANIC);
                 self.deadflag = Defines.DEAD_DEAD;
                 return;
@@ -1326,6 +1333,7 @@ public class M_Actor {
     };
 
     static EntThinkAdapter actor_fire = new EntThinkAdapter() {
+        public String getID() { return "actor_fire";}
         public boolean think(edict_t self) {
             actorMachineGun(self);
 
@@ -1348,6 +1356,7 @@ public class M_Actor {
             FRAME_attak04, actor_frames_attack, actor_run);
 
     static EntThinkAdapter actor_attack = new EntThinkAdapter() {
+        public String getID() { return "actor_attack";}
         public boolean think(edict_t self) {
             int n;
 
@@ -1361,6 +1370,7 @@ public class M_Actor {
     };
 
     static EntUseAdapter actor_use = new EntUseAdapter() {
+        public String getID() { return "actor_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             float v[] = { 0, 0, 0 };
 
@@ -1400,6 +1410,7 @@ public class M_Actor {
      */
 
     static EntTouchAdapter target_actor_touch = new EntTouchAdapter() {
+        public String getID() { return "target_actor_touch";}
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
             float v[] = { 0, 0, 0 };

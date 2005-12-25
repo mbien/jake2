@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 09.12.2003 by RST.
-// $Id: Lib.java,v 1.13 2005-05-26 16:56:31 hzi Exp $
+// $Id: Lib.java,v 1.13.4.1 2005-12-25 18:11:16 cawe Exp $
 
 package jake2.util;
 
@@ -33,41 +33,47 @@ import java.nio.*;
 public class Lib {
 
 
-	/*
-	=============
-	VectorToString
-	
-	This is just a convenience function
-	for printing vectors
-	=============
-	*/
+	/** Converts a vector to a string. */
 	public static String vtos(float[] v) {
 		return (int) v[0] + " " + (int) v[1] + " " + (int) v[2];
 	}
+	
+	/** Converts a vector to a string. */
 	public static String vtofs(float[] v) {
 		return v[0] + " " + v[1] + " " + v[2];
 	}
+	
+	/** Converts a vector to a beatiful string. */
 	public static String vtofsbeaty(float[] v) {
 		return Com.sprintf("%8.2f %8.2f %8.2f", new Vargs().add(v[0]).add(v[1]).add(v[2]));
 	}
+	
+	/** Like in  libc. */
 	public static short rand() {
-		//return (short) (Math.random() * 0x8000);
 		return (short)Globals.rnd.nextInt(Short.MAX_VALUE+1);
 	}
+	
+	/** Like in libc. */
 	public static float crandom() {
 		return (Globals.rnd.nextFloat() - 0.5f) * 2.0f;
-		//return (float) (Math.random() - 0.5) * 2.0f;
 	}
+	
+	/** Like in libc. */
 	public static float random() {
 		return Globals.rnd.nextFloat();
 	}
+	
+	/** Like in libc. */
 	public static float crand() {
 		return (Globals.rnd.nextFloat() - 0.5f) * 2.0f;
 	}
+	
+	/** Like in libc. */
 	public static int strcmp(String in1, String in2) {
 		return in1.compareTo(in2);
 	}
 
+	/** Like in libc. */
 	public static float atof(String in) {
 		float res = 0;
 	
@@ -79,11 +85,13 @@ public class Lib {
 	
 		return res;
 	}
+	
+	/** Like in quake2. */
 	public static int Q_stricmp(String in1, String in2) {
 		return in1.compareToIgnoreCase(in2);
 	}
-	//	  =================================================================================
 	
+	/** Like in libc. */
 	public static int atoi(String in) {
 		try {
 			return Integer.parseInt(in);
@@ -96,24 +104,27 @@ public class Lib {
 			}
 		}
 	}
+	
+	/** Converts a string to a vector. Needs improvement. */
 	public static float[] atov(String v) {
 		float[] res = { 0, 0, 0 };
-	
-		int i1 = v.indexOf(" ");
-		int i2 = v.indexOf(" ", i1 + 1);
-	
-		res[0] = atof(v.substring(0, i1));
-		res[1] = atof(v.substring(i1 + 1, i2));
-		res[2] = atof(v.substring(i2 + 1, v.length()));
-	
+		String strres[] = v.split(" ");
+		for (int n=0; n < 3 && n < strres.length; n++)
+		{
+			res[n] = atof(strres[n]);
+		}
 		return res;
 	}
+
+	/** Like in libc. */
 	public static int strlen(char in[]) {
 		for (int i = 0; i < in.length; i++)
 			if (in[i] == 0)
 				return i;
 		return in.length;
 	}
+	
+	/** Like in libc. */
 	public static int strlen(byte in[]) {
 		for (int i = 0; i < in.length; i++)
 			if (in[i] == 0)
@@ -121,6 +132,7 @@ public class Lib {
 		return in.length;
 	}
 
+	/** Converts memory to a memory dump string. */
 	public static String hexdumpfile(ByteBuffer bb, int len) throws IOException {
 	
 		ByteBuffer bb1 = bb.slice();
@@ -131,7 +143,8 @@ public class Lib {
 	
 		return hexDump(buf, len, false);
 	}
-	// dump data as hexstring
+	
+	/** Converts memory to a memory dump string. */
 	public static String hexDump(byte data1[], int len, boolean showAddress) {
 		StringBuffer result = new StringBuffer();
 		StringBuffer charfield = new StringBuffer();
@@ -165,35 +178,45 @@ public class Lib {
 		}
 		return result.toString();
 	}
-	//formats an hex byte
+	
+	/** Formats an hex byte. */
 	public static String hex2(int i) {
 		String val = Integer.toHexString(i & 0xff);
-		return ("00".substring(0, 2 - val.length()) + val).toUpperCase();
+		return ("00".substring(0, 2 - val.length()) + val).toUpperCase();	
 	}
+	
+	/** Returns true if the char is alphanumeric. */
 	public static char readableChar(int i) {
 		if ((i < 0x20) || (i > 0x7f))
 			return '.';
 		else
 			return (char) i;
 	}
+	
+	/** Prints a vector to the quake console. */
 	public static void printv(String in, float arr[]) {
 		for (int n = 0; n < arr.length; n++) {
 			Com.Println(in + "[" + n + "]: " + arr[n]);
 		}
 	}
+	
 	static final byte nullfiller[] = new byte[8192];
+		
+	/** Like in libc. */
 	public static void fwriteString(String s, int len, RandomAccessFile f) throws IOException {
 		if (s ==  null) 
 			return;
 		int diff = len - s.length();
 		if (diff > 0) {
-			f.write(s.getBytes());
+			f.write(stringToBytes(s));
 	
 			f.write(nullfiller, 0, diff);
 		}
 		else
-			f.write(s.getBytes(), 0, len);
+			f.write(stringToBytes(s), 0, len);
 	}
+	
+	/** Like in libc */
 	public static RandomAccessFile fopen(String name, String mode) {
 		try {
 			return new RandomAccessFile(name, mode);
@@ -203,6 +226,8 @@ public class Lib {
 			return null;
 		}
 	}
+	
+	/** Like in libc */
 	public static void fclose(RandomAccessFile f) {
 		try {
 			f.close();
@@ -210,12 +235,16 @@ public class Lib {
 		catch (Exception e) {
 		}
 	}
+	
+	/** Like in libc */
 	public static String freadString(RandomAccessFile f, int len) {
 		byte buffer[] = new byte[len];
 		FS.Read(buffer, len, f);
 	
 		return Lib.CtoJava(buffer);
 	}
+	
+	/** Returns the right part of the string from the last occruence of c. */
 	public static String rightFrom(String in, char c) {
 		int pos = in.lastIndexOf(c);
 		if (pos == -1)
@@ -224,6 +253,8 @@ public class Lib {
 			return in.substring(pos + 1, in.length());
 		return "";
 	}
+	
+	/** Returns the left part of the string from the last occruence of c. */
 	public static String leftFrom(String in, char c) {
 		int pos = in.lastIndexOf(c);
 		if (pos == -1)
@@ -233,6 +264,7 @@ public class Lib {
 		return "";
 	}
 
+	/** Renames a file. */
 	public static int rename(String oldn, String newn) {
 		try {
 			File f1 = new File(oldn);
@@ -244,6 +276,8 @@ public class Lib {
 			return 1;
 		}
 	}
+	
+	/** Converts an int to 4 bytes java representation. */
 	public static byte[] getIntBytes(int c) {
 		byte b[] = new byte[4];
 		b[0] = (byte) ((c & 0xff));
@@ -252,9 +286,13 @@ public class Lib {
 		b[3] = (byte) ((c >>> 24) & 0xff);
 		return b;
 	}
+	
+	/** Converts an 4 bytes java int representation to an int. */
 	public static int getInt(byte b[]) {
 		return (b[0] & 0xff) | ((b[1] & 0xff) << 8) | ((b[2] & 0xff) << 16) | ((b[3] & 0xff) << 24);
 	}
+	
+	/** Duplicates a float array. */
 	public static float[] clone(float in[]) {
 		float out[] = new float[in.length];
 	
@@ -263,28 +301,57 @@ public class Lib {
 	
 		return out;
 	}
+    
+    /** 
+     * convert a java string to byte[] with 8bit latin 1
+     * 
+     * avoid String.getBytes() because it is using system specific character encoding.
+     */
+    public static byte[] stringToBytes(String value) {
+        try {
+           return value.getBytes("ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            // can't happen: Latin 1 is a standard encoding
+            return null;
+        }
+    }
+    
+    /** 
+     * convert a byte[] with 8bit latin 1 to java string
+     * 
+     * avoid new String(bytes) because it is using system specific character encoding.
+     */
+    public static String bytesToString(byte[] value) {
+        try {
+           return new String(value, "ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            // can't happen: Latin 1 is a standard encoding
+            return null;
+        }
+    }
 	
+	/** Helper method that savely handles the null termination of old C String data. */
 	public static String CtoJava(String old) {
 	    int index = old.indexOf('\0');
 	    if (index == 0) return "";
 	    return (index > 0) ? old.substring(0, index) : old; 
 	}
 	
+	/** Helper method that savely handles the null termination of old C String data. */
 	public static String CtoJava(byte[] old) {
 		return CtoJava(old, 0, old.length);
 	}
 
+	/** Helper method that savely handles the null termination of old C String data. */
 	public static String CtoJava(byte[] old, int offset, int maxLenght) {
 		if (old.length == 0 || old[0] == 0) return "";
 	    int i;
-	    for (i = offset; old[i] != 0 && (i - offset) < maxLenght; i++);
+	    for (i = offset; (i - offset) < maxLenght && old[i] != 0; i++);
 		return new String(old, offset, i - offset);
 	}
 	
 	
-	/*
-	 * java.nio.* Buffer util functions
-	 */
+	/* java.nio.* Buffer util functions */
 	
 	public static final int SIZEOF_FLOAT = 4;
 	public static final int SIZEOF_INT = 4;

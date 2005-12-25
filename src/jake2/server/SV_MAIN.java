@@ -19,7 +19,7 @@
  */
 
 // Created on 13.01.2004 by RST.
-// $Id: SV_MAIN.java,v 1.11 2005-07-01 14:20:55 hzi Exp $
+// $Id: SV_MAIN.java,v 1.11.2.1 2005-12-25 18:11:18 cawe Exp $
 package jake2.server;
 
 import jake2.Defines;
@@ -436,20 +436,17 @@ public class SV_MAIN {
         return 1;
     }
 
-    /*
-     * =============== SVC_RemoteCommand
-     * 
+    /**
      * A client issued an rcon command. Shift down the remaining args Redirect
-     * all printfs ===============
+     * all printfs fromt hte server to the client.
      */
     public static void SVC_RemoteCommand() {
         int i;
-        //char remaining[1024];
         String remaining;
 
         i = Rcon_Validate();
 
-        String msg = new String(Globals.net_message.data, 4, -1);
+        String msg = Lib.CtoJava(Globals.net_message.data, 4, 1024);
 
         if (i == 0)
             Com.Printf("Bad rcon from " + NET.AdrToString(Globals.net_from)
@@ -460,8 +457,8 @@ public class SV_MAIN {
 
         Com.BeginRedirect(Defines.RD_PACKET, SV_SEND.sv_outputbuf,
                 Defines.SV_OUTPUTBUF_LENGTH, new Com.RD_Flusher() {
-                    public void rd_flush(int target, byte[] buffer) {
-                        SV_SEND.SV_FlushRedirect(target, buffer);
+                    public void rd_flush(int target, StringBuffer buffer) {
+                        SV_SEND.SV_FlushRedirect(target, Lib.stringToBytes(buffer.toString()));
                     }
                 });
 
@@ -918,8 +915,7 @@ public class SV_MAIN {
                 Defines.CVAR_SERVERINFO);
         Cvar.Get("fraglimit", "0", Defines.CVAR_SERVERINFO);
         Cvar.Get("timelimit", "0", Defines.CVAR_SERVERINFO);
-        //TODO: set cheats 0
-        Cvar.Get("cheats", "1", Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
+        Cvar.Get("cheats", "0", Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
         Cvar.Get("protocol", "" + Defines.PROTOCOL_VERSION,
                 Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
 
@@ -934,8 +930,7 @@ public class SV_MAIN {
         SV_MAIN.sv_timedemo = Cvar.Get("timedemo", "0", 0);
         SV_MAIN.sv_enforcetime = Cvar.Get("sv_enforcetime", "0", 0);
 
-        // TODO: carsten, re-allow downloads per default
-        SV_MAIN.allow_download = Cvar.Get("allow_download", "0",
+        SV_MAIN.allow_download = Cvar.Get("allow_download", "1",
                 Defines.CVAR_ARCHIVE);
         SV_MAIN.allow_download_players = Cvar.Get("allow_download_players",
                 "0", Defines.CVAR_ARCHIVE);

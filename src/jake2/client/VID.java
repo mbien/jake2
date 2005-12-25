@@ -2,7 +2,7 @@
  * VID.java
  * Copyright (C) 2003
  *
- * $Id: VID.java,v 1.16.4.1 2005-11-13 12:57:56 cawe Exp $
+ * $Id: VID.java,v 1.16.4.2 2005-12-25 18:11:24 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.

@@ -19,7 +19,7 @@
  */
 
 // Created on 27.12.2003 by RST.
-// $Id: GameMisc.java,v 1.4 2004-09-22 19:22:03 salomo Exp $
+// $Id: GameMisc.java,v 1.4.12.1 2005-12-25 18:11:20 cawe Exp $
 package jake2.game;
 
 import java.util.Calendar;
@@ -508,7 +508,7 @@ public class GameMisc {
         ent.solid = Defines.SOLID_NOT;
         ent.s.effects |= Defines.EF_GIB;
         ent.takedamage = Defines.DAMAGE_YES;
-        ent.die = GameAI.gib_die;
+        ent.die = gib_die;
         ent.movetype = Defines.MOVETYPE_TOSS;
         ent.svflags |= Defines.SVF_MONSTER;
         ent.deadflag = Defines.DEAD_DEAD;
@@ -529,7 +529,7 @@ public class GameMisc {
         ent.solid = Defines.SOLID_NOT;
         ent.s.effects |= Defines.EF_GIB;
         ent.takedamage = Defines.DAMAGE_YES;
-        ent.die = GameAI.gib_die;
+        ent.die = gib_die;
         ent.movetype = Defines.MOVETYPE_TOSS;
         ent.svflags |= Defines.SVF_MONSTER;
         ent.deadflag = Defines.DEAD_DEAD;
@@ -550,7 +550,7 @@ public class GameMisc {
         ent.solid = Defines.SOLID_NOT;
         ent.s.effects |= Defines.EF_GIB;
         ent.takedamage = Defines.DAMAGE_YES;
-        ent.die = GameAI.gib_die;
+        ent.die = gib_die;
         ent.movetype = Defines.MOVETYPE_TOSS;
         ent.svflags |= Defines.SVF_MONSTER;
         ent.deadflag = Defines.DEAD_DEAD;
@@ -701,8 +701,210 @@ public class GameMisc {
      * editor convenience.
      */
 
+    public static void VelocityForDamage(int damage, float[] v) {
+        v[0] = 100.0f * Lib.crandom();
+        v[1] = 100.0f * Lib.crandom();
+        v[2] = 200.0f + 100.0f * Lib.random();
+    
+        if (damage < 50)
+            Math3D.VectorScale(v, 0.7f, v);
+        else
+            Math3D.VectorScale(v, 1.2f, v);
+    }
+
+    public static void BecomeExplosion1(edict_t self) {
+        GameBase.gi.WriteByte(Defines.svc_temp_entity);
+        GameBase.gi.WriteByte(Defines.TE_EXPLOSION1);
+        GameBase.gi.WritePosition(self.s.origin);
+        GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+    
+        GameUtil.G_FreeEdict(self);
+    }
+
+    public static void BecomeExplosion2(edict_t self) {
+        GameBase.gi.WriteByte(Defines.svc_temp_entity);
+        GameBase.gi.WriteByte(Defines.TE_EXPLOSION2);
+        GameBase.gi.WritePosition(self.s.origin);
+        GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+    
+        GameUtil.G_FreeEdict(self);
+    }
+
+    public static void ThrowGib(edict_t self, String gibname, int damage,
+            int type) {
+        edict_t gib;
+    
+        float[] vd = { 0, 0, 0 };
+        float[] origin = { 0, 0, 0 };
+        float[] size = { 0, 0, 0 };
+        float vscale;
+    
+        gib = GameUtil.G_Spawn();
+    
+        Math3D.VectorScale(self.size, 0.5f, size);
+        Math3D.VectorAdd(self.absmin, size, origin);
+        gib.s.origin[0] = origin[0] + Lib.crandom() * size[0];
+        gib.s.origin[1] = origin[1] + Lib.crandom() * size[1];
+        gib.s.origin[2] = origin[2] + Lib.crandom() * size[2];
+    
+        GameBase.gi.setmodel(gib, gibname);
+        gib.solid = Defines.SOLID_NOT;
+        gib.s.effects |= Defines.EF_GIB;
+        gib.flags |= Defines.FL_NO_KNOCKBACK;
+        gib.takedamage = Defines.DAMAGE_YES;
+        gib.die = gib_die;
+    
+        if (type == Defines.GIB_ORGANIC) {
+            gib.movetype = Defines.MOVETYPE_TOSS;
+            gib.touch = gib_touch;
+            vscale = 0.5f;
+        } else {
+            gib.movetype = Defines.MOVETYPE_BOUNCE;
+            vscale = 1.0f;
+        }
+    
+        VelocityForDamage(damage, vd);
+        Math3D.VectorMA(self.velocity, vscale, vd, gib.velocity);
+        ClipGibVelocity(gib);
+        gib.avelocity[0] = Lib.random() * 600;
+        gib.avelocity[1] = Lib.random() * 600;
+        gib.avelocity[2] = Lib.random() * 600;
+    
+        gib.think = GameUtil.G_FreeEdictA;
+        gib.nextthink = GameBase.level.time + 10 + Lib.random() * 10;
+    
+        GameBase.gi.linkentity(gib);
+    }
+
+    public static void ThrowHead(edict_t self, String gibname, int damage,
+            int type) {
+        float vd[] = { 0, 0, 0 };
+    
+        float vscale;
+    
+        self.s.skinnum = 0;
+        self.s.frame = 0;
+        Math3D.VectorClear(self.mins);
+        Math3D.VectorClear(self.maxs);
+    
+        self.s.modelindex2 = 0;
+        GameBase.gi.setmodel(self, gibname);
+        self.solid = Defines.SOLID_NOT;
+        self.s.effects |= Defines.EF_GIB;
+        self.s.effects &= ~Defines.EF_FLIES;
+        self.s.sound = 0;
+        self.flags |= Defines.FL_NO_KNOCKBACK;
+        self.svflags &= ~Defines.SVF_MONSTER;
+        self.takedamage = Defines.DAMAGE_YES;
+        self.die = gib_die;
+    
+        if (type == Defines.GIB_ORGANIC) {
+            self.movetype = Defines.MOVETYPE_TOSS;
+            self.touch = gib_touch;
+            vscale = 0.5f;
+        } else {
+            self.movetype = Defines.MOVETYPE_BOUNCE;
+            vscale = 1.0f;
+        }
+    
+        VelocityForDamage(damage, vd);
+        Math3D.VectorMA(self.velocity, vscale, vd, self.velocity);
+        ClipGibVelocity(self);
+    
+        self.avelocity[Defines.YAW] = Lib.crandom() * 600f;
+    
+        self.think = GameUtil.G_FreeEdictA;
+        self.nextthink = GameBase.level.time + 10 + Lib.random() * 10;
+    
+        GameBase.gi.linkentity(self);
+    }
+
+    public static void ThrowClientHead(edict_t self, int damage) {
+        float vd[] = { 0, 0, 0 };
+        String gibname;
+    
+        if ((Lib.rand() & 1) != 0) {
+            gibname = "models/objects/gibs/head2/tris.md2";
+            self.s.skinnum = 1; // second skin is player
+        } else {
+            gibname = "models/objects/gibs/skull/tris.md2";
+            self.s.skinnum = 0;
+        }
+    
+        self.s.origin[2] += 32;
+        self.s.frame = 0;
+        GameBase.gi.setmodel(self, gibname);
+        Math3D.VectorSet(self.mins, -16, -16, 0);
+        Math3D.VectorSet(self.maxs, 16, 16, 16);
+    
+        self.takedamage = Defines.DAMAGE_NO;
+        self.solid = Defines.SOLID_NOT;
+        self.s.effects = Defines.EF_GIB;
+        self.s.sound = 0;
+        self.flags |= Defines.FL_NO_KNOCKBACK;
+    
+        self.movetype = Defines.MOVETYPE_BOUNCE;
+        VelocityForDamage(damage, vd);
+        Math3D.VectorAdd(self.velocity, vd, self.velocity);
+    
+        if (self.client != null)
+        // bodies in the queue don't have a client anymore
+        {
+            self.client.anim_priority = Defines.ANIM_DEATH;
+            self.client.anim_end = self.s.frame;
+        } else {
+            self.think = null;
+            self.nextthink = 0;
+        }
+    
+        GameBase.gi.linkentity(self);
+    }
+
+    public static void ThrowDebris(edict_t self, String modelname, float speed,
+            float[] origin) {
+        edict_t chunk;
+        float[] v = { 0, 0, 0 };
+    
+        chunk = GameUtil.G_Spawn();
+        Math3D.VectorCopy(origin, chunk.s.origin);
+        GameBase.gi.setmodel(chunk, modelname);
+        v[0] = 100 * Lib.crandom();
+        v[1] = 100 * Lib.crandom();
+        v[2] = 100 + 100 * Lib.crandom();
+        Math3D.VectorMA(self.velocity, speed, v, chunk.velocity);
+        chunk.movetype = Defines.MOVETYPE_BOUNCE;
+        chunk.solid = Defines.SOLID_NOT;
+        chunk.avelocity[0] = Lib.random() * 600;
+        chunk.avelocity[1] = Lib.random() * 600;
+        chunk.avelocity[2] = Lib.random() * 600;
+        chunk.think = GameUtil.G_FreeEdictA;
+        chunk.nextthink = GameBase.level.time + 5 + Lib.random() * 5;
+        chunk.s.frame = 0;
+        chunk.flags = 0;
+        chunk.classname = "debris";
+        chunk.takedamage = Defines.DAMAGE_YES;
+        chunk.die = debris_die;
+        GameBase.gi.linkentity(chunk);
+    }
+
+    public static void ClipGibVelocity(edict_t ent) {
+        if (ent.velocity[0] < -300)
+            ent.velocity[0] = -300;
+        else if (ent.velocity[0] > 300)
+            ent.velocity[0] = 300;
+        if (ent.velocity[1] < -300)
+            ent.velocity[1] = -300;
+        else if (ent.velocity[1] > 300)
+            ent.velocity[1] = 300;
+        if (ent.velocity[2] < 200)
+            ent.velocity[2] = 200; // always some upwards
+        else if (ent.velocity[2] > 500)
+            ent.velocity[2] = 500;
+    }
+
     //=====================================================
     public static EntUseAdapter Use_Areaportal = new EntUseAdapter() {
+        public String getID() { return "use_areaportal";}
         public void use(edict_t ent, edict_t other, edict_t activator) {
             ent.count ^= 1; // toggle state
             //	gi.dprintf ("portalstate: %i = %i\n", ent.style, ent.count);
@@ -719,6 +921,7 @@ public class GameMisc {
      */
 
     static EntThinkAdapter SP_func_areaportal = new EntThinkAdapter() {
+        public String getID() { return "sp_func_areaportal";}
         public boolean think(edict_t ent) {
             ent.use = Use_Areaportal;
             ent.count = 0; // always start closed;
@@ -732,6 +935,7 @@ public class GameMisc {
      * path_corner targeted touches it
      */
     public static EntTouchAdapter path_corner_touch = new EntTouchAdapter() {
+        public String getID() { return "path_corner_touch";}
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
             float[] v = { 0, 0, 0 };
@@ -791,6 +995,7 @@ public class GameMisc {
      * going after the activator. If hold is selected, it will stay here.
      */
     public static EntTouchAdapter point_combat_touch = new EntTouchAdapter() {
+        public String getID() { return "point_combat_touch";}
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
             edict_t activator;
@@ -849,6 +1054,7 @@ public class GameMisc {
      * level. Don't use
      */
     public static EntThinkAdapter TH_viewthing = new EntThinkAdapter() {
+        public String getID() { return "th_viewthing";}
         public boolean think(edict_t ent) {
             ent.s.frame = (ent.s.frame + 1) % 7;
             ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -866,7 +1072,7 @@ public class GameMisc {
     public static final int START_OFF = 1;
 
     public static EntUseAdapter light_use = new EntUseAdapter() {
-
+        public String getID() { return "light_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             if ((self.spawnflags & START_OFF) != 0) {
                 GameBase.gi.configstring(Defines.CS_LIGHTS + self.style, "m");
@@ -893,6 +1099,7 @@ public class GameMisc {
      */
 
     static EntUseAdapter func_wall_use = new EntUseAdapter() {
+        public String getID() { return "func_wall_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             if (self.solid == Defines.SOLID_NOT) {
                 self.solid = Defines.SOLID_BSP;
@@ -914,6 +1121,7 @@ public class GameMisc {
      * is solid bmodel that will fall if it's support it removed.
      */
     static EntTouchAdapter func_object_touch = new EntTouchAdapter() {
+        public String getID() { return "func_object_touch";}
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
             // only squash thing we fall on top of
@@ -923,13 +1131,14 @@ public class GameMisc {
                 return;
             if (other.takedamage == Defines.DAMAGE_NO)
                 return;
-            GameUtil.T_Damage(other, self, self, Globals.vec3_origin,
+            GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     self.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
                     Defines.MOD_CRUSH);
         }
     };
 
     static EntThinkAdapter func_object_release = new EntThinkAdapter() {
+        public String getID() { return "func_object_release";}
         public boolean think(edict_t self) {
             self.movetype = Defines.MOVETYPE_TOSS;
             self.touch = func_object_touch;
@@ -938,6 +1147,7 @@ public class GameMisc {
     };
 
     static EntUseAdapter func_object_use = new EntUseAdapter() {
+        public String getID() { return "func_object_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.solid = Defines.SOLID_BSP;
             self.svflags &= ~Defines.SVF_NOCLIENT;
@@ -962,7 +1172,7 @@ public class GameMisc {
      * chunk per 25 of mass (up to 16). So 800 gives the most.
      */
     public static EntDieAdapter func_explosive_explode = new EntDieAdapter() {
-
+        public String getID() { return "func_explosive_explode";}
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
             float[] origin = { 0, 0, 0 };
@@ -979,7 +1189,7 @@ public class GameMisc {
             self.takedamage = Defines.DAMAGE_NO;
 
             if (self.dmg != 0)
-                GameUtil.T_RadiusDamage(self, attacker, self.dmg, null,
+                GameCombat.T_RadiusDamage(self, attacker, self.dmg, null,
                         self.dmg + 40, Defines.MOD_EXPLOSIVE);
 
             Math3D.VectorSubtract(self.s.origin, inflictor.s.origin,
@@ -1003,7 +1213,7 @@ public class GameMisc {
                     chunkorigin[0] = origin[0] + Lib.crandom() * size[0];
                     chunkorigin[1] = origin[1] + Lib.crandom() * size[1];
                     chunkorigin[2] = origin[2] + Lib.crandom() * size[2];
-                    GameAI.ThrowDebris(self, "models/objects/debris1/tris.md2",
+                    ThrowDebris(self, "models/objects/debris1/tris.md2",
                             1, chunkorigin);
                 }
             }
@@ -1016,20 +1226,21 @@ public class GameMisc {
                 chunkorigin[0] = origin[0] + Lib.crandom() * size[0];
                 chunkorigin[1] = origin[1] + Lib.crandom() * size[1];
                 chunkorigin[2] = origin[2] + Lib.crandom() * size[2];
-                GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", 2,
+                ThrowDebris(self, "models/objects/debris2/tris.md2", 2,
                         chunkorigin);
             }
 
             GameUtil.G_UseTargets(self, attacker);
 
             if (self.dmg != 0)
-                GameAI.BecomeExplosion1(self);
+                BecomeExplosion1(self);
             else
                 GameUtil.G_FreeEdict(self);
         }
     };
 
     public static EntUseAdapter func_explosive_use = new EntUseAdapter() {
+        public String getID() { return "func_explosive_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             func_explosive_explode.die(self, self, other, self.health,
                     Globals.vec3_origin);
@@ -1037,7 +1248,7 @@ public class GameMisc {
     };
 
     public static EntUseAdapter func_explosive_spawn = new EntUseAdapter() {
-
+        public String getID() { return "func_explosive_spawn";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.solid = Defines.SOLID_BSP;
             self.svflags &= ~Defines.SVF_NOCLIENT;
@@ -1053,7 +1264,7 @@ public class GameMisc {
      */
 
     public static EntTouchAdapter barrel_touch = new EntTouchAdapter() {
-
+        public String getID() { return "barrel_touch";}
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
             float ratio;
@@ -1070,13 +1281,14 @@ public class GameMisc {
     };
 
     public static EntThinkAdapter barrel_explode = new EntThinkAdapter() {
+        public String getID() { return "barrel_explode";}
         public boolean think(edict_t self) {
 
             float[] org = { 0, 0, 0 };
             float spd;
             float[] save = { 0, 0, 0 };
 
-            GameUtil.T_RadiusDamage(self, self.activator, self.dmg, null,
+            GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
                     self.dmg + 40, Defines.MOD_BARREL);
 
             Math3D.VectorCopy(self.s.origin, save);
@@ -1087,31 +1299,31 @@ public class GameMisc {
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris1/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris1/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris1/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris1/tris.md2", spd,
                     org);
 
             // bottom corners
             spd = 1.75f * (float) self.dmg / 200.0f;
             Math3D.VectorCopy(self.absmin, org);
-            GameAI.ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
                     org);
             Math3D.VectorCopy(self.absmin, org);
             org[0] += self.size[0];
-            GameAI.ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
                     org);
             Math3D.VectorCopy(self.absmin, org);
             org[1] += self.size[1];
-            GameAI.ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
                     org);
             Math3D.VectorCopy(self.absmin, org);
             org[0] += self.size[0];
             org[1] += self.size[1];
-            GameAI.ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
                     org);
 
             // a bunch of little chunks
@@ -1119,55 +1331,56 @@ public class GameMisc {
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
-            GameAI.ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
+            ThrowDebris(self, "models/objects/debris2/tris.md2", spd,
                     org);
 
             Math3D.VectorCopy(save, self.s.origin);
             if (self.groundentity != null)
-                GameAI.BecomeExplosion2(self);
+                BecomeExplosion2(self);
             else
-                GameAI.BecomeExplosion1(self);
+                BecomeExplosion1(self);
 
             return true;
         }
     };
 
     public static EntDieAdapter barrel_delay = new EntDieAdapter() {
+        public String getID() { return "barrel_delay";}
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
 
@@ -1187,6 +1400,7 @@ public class GameMisc {
      */
 
     static EntUseAdapter misc_blackhole_use = new EntUseAdapter() {
+        public String getID() { return "misc_blavkhole_use";}
         public void use(edict_t ent, edict_t other, edict_t activator) {
             /*
              * gi.WriteByte (svc_temp_entity); gi.WriteByte (TE_BOSSTPORT);
@@ -1198,6 +1412,7 @@ public class GameMisc {
     };
 
     static EntThinkAdapter misc_blackhole_think = new EntThinkAdapter() {
+        public String getID() { return "misc_blackhole_think";}
         public boolean think(edict_t self) {
 
             if (++self.s.frame < 19)
@@ -1215,6 +1430,7 @@ public class GameMisc {
      */
 
     static EntThinkAdapter misc_eastertank_think = new EntThinkAdapter() {
+        public String getID() { return "misc_eastertank_think";}
         public boolean think(edict_t self) {
             if (++self.s.frame < 293)
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -1231,6 +1447,7 @@ public class GameMisc {
      */
 
     static EntThinkAdapter misc_easterchick_think = new EntThinkAdapter() {
+        public String getID() { return "misc_easterchick_think";}
         public boolean think(edict_t self) {
             if (++self.s.frame < 247)
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -1246,6 +1463,7 @@ public class GameMisc {
      * QUAKED misc_easterchick2 (1 .5 0) (-32 -32 0) (32 32 32)
      */
     static EntThinkAdapter misc_easterchick2_think = new EntThinkAdapter() {
+        public String getID() { return "misc_easterchick2_think";}
         public boolean think(edict_t self) {
             if (++self.s.frame < 287)
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -1264,6 +1482,7 @@ public class GameMisc {
      */
 
     public static EntThinkAdapter commander_body_think = new EntThinkAdapter() {
+        public String getID() { return "commander_body_think";}
         public boolean think(edict_t self) {
             if (++self.s.frame < 24)
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -1278,7 +1497,7 @@ public class GameMisc {
     };
 
     public static EntUseAdapter commander_body_use = new EntUseAdapter() {
-
+        public String getID() { return "commander_body_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.think = commander_body_think;
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -1288,6 +1507,7 @@ public class GameMisc {
     };
 
     public static EntThinkAdapter commander_body_drop = new EntThinkAdapter() {
+        public String getID() { return "commander_body_group";}
         public boolean think(edict_t self) {
             self.movetype = Defines.MOVETYPE_TOSS;
             self.s.origin[2] += 2;
@@ -1300,6 +1520,7 @@ public class GameMisc {
      * of the banner. The banner is 128 tall.
      */
     static EntThinkAdapter misc_banner_think = new EntThinkAdapter() {
+        public String getID() { return "misc_banner_think";}
         public boolean think(edict_t ent) {
             ent.s.frame = (ent.s.frame + 1) % 16;
             ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -1313,7 +1534,7 @@ public class GameMisc {
      * model. Comes in 6 exciting different poses!
      */
     static EntDieAdapter misc_deadsoldier_die = new EntDieAdapter() {
-
+        public String getID() { return "misc_deadsoldier_die";}
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
             int n;
@@ -1324,9 +1545,9 @@ public class GameMisc {
             GameBase.gi.sound(self, Defines.CHAN_BODY, GameBase.gi
                     .soundindex("misc/udeath.wav"), 1, Defines.ATTN_NORM, 0);
             for (n = 0; n < 4; n++)
-                GameAI.ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2",
+                ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2",
                         damage, Defines.GIB_ORGANIC);
-            GameAI.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
+            ThrowHead(self, "models/objects/gibs/head2/tris.md2",
                     damage, Defines.GIB_ORGANIC);
         }
     };
@@ -1341,6 +1562,7 @@ public class GameMisc {
      */
 
     static EntUseAdapter misc_viper_use = new EntUseAdapter() {
+        public String getID() { return "misc_viper_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.svflags &= ~Defines.SVF_NOCLIENT;
             self.use = GameFunc.train_use;
@@ -1353,19 +1575,20 @@ public class GameMisc {
      * should the bomb make?
      */
     static EntTouchAdapter misc_viper_bomb_touch = new EntTouchAdapter() {
-
+        public String getID() { return "misc_viper_bomb_touch";}
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
             GameUtil.G_UseTargets(self, self.activator);
 
             self.s.origin[2] = self.absmin[2] + 1;
-            GameUtil.T_RadiusDamage(self, self, self.dmg, null, self.dmg + 40,
+            GameCombat.T_RadiusDamage(self, self, self.dmg, null, self.dmg + 40,
                     Defines.MOD_BOMB);
-            GameAI.BecomeExplosion2(self);
+            BecomeExplosion2(self);
         }
     };
 
     static EntThinkAdapter misc_viper_bomb_prethink = new EntThinkAdapter() {
+        public String getID() { return "misc_viper_bomb_prethink";}
         public boolean think(edict_t self) {
 
             float[] v = { 0, 0, 0 };
@@ -1389,6 +1612,7 @@ public class GameMisc {
     };
 
     static EntUseAdapter misc_viper_bomb_use = new EntUseAdapter() {
+        public String getID() { return "misc_viper_bomb_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             edict_t viper = null;
 
@@ -1425,6 +1649,7 @@ public class GameMisc {
      */
 
     static EntUseAdapter misc_strogg_ship_use = new EntUseAdapter() {
+        public String getID() { return "misc_strogg_ship_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.svflags &= ~Defines.SVF_NOCLIENT;
             self.use = GameFunc.train_use;
@@ -1436,6 +1661,7 @@ public class GameMisc {
      * QUAKED misc_satellite_dish (1 .5 0) (-64 -64 0) (64 64 128)
      */
     static EntThinkAdapter misc_satellite_dish_think = new EntThinkAdapter() {
+        public String getID() { return "misc_satellite_dish_think";}
         public boolean think(edict_t self) {
             self.s.frame++;
             if (self.s.frame < 38)
@@ -1445,6 +1671,7 @@ public class GameMisc {
     };
 
     static EntUseAdapter misc_satellite_dish_use = new EntUseAdapter() {
+        public String getID() { return "misc_satellite_dish_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.s.frame = 0;
             self.think = misc_satellite_dish_think;
@@ -1457,6 +1684,7 @@ public class GameMisc {
      */
 
     static EntUseAdapter target_string_use = new EntUseAdapter() {
+        public String getID() { return "target_string_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             edict_t e;
             int n, l;
@@ -1500,7 +1728,7 @@ public class GameMisc {
     public static final int CLOCK_MESSAGE_SIZE = 16;
 
     public static EntThinkAdapter func_clock_think = new EntThinkAdapter() {
-
+        public String getID() { return "func_clock_think";}
         public boolean think(edict_t self) {
             if (null == self.enemy) {
 
@@ -1569,7 +1797,7 @@ public class GameMisc {
     };
 
     public static EntUseAdapter func_clock_use = new EntUseAdapter() {
-
+        public String getID() { return "func_clock_use";}
         public void use(edict_t self, edict_t other, edict_t activator) {
             if (0 == (self.spawnflags & 8))
                 self.use = null;
@@ -1583,6 +1811,7 @@ public class GameMisc {
     //=================================================================================
 
     static EntTouchAdapter teleporter_touch = new EntTouchAdapter() {
+        public String getID() { return "teleporter_touch";}
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
             edict_t dest;
@@ -1639,6 +1868,7 @@ public class GameMisc {
      */
 
     public static EntThinkAdapter SP_misc_teleporter_dest = new EntThinkAdapter() {
+        public String getID() { return "SP_misc_teleporter_dest";}
         public boolean think(edict_t ent) {
             GameBase.gi.setmodel(ent, "models/objects/dmspot/tris.md2");
             ent.s.skinnum = 0;
@@ -1648,6 +1878,68 @@ public class GameMisc {
             Math3D.VectorSet(ent.maxs, 32, 32, -16);
             GameBase.gi.linkentity(ent);
             return true;
+        }
+    };
+
+    public static EntThinkAdapter gib_think = new EntThinkAdapter() {
+        public String getID() { return "gib_think";}
+        public boolean think(edict_t self) {
+            self.s.frame++;
+            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+    
+            if (self.s.frame == 10) {
+                self.think = GameUtil.G_FreeEdictA;
+                self.nextthink = GameBase.level.time + 8
+                        + Globals.rnd.nextFloat() * 10;
+            }
+            return true;
+        }
+    };
+
+    public static EntTouchAdapter gib_touch = new EntTouchAdapter() {
+        public String getID() { return "gib_touch";}
+        public void touch(edict_t self, edict_t other, cplane_t plane,
+                csurface_t surf) {
+            float[] normal_angles = { 0, 0, 0 }, right = { 0, 0, 0 };
+    
+            if (null == self.groundentity)
+                return;
+    
+            self.touch = null;
+    
+            if (plane != null) {
+                GameBase.gi.sound(self, Defines.CHAN_VOICE, GameBase.gi
+                        .soundindex("misc/fhit3.wav"), 1, Defines.ATTN_NORM, 0);
+    
+                Math3D.vectoangles(plane.normal, normal_angles);
+                Math3D.AngleVectors(normal_angles, null, right, null);
+                Math3D.vectoangles(right, self.s.angles);
+    
+                if (self.s.modelindex == GameBase.sm_meat_index) {
+                    self.s.frame++;
+                    self.think = gib_think;
+                    self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                }
+            }
+        }
+    };
+
+    public static EntDieAdapter gib_die = new EntDieAdapter() {
+        public String getID() { return "gib_die";}
+        public void die(edict_t self, edict_t inflictor, edict_t attacker,
+                int damage, float[] point) {
+            GameUtil.G_FreeEdict(self);
+        }
+    };
+
+    /*
+     * ================= debris =================
+     */
+    public static EntDieAdapter debris_die = new EntDieAdapter() {
+        public String getID() { return "debris_die";}
+        public void die(edict_t self, edict_t inflictor, edict_t attacker,
+                int damage, float[] point) {
+            GameUtil.G_FreeEdict(self);
         }
     };
 }

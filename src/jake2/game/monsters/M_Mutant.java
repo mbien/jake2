@@ -19,25 +19,12 @@
  */
 
 // Created on 13.11.2003 by RST.
-// $Id: M_Mutant.java,v 1.2 2005-02-06 18:48:17 salomo Exp $
+// $Id: M_Mutant.java,v 1.2.6.1 2005-12-25 18:15:09 cawe Exp $
 package jake2.game.monsters;
 
 import jake2.Defines;
 import jake2.client.M;
-import jake2.game.EntDieAdapter;
-import jake2.game.EntInteractAdapter;
-import jake2.game.EntPainAdapter;
-import jake2.game.EntThinkAdapter;
-import jake2.game.EntTouchAdapter;
-import jake2.game.Fire;
-import jake2.game.GameAI;
-import jake2.game.GameBase;
-import jake2.game.GameUtil;
-import jake2.game.cplane_t;
-import jake2.game.csurface_t;
-import jake2.game.edict_t;
-import jake2.game.mframe_t;
-import jake2.game.mmove_t;
+import jake2.game.*;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
@@ -375,6 +362,7 @@ public class M_Mutant {
     //	SOUNDS
     //
     static EntThinkAdapter mutant_step = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_step"; }
         public boolean think(edict_t self) {
             int n;
             n = (Lib.rand() + 1) % 3;
@@ -392,6 +380,7 @@ public class M_Mutant {
     };
 
     static EntInteractAdapter mutant_sight = new EntInteractAdapter() {
+    	public String getID(){ return "mutant_sight"; }
         public boolean interact(edict_t self, edict_t other) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
                     Defines.ATTN_NORM, 0);
@@ -400,6 +389,7 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_search = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_search"; }
         public boolean think(edict_t self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
                     Defines.ATTN_NORM, 0);
@@ -408,6 +398,7 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_swing = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_swing"; }
         public boolean think(edict_t self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_swing, 1,
                     Defines.ATTN_NORM, 0);
@@ -486,6 +477,7 @@ public class M_Mutant {
             FRAME_stand151, mutant_frames_stand, null);
 
     static EntThinkAdapter mutant_stand = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_stand"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = mutant_move_stand;
             return true;
@@ -497,6 +489,7 @@ public class M_Mutant {
     //
 
     static EntThinkAdapter mutant_idle_loop = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_idle_loop"; }
         public boolean think(edict_t self) {
             if (Lib.random() < 0.75)
                 self.monsterinfo.nextframe = FRAME_stand155;
@@ -525,6 +518,7 @@ public class M_Mutant {
             FRAME_stand164, mutant_frames_idle, mutant_stand);
 
     static EntThinkAdapter mutant_idle = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_idle"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = mutant_move_idle;
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
@@ -555,6 +549,7 @@ public class M_Mutant {
             mutant_frames_walk, null);
 
     static EntThinkAdapter mutant_walk_loop = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_walk_loop"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = mutant_move_walk;
             return true;
@@ -571,6 +566,7 @@ public class M_Mutant {
             FRAME_walk04, mutant_frames_start_walk, mutant_walk_loop);
 
     static EntThinkAdapter mutant_walk = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_walk"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = mutant_move_start_walk;
             return true;
@@ -593,6 +589,7 @@ public class M_Mutant {
             mutant_frames_run, null);
 
     static EntThinkAdapter mutant_run = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_run"; }
         public boolean think(edict_t self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = mutant_move_stand;
@@ -608,11 +605,12 @@ public class M_Mutant {
     //
 
     static EntThinkAdapter mutant_hit_left = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_hit_left"; }
         public boolean think(edict_t self) {
             float[] aim = { 0, 0, 0 };
 
             Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], 8);
-            if (Fire.fire_hit(self, aim, (10 + (Lib.rand() % 5)), 100))
+            if (GameWeapon.fire_hit(self, aim, (10 + (Lib.rand() % 5)), 100))
                 GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_hit, 1,
                         Defines.ATTN_NORM, 0);
             else
@@ -623,11 +621,12 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_hit_right = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_hit_right"; }
         public boolean think(edict_t self) {
             float[] aim = { 0, 0, 0 };
 
             Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.maxs[0], 8);
-            if (Fire.fire_hit(self, aim, (10 + (Lib.rand() % 5)), 100))
+            if (GameWeapon.fire_hit(self, aim, (10 + (Lib.rand() % 5)), 100))
                 GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_hit2, 1,
                         Defines.ATTN_NORM, 0);
             else
@@ -638,6 +637,7 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_check_refire = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_check_refire"; }
         public boolean think(edict_t self) {
             if (null == self.enemy || !self.enemy.inuse
                     || self.enemy.health <= 0)
@@ -663,6 +663,7 @@ public class M_Mutant {
             FRAME_attack15, mutant_frames_attack, mutant_run);
 
     static EntThinkAdapter mutant_melee = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_melee"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = mutant_move_attack;
             return true;
@@ -674,6 +675,7 @@ public class M_Mutant {
     //
 
     static EntTouchAdapter mutant_jump_touch = new EntTouchAdapter() {
+    	public String getID(){ return "mutant_jump_touch"; }
 
         public void touch(edict_t self, edict_t other, cplane_t plane,
                 csurface_t surf) {
@@ -692,7 +694,7 @@ public class M_Mutant {
                     Math3D.VectorNormalize(normal);
                     Math3D.VectorMA(self.s.origin, self.maxs[0], normal, point);
                     damage = (int) (40 + 10 * Lib.random());
-                    GameUtil.T_Damage(other, self, self, self.velocity, point,
+                    GameCombat.T_Damage(other, self, self, self.velocity, point,
                             normal, damage, damage, 0, Defines.MOD_UNKNOWN);
                 }
             }
@@ -710,6 +712,7 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_jump_takeoff = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_jump_takeoff"; }
         public boolean think(edict_t self) {
 
             float[] forward = { 0, 0, 0 };
@@ -729,6 +732,7 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_check_landing = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_check_landing"; }
         public boolean think(edict_t self) {
             if (self.groundentity != null) {
                 GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_thud, 1,
@@ -760,6 +764,7 @@ public class M_Mutant {
             FRAME_attack08, mutant_frames_jump, mutant_run);
 
     static EntThinkAdapter mutant_jump = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_jump"; }
         public boolean think(edict_t self) {
 
             self.monsterinfo.currentmove = mutant_move_jump;
@@ -771,6 +776,7 @@ public class M_Mutant {
     //	CHECKATTACK
     //
     static EntThinkAdapter mutant_check_melee = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_check_melee"; }
         public boolean think(edict_t self) {
             if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)
                 return true;
@@ -780,6 +786,7 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_check_jump = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_check_jump"; }
         public boolean think(edict_t self) {
 
             float[] v = { 0, 0, 0 };
@@ -808,6 +815,7 @@ public class M_Mutant {
     };
 
     static EntThinkAdapter mutant_checkattack = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_checkattack"; }
         public boolean think(edict_t self) {
 
             if (null == self.enemy || self.enemy.health <= 0)
@@ -870,6 +878,7 @@ public class M_Mutant {
             FRAME_pain311, mutant_frames_pain3, mutant_run);
 
     static EntPainAdapter mutant_pain = new EntPainAdapter() {
+    	public String getID(){ return "mutant_pain"; }
         public void pain(edict_t self, edict_t other, float kick, int damage) {
             float r;
 
@@ -905,6 +914,7 @@ public class M_Mutant {
     //	DEATH
     //
     static EntThinkAdapter mutant_dead = new EntThinkAdapter() {
+    	public String getID(){ return "mutant_dead"; }
         public boolean think(edict_t self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
@@ -947,6 +957,7 @@ public class M_Mutant {
             FRAME_death210, mutant_frames_death2, mutant_dead);
 
     static EntDieAdapter mutant_die = new EntDieAdapter() {
+    	public String getID(){ return "mutant_die"; }
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
             int n;
@@ -957,13 +968,13 @@ public class M_Mutant {
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
                 for (n = 0; n < 2; n++)
-                    GameAI.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
+                    GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
-                    GameAI.ThrowGib(self,
+                    GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
                             Defines.GIB_ORGANIC);
-                GameAI.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
+                GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
                         damage, Defines.GIB_ORGANIC);
                 self.deadflag = Defines.DEAD_DEAD;
                 return;
@@ -994,6 +1005,7 @@ public class M_Mutant {
      * Trigger_Spawn Sight
      */
     public static EntThinkAdapter SP_monster_mutant = new EntThinkAdapter() {
+    	public String getID(){ return "SP_monster_mutant"; }
         public boolean think(edict_t self) {
             if (GameBase.deathmatch.value != 0) {
                 GameUtil.G_FreeEdict(self);

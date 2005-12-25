@@ -2,7 +2,7 @@
  * CL.java
  * Copyright (C) 2004
  * 
- * $Id: CL.java,v 1.23 2005-07-01 14:20:48 hzi Exp $
+ * $Id: CL.java,v 1.23.2.1 2005-12-25 18:11:24 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -56,11 +56,6 @@ public final class CL {
 
     public static final int PLAYER_MULT = 5;
 
-    /*
-     * ================== CL_FixCvarCheats
-     * 
-     * ==================
-     */
     public static class cheatvar_t {
         String name;
 
@@ -89,10 +84,10 @@ public final class CL {
 
     static int numcheatvars;
 
-    /*
-     * ==================== CL_Stop_f
+    /**
+     * Stop_f
      * 
-     * stop recording a demo ====================
+     * Stop recording a demo.
      */
     static xcommand_t Stop_f = new xcommand_t() {
         public void execute() {
@@ -117,15 +112,14 @@ public final class CL {
         }
     };
 
-    /*
-     * ==================== CL_Record_f
-     * 
-     * record <demoname>
-     * 
-     * Begins recording a demo from the current position ====================
-     */
     static entity_state_t nullstate = new entity_state_t(null);
 
+    /**
+     * Record_f
+     * 
+     * record &lt;demoname&gt;
+     * Begins recording a demo from the current position.
+     */
     static xcommand_t Record_f = new xcommand_t() {
         public void execute() {
             try {
@@ -233,8 +227,8 @@ public final class CL {
         }
     };
 
-    /*
-     * ================== CL_ForwardToServer_f ==================
+    /**
+     * ForwardToServer_f
      */
     static xcommand_t ForwardToServer_f = new xcommand_t() {
         public void execute() {
@@ -253,8 +247,8 @@ public final class CL {
         }
     };
 
-    /*
-     * ================== CL_Pause_f ==================
+    /**
+     * Pause_f
      */
     static xcommand_t Pause_f = new xcommand_t() {
         public void execute() {
@@ -270,8 +264,8 @@ public final class CL {
         }
     };
 
-    /*
-     * ================== CL_Quit_f ==================
+    /**
+     * Quit_f
      */
     static xcommand_t Quit_f = new xcommand_t() {
         public void execute() {
@@ -280,10 +274,8 @@ public final class CL {
         }
     };
 
-    /*
-     * ================ CL_Connect_f
-     * 
-     * ================
+    /**
+     * Connect_f
      */
     static xcommand_t Connect_f = new xcommand_t() {
         public void execute() {
@@ -315,63 +307,54 @@ public final class CL {
         }
     };
 
-    /*
-     * ===================== CL_Rcon_f
+    /**
+     * Rcon_f
      * 
      * Send the rest of the command line over as an unconnected command.
-     * =====================
      */
     static xcommand_t Rcon_f = new xcommand_t() {
         public void execute() {
-            StringBuffer message = new StringBuffer(1024);
-            int i;
-            netadr_t to = new netadr_t();
 
-            if (Globals.rcon_client_password.string == null) {
-                Com
-                        .Printf("You must set 'rcon_password' before\nissuing an rcon command.\n");
+            if (Globals.rcon_client_password.string.length() == 0) {
+                Com.Printf("You must set 'rcon_password' before\nissuing an rcon command.\n");
                 return;
             }
 
-            message.append((char) 255);
-            message.append((char) 255);
-            message.append((char) 255);
-            message.append((char) 255);
+            StringBuffer message = new StringBuffer(1024);
 
-            NET.Config(true); // allow remote
+            // connection less packet
+            message.append('\u00ff');
+            message.append('\u00ff');
+            message.append('\u00ff');
+            message.append('\u00ff');
 
-            //strcat (message, "rcon ");
+            // allow remote
+            NET.Config(true);
+
             message.append("rcon ");
-
-            //strcat (message, rcon_client_password.string);
             message.append(Globals.rcon_client_password.string);
-            //strcat (message, " ");
             message.append(" ");
 
-            for (i = 1; i < Cmd.Argc(); i++) {
-                //strcat (message, Cmd.Argv(i));
+            for (int i = 1; i < Cmd.Argc(); i++) {
                 message.append(Cmd.Argv(i));
-                //strcat (message, " ");
                 message.append(" ");
             }
+
+            netadr_t to = new netadr_t();
 
             if (Globals.cls.state >= Defines.ca_connected)
                 to = Globals.cls.netchan.remote_address;
             else {
                 if (Globals.rcon_address.string.length() == 0) {
-                    Com
-                            .Printf("You must either be connected,\nor set the 'rcon_address' cvar\nto issue rcon commands\n");
-
+                    Com.Printf("You must either be connected,\nor set the 'rcon_address' cvar\nto issue rcon commands\n");
                     return;
                 }
                 NET.StringToAdr(Globals.rcon_address.string, to);
-                if (to.port == 0)
-                    //to.port = BigShort (PORT_SERVER);
-                    to.port = Defines.PORT_SERVER;
+                if (to.port == 0) to.port = Defines.PORT_SERVER;
             }
             message.append('\0');
             String b = message.toString();
-            NET.SendPacket(Defines.NS_CLIENT, b.length(), b.getBytes(), to);
+            NET.SendPacket(Defines.NS_CLIENT, b.length(), Lib.stringToBytes(b), to);
         }
     };
 
@@ -381,11 +364,10 @@ public final class CL {
         }
     };
 
-    /*
-     * ================= CL_Changing_f
+    /**
+     * Changing_f
      * 
-     * Just sent as a hint to the client that they should drop to full console
-     * =================
+     * Just sent as a hint to the client that they should drop to full console.
      */
     static xcommand_t Changing_f = new xcommand_t() {
         public void execute() {
@@ -403,10 +385,10 @@ public final class CL {
         }
     };
 
-    /*
-     * ================= CL_Reconnect_f
+    /**
+     * Reconnect_f
      * 
-     * The server is changing levels =================
+     * The server is changing levels.
      */
     static xcommand_t Reconnect_f = new xcommand_t() {
         public void execute() {
@@ -439,8 +421,8 @@ public final class CL {
         }
     };
 
-    /*
-     * ================= CL_PingServers_f =================
+    /**
+     * PingServers_f
      */
     static xcommand_t PingServers_f = new xcommand_t() {
         public void execute() {
@@ -498,10 +480,10 @@ public final class CL {
         }
     };
 
-    /*
-     * ================= CL_Skins_f
+    /**
+     * Skins_f
      * 
-     * Load or download any custom player skins and models =================
+     * Load or download any custom player skins and models.
      */
     static xcommand_t Skins_f = new xcommand_t() {
         public void execute() {
@@ -520,8 +502,8 @@ public final class CL {
         }
     };
 
-    /*
-     * ============== CL_Userinfo_f ==============
+    /**
+     * Userinfo_f
      */
     static xcommand_t Userinfo_f = new xcommand_t() {
         public void execute() {
@@ -530,11 +512,11 @@ public final class CL {
         }
     };
 
-    /*
-     * ================= CL_Snd_Restart_f
+    /**
+     * Snd_Restart_f
      * 
      * Restart the sound subsystem so it can pick up new parameters and flush
-     * all sounds =================
+     * all sounds.
      */
     static xcommand_t Snd_Restart_f = new xcommand_t() {
         public void execute() {
@@ -552,25 +534,20 @@ public final class CL {
 
     static String env_suf[] = { "rt", "bk", "lf", "ft", "up", "dn" };
 
-    /*
-     * ================= CL_Precache_f
-     * 
+    /**
      * The server will send this command right before allowing the client into
-     * the server =================
+     * the server.
      */
     static xcommand_t Precache_f = new xcommand_t() {
         public void execute() {
-            /*
-             * Yet another hack to let old demos work the old precache sequence
-             */
-
+            // Yet another hack to let old demos work the old precache sequence.
             if (Cmd.Argc() < 2) {
 
                 int iw[] = { 0 }; // for detecting cheater maps
 
                 CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
                         true, iw);
-                int mapchecksum = iw[0];
+
                 CL_parse.RegisterSounds();
                 CL_view.PrepRefresh();
                 return;
@@ -585,29 +562,22 @@ public final class CL {
         }
     };
 
-    /*
-     * ================== CL_Frame
-     * 
-     * ==================
-     */
     private static int extratime;
 
     //	  ============================================================================
 
-    /*
-     * =============== CL_Shutdown
+    /**
+     * Shutdown
      * 
      * FIXME: this is a callback from Sys_Quit and Com_Error. It would be better
      * to run quit through here before the final handoff to the sys code.
-     * ===============
      */
     static boolean isdown = false;
 
-    /*
-     * ==================== CL_WriteDemoMessage
+    /**
+     * WriteDemoMessage
      * 
      * Dumps the current net message, prefixed by the length
-     * ====================
      */
     static void WriteDemoMessage() {
         int swlen;
@@ -623,11 +593,10 @@ public final class CL {
 
     }
 
-    /*
-     * ======================= CL_SendConnectPacket
+    /**
+     * SendConnectPacket
      * 
      * We have gotten a challenge from the server, so try and connect.
-     * ======================
      */
     static void SendConnectPacket() {
         netadr_t adr = new netadr_t();
@@ -650,10 +619,10 @@ public final class CL {
                 + Globals.cls.challenge + " \"" + Cvar.Userinfo() + "\"\n");
     }
 
-    /*
-     * ================= CL_CheckForResend
+    /**
+     * CheckForResend
      * 
-     * Resend a connect message if the last one has timed out =================
+     * Resend a connect message if the last one has timed out.
      */
     static void CheckForResend() {
         netadr_t adr = new netadr_t();
@@ -682,23 +651,20 @@ public final class CL {
             return;
         }
         if (adr.port == 0)
-            //			adr.port = BigShort(PORT_SERVER);
             adr.port = Defines.PORT_SERVER;
 
-        Globals.cls.connect_time = Globals.cls.realtime; // for retransmit
-                                                         // requests
+        // for retransmit requests
+        Globals.cls.connect_time = Globals.cls.realtime;
 
         Com.Printf("Connecting to " + Globals.cls.servername + "...\n");
 
         Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "getchallenge\n");
     }
 
-    /*
-     * ===================== CL_ClearState
+    /**
+     * ClearState
      * 
-     * =====================
      */
-
     static void ClearState() {
         S.StopAllSounds();
         CL_fx.ClearEffects();
@@ -714,14 +680,13 @@ public final class CL {
         SZ.Clear(Globals.cls.netchan.message);
     }
 
-    /*
-     * ===================== CL_Disconnect
+    /**
+     * Disconnect
      * 
      * Goes from a connected state to full screen console state Sends a
      * disconnect message to the server This is also called on Com_Error, so it
-     * shouldn't cause any errors =====================
+     * shouldn't cause any errors.
      */
-
     static void Disconnect() {
 
         String fin;
@@ -741,22 +706,23 @@ public final class CL {
         }
 
         Math3D.VectorClear(Globals.cl.refdef.blend);
-        //re.CinematicSetPalette(null);
+        
+        Globals.re.CinematicSetPalette(null);
 
         Menu.ForceMenuOff();
 
         Globals.cls.connect_time = 0;
 
-        //		SCR.StopCinematic();
+        SCR.StopCinematic();
 
         if (Globals.cls.demorecording)
             Stop_f.execute();
 
         // send a disconnect message to the server
         fin = (char) Defines.clc_stringcmd + "disconnect";
-        Netchan.Transmit(Globals.cls.netchan, fin.length(), fin.getBytes());
-        Netchan.Transmit(Globals.cls.netchan, fin.length(), fin.getBytes());
-        Netchan.Transmit(Globals.cls.netchan, fin.length(), fin.getBytes());
+        Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
+        Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
+        Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
 
         ClearState();
 
@@ -764,17 +730,15 @@ public final class CL {
         if (Globals.cls.download != null) {
             Lib.fclose(Globals.cls.download);
             Globals.cls.download = null;
-            //			fclose(cls.download);
-            //			cls.download = NULL;
         }
 
         Globals.cls.state = Defines.ca_disconnected;
     }
 
-    /*
-     * ================= CL_ParseStatusMessage
+    /**
+     * ParseStatusMessage
      * 
-     * Handle a reply from a ping =================
+     * Handle a reply from a ping.
      */
     static void ParseStatusMessage() {
         String s;
@@ -785,10 +749,10 @@ public final class CL {
         Menu.AddToServerList(Globals.net_from, s);
     }
 
-    /*
-     * ================= CL_ConnectionlessPacket
+    /**
+     * ConnectionlessPacket
      * 
-     * Responses to broadcasts, etc =================
+     * Responses to broadcasts, etc
      */
     static void ConnectionlessPacket() {
         String s;
@@ -839,7 +803,8 @@ public final class CL {
         // print command from somewhere
         if (c.equals("print")) {
             s = MSG.ReadString(Globals.net_message);
-            Com.Printf(s);
+            if (s.length() > 0)
+            	Com.Printf(s);
             return;
         }
 
@@ -867,8 +832,8 @@ public final class CL {
     }
 
 
-    /*
-     * ================= CL_ReadPackets =================
+    /**
+     * ReadPackets
      */
     static void ReadPackets() {
         while (NET.GetPacket(Defines.NS_CLIENT, Globals.net_from,
@@ -927,8 +892,8 @@ public final class CL {
 
     //	  =============================================================================
 
-    /*
-     * ============== CL_FixUpGender_f ==============
+    /**
+     * FixUpGender_f
      */
     static void FixUpGender() {
 
@@ -1271,8 +1236,8 @@ public final class CL {
                 + CL.precache_spawncount + "\n");
     }
 
-    /*
-     * ================= CL_InitLocal =================
+    /**
+     * InitLocal
      */
     public static void InitLocal() {
         Globals.cls.state = Defines.ca_disconnected;
@@ -1421,10 +1386,10 @@ public final class CL {
 
     }
 
-    /*
-     * =============== CL_WriteConfiguration
+    /**
+     * WriteConfiguration
      * 
-     * Writes key bindings and archived cvars to config.cfg ===============
+     * Writes key bindings and archived cvars to config.cfg.
      */
     public static void WriteConfiguration() {
         RandomAccessFile f;
@@ -1454,6 +1419,9 @@ public final class CL {
         Cvar.WriteVariables(path);
     }
 
+    /**
+     * FixCvarCheats
+     */
     public static void FixCvarCheats() {
         int i;
         CL.cheatvar_t var;
@@ -1482,12 +1450,10 @@ public final class CL {
         }
     }
 
-    //	  ============================================================================
+    //	  =============================================================
 
-    /*
-     * ================== CL_SendCommand
-     * 
-     * ==================
+    /**
+     * SendCommand
      */
     public static void SendCommand() {
         // get new key events
@@ -1511,6 +1477,9 @@ public final class CL {
 
     //	private static int lasttimecalled;
 
+    /**
+     * Frame
+     */
     public static void Frame(int msec) {
         
         if (Globals.dedicated.value != 0)
@@ -1572,7 +1541,7 @@ public final class CL {
         // advance local effects for next frame
         CL_fx.RunDLights();
         CL_fx.RunLightStyles();
-
+        SCR.RunCinematic();
         SCR.RunConsole();
 
         Globals.cls.framecount++;
@@ -1585,6 +1554,9 @@ public final class CL {
         }
     }
 
+    /**
+     * Shutdown
+     */
     public static void Shutdown() {
 
         if (isdown) {
@@ -1601,7 +1573,7 @@ public final class CL {
     }
 
     /**
-     * initialize client subsystem
+     * Initialize client subsystem.
      */
     public static void Init() {
         if (Globals.dedicated.value != 0.0f)

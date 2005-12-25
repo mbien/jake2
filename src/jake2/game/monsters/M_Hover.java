@@ -19,10 +19,11 @@
  */
 
 // Created on 13.11.2003 by RST.
-// $Id: M_Hover.java,v 1.2 2005-02-06 18:48:17 salomo Exp $
+// $Id: M_Hover.java,v 1.2.6.1 2005-12-25 18:15:10 cawe Exp $
 package jake2.game.monsters;
 
 import jake2.Defines;
+import jake2.game.*;
 import jake2.game.EntDieAdapter;
 import jake2.game.EntInteractAdapter;
 import jake2.game.EntPainAdapter;
@@ -468,6 +469,7 @@ public class M_Hover {
     static int sound_search2;
 
     static EntThinkAdapter hover_reattack = new EntThinkAdapter() {
+    	public String getID() { return "hover_reattack"; }
         public boolean think(edict_t self) {
             if (self.enemy.health > 0)
                 if (GameUtil.visible(self, self.enemy))
@@ -481,6 +483,7 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_fire_blaster = new EntThinkAdapter() {
+    	public String getID() { return "hover_fire_blaster"; }
         public boolean think(edict_t self) {
             float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -509,6 +512,7 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_stand = new EntThinkAdapter() {
+    	public String getID() { return "hover_stand"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = hover_move_stand;
             return true;
@@ -516,6 +520,7 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_run = new EntThinkAdapter() {
+    	public String getID() { return "hover_run"; }
         public boolean think(edict_t self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = hover_move_stand;
@@ -526,6 +531,7 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_walk = new EntThinkAdapter() {
+    	public String getID() { return "hover_walk"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = hover_move_walk;
             return true;
@@ -533,6 +539,7 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_start_attack = new EntThinkAdapter() {
+    	public String getID() { return "hover_start_attack"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = hover_move_start_attack;
             return true;
@@ -540,6 +547,7 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_attack = new EntThinkAdapter() {
+    	public String getID() { return "hover_attack"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = hover_move_attack1;
             return true;
@@ -547,6 +555,7 @@ public class M_Hover {
     };
 
     static EntPainAdapter hover_pain = new EntPainAdapter() {
+    	public String getID() { return "hover_pain"; }
         public void pain(edict_t self, edict_t other, float kick, int damage) {
             if (self.health < (self.max_health / 2))
                 self.s.skinnum = 1;
@@ -578,18 +587,20 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_deadthink = new EntThinkAdapter() {
+    	public String getID() { return "hover_deadthink"; }
         public boolean think(edict_t self) {
             if (null == self.groundentity
                     && GameBase.level.time < self.timestamp) {
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
                 return true;
             }
-            GameAI.BecomeExplosion1(self);
+            GameMisc.BecomeExplosion1(self);
             return true;
         }
     };
 
     static EntThinkAdapter hover_dead = new EntThinkAdapter() {
+    	public String getID() { return "hover_dead"; }
         public boolean think(edict_t self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
@@ -603,6 +614,7 @@ public class M_Hover {
     };
 
     static EntDieAdapter hover_die = new EntDieAdapter() {
+    	public String getID() { return "hover_die"; }
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
             int n;
@@ -614,13 +626,13 @@ public class M_Hover {
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
                 for (n = 0; n < 2; n++)
-                    GameAI.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
+                    GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
                 for (n = 0; n < 2; n++)
-                    GameAI.ThrowGib(self,
+                    GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
                             Defines.GIB_ORGANIC);
-                GameAI.ThrowHead(self, "models/objects/gibs/sm_meat/tris.md2",
+                GameMisc.ThrowHead(self, "models/objects/gibs/sm_meat/tris.md2",
                         damage, Defines.GIB_ORGANIC);
                 self.deadflag = Defines.DEAD_DEAD;
                 return;
@@ -643,6 +655,7 @@ public class M_Hover {
     };
 
     static EntInteractAdapter hover_sight = new EntInteractAdapter() {
+    	public String getID() { return "hover_sight"; }
         public boolean interact(edict_t self, edict_t other) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
                     Defines.ATTN_NORM, 0);
@@ -651,6 +664,7 @@ public class M_Hover {
     };
 
     static EntThinkAdapter hover_search = new EntThinkAdapter() {
+    	public String getID() { return "hover_search"; }
         public boolean think(edict_t self) {
             if (Lib.random() < 0.5)
                 GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search1, 1,

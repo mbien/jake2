@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 // Created on 08.11.2003 by RST.
-// $Id: ItemUseAdapter.java,v 1.1 2004-07-07 19:59:07 hzi Exp $
+// $Id: ItemUseAdapter.java,v 1.1.1.1.16.1 2005-12-25 18:11:20 cawe Exp $
 
 package jake2.game;
 
-class ItemUseAdapter  extends SuperAdapter {
+public abstract class ItemUseAdapter  extends SuperAdapter {
 	public void use(edict_t ent, gitem_t item) {
 	}
 }

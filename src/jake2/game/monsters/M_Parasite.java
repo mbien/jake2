@@ -19,11 +19,12 @@
  */
 
 // Created on 13.11.2003 by RST.
-// $Id: M_Parasite.java,v 1.2 2005-02-06 18:48:16 salomo Exp $
+// $Id: M_Parasite.java,v 1.2.6.1 2005-12-25 18:15:09 cawe Exp $
 package jake2.game.monsters;
 
 import jake2.Defines;
 import jake2.Globals;
+import jake2.game.*;
 import jake2.game.EntDieAdapter;
 import jake2.game.EntInteractAdapter;
 import jake2.game.EntPainAdapter;
@@ -303,6 +304,7 @@ public class M_Parasite {
     static int sound_search;
 
     static EntThinkAdapter parasite_launch = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_launch"; }
         public boolean think(edict_t self) {
 
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_launch, 1,
@@ -312,6 +314,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_reel_in = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_reel_in"; }
         public boolean think(edict_t self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_reelin, 1,
                     Defines.ATTN_NORM, 0);
@@ -320,6 +323,7 @@ public class M_Parasite {
     };
 
     static EntInteractAdapter parasite_sight = new EntInteractAdapter() {
+    	public String getID(){ return "parasite_sight"; }
         public boolean interact(edict_t self, edict_t other) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_sight, 1,
                     Defines.ATTN_NORM, 0);
@@ -328,6 +332,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_tap = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_tap"; }
         public boolean think(edict_t self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_tap, 1,
                     Defines.ATTN_IDLE, 0);
@@ -336,6 +341,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_scratch = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_scratch"; }
         public boolean think(edict_t self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_scratch, 1,
                     Defines.ATTN_IDLE, 0);
@@ -344,6 +350,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_search = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_search"; }
         public boolean think(edict_t self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_search, 1,
                     Defines.ATTN_IDLE, 0);
@@ -352,6 +359,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_start_walk = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_start_walk"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = parasite_move_start_walk;
             return true;
@@ -359,6 +367,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_walk = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_walk"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = parasite_move_walk;
             return true;
@@ -366,6 +375,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_stand = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_stand"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = parasite_move_stand;
             return true;
@@ -373,6 +383,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_end_fidget = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_end_fidget"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = parasite_move_end_fidget;
             return true;
@@ -380,6 +391,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_do_fidget = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_do_fidget"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = parasite_move_fidget;
             return true;
@@ -387,6 +399,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_refidget = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_refidget"; }
         public boolean think(edict_t self) {
             if (Lib.random() <= 0.8)
                 self.monsterinfo.currentmove = parasite_move_fidget;
@@ -397,6 +410,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_idle = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_idle"; }
         public boolean think(edict_t self) {
             self.monsterinfo.currentmove = parasite_move_start_fidget;
             return true;
@@ -404,6 +418,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_start_run = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_start_run"; }
         public boolean think(edict_t self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = parasite_move_stand;
@@ -414,6 +429,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_run = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_run"; }
         public boolean think(edict_t self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = parasite_move_stand;
@@ -555,6 +571,7 @@ public class M_Parasite {
             FRAME_pain111, parasite_frames_pain1, parasite_start_run);
 
     static EntPainAdapter parasite_pain = new EntPainAdapter() {
+    	public String getID(){ return "parasite_pain"; }
         public void pain(edict_t self, edict_t other, float kick, int damage) {
             if (self.health < (self.max_health / 2))
                 self.s.skinnum = 1;
@@ -579,6 +596,7 @@ public class M_Parasite {
     };
 
     static EntThinkAdapter parasite_drain_attack = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_drain_attack"; }
         public boolean think(edict_t self) {
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 }, f = { 0, 0, 0 }, r = {
                     0, 0, 0 }, end = { 0, 0, 0 }, dir = { 0, 0, 0 };
@@ -625,7 +643,7 @@ public class M_Parasite {
             GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
 
             Math3D.VectorSubtract(start, end, dir);
-            GameUtil.T_Damage(self.enemy, self, self, dir, self.enemy.s.origin,
+            GameCombat.T_Damage(self.enemy, self, self, dir, self.enemy.s.origin,
                     Globals.vec3_origin, damage, 0,
                     Defines.DAMAGE_NO_KNOCKBACK, Defines.MOD_UNKNOWN);
             return true;
@@ -699,6 +717,7 @@ public class M_Parasite {
      */
 
     static EntThinkAdapter parasite_attack = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_attack"; }
         public boolean think(edict_t self) {
             //	if (random() <= 0.2)
             //		self.monsterinfo.currentmove = &parasite_move_break;
@@ -713,6 +732,7 @@ public class M_Parasite {
      */
 
     static EntThinkAdapter parasite_dead = new EntThinkAdapter() {
+    	public String getID(){ return "parasite_dead"; }
         public boolean think(edict_t self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
@@ -737,6 +757,7 @@ public class M_Parasite {
             FRAME_death107, parasite_frames_death, parasite_dead);
 
     static EntDieAdapter parasite_die = new EntDieAdapter() {
+    	public String getID(){ return "parasite_die"; }
         public void die(edict_t self, edict_t inflictor, edict_t attacker,
                 int damage, float[] point) {
             int n;
@@ -748,13 +769,13 @@ public class M_Parasite {
                                 .soundindex("misc/udeath.wav"), 1,
                                 Defines.ATTN_NORM, 0);
                 for (n = 0; n < 2; n++)
-                    GameAI.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
+                    GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
                             damage, Defines.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
-                    GameAI.ThrowGib(self,
+                    GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
                             Defines.GIB_ORGANIC);
-                GameAI.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
+                GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
                         damage, Defines.GIB_ORGANIC);
                 self.deadflag = Defines.DEAD_DEAD;
                 return;
@@ -782,6 +803,7 @@ public class M_Parasite {
      */
 
     public static EntThinkAdapter SP_monster_parasite = new EntThinkAdapter() {
+    	public String getID(){ return "SP_monster_parasite"; }
         public boolean think(edict_t self) {
             if (GameBase.deathmatch.value != 0) {
                 GameUtil.G_FreeEdict(self);

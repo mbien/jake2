@@ -19,7 +19,7 @@
  */
 
 // Created on 17.01.2004 by RST.
-// $Id: SV_USER.java,v 1.8 2005-02-06 19:28:16 salomo Exp $
+// $Id: SV_USER.java,v 1.8.6.1 2005-12-25 18:11:18 cawe Exp $
 package jake2.server;
 
 import jake2.Defines;
@@ -417,6 +417,13 @@ public class SV_USER {
             FS.FreeFile(SV_MAIN.sv_client.download);
 
         SV_MAIN.sv_client.download = FS.LoadFile(name);
+        
+        // rst: this handles loading errors, no message yet visible 
+        if (SV_MAIN.sv_client.download == null)
+        {        	
+        	return;
+        }
+        
         SV_MAIN.sv_client.downloadsize = SV_MAIN.sv_client.download.length;
         SV_MAIN.sv_client.downloadcount = offset;
 
@@ -426,7 +433,7 @@ public class SV_USER {
         if (SV_MAIN.sv_client.download == null // special check for maps, if it
                                                // came from a pak file, don't
                                                // allow
-                // download ZOID
+                							   // download ZOID
                 || (name.startsWith("maps/") && FS.file_from_pak != 0)) {
             Com.DPrintf("Couldn't download " + name + " to "
                     + SV_MAIN.sv_client.name + "\n");
@@ -531,7 +538,7 @@ public class SV_USER {
         }
 
         if (i == SV_USER.ucmds.length && SV_INIT.sv.state == Defines.ss_game)
-            GameAI.ClientCommand(SV_USER.sv_player);
+            Cmd.ClientCommand(SV_USER.sv_player);
 
         //	SV_EndRedirect ();
     }

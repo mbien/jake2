@@ -19,7 +19,9 @@
  */
 
 // Created on 30.11.2003 by RST.
-// $Id: GameBase.java,v 1.10 2005-02-20 21:50:36 salomo Exp $
+
+// $Id: GameBase.java,v 1.10.6.1 2005-12-25 18:11:20 cawe Exp $
+
 /** Father of all GameObjects. */
 
 package jake2.game;
@@ -336,7 +338,7 @@ public class GameBase {
             //if (ent.index == 1)
             //Com.Printf("trigger:" + hit.classname + "(" + hit.index + ")\n");
 
-            hit.touch.touch(hit, ent, GameBase.dummyplane, null);
+            hit.touch.touch(hit, ent, dummyplane, null);
         }
     }
 
@@ -501,30 +503,30 @@ public class GameBase {
             s = sv_maplist.string;
             f = null;
             StringTokenizer tk = new StringTokenizer(s, seps);
-            t = tk.nextToken();
-            //t = strtok(s, seps);
-            while (t != null) {
-                if (Lib.Q_stricmp(t, level.mapname) == 0) {
+            
+            while (tk.hasMoreTokens()){
+            	t = tk.nextToken();
+     
+            	// store first map
+            	if (f == null)
+            		f = t;
+            	
+                if (t.equalsIgnoreCase(level.mapname)) {
                     // it's in the list, go to the next one
-                    t = tk.nextToken();
-                    if (t == null) { // end of list, go to first one
+                	if (!tk.hasMoreTokens()) {
+                		// end of list, go to first one
                         if (f == null) // there isn't a first one, same level
-                            PlayerHud
-                                    .BeginIntermission(CreateTargetChangeLevel(level.mapname));
+                            PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
                         else
-                            PlayerHud
-                                    .BeginIntermission(CreateTargetChangeLevel(f));
+                            PlayerHud.BeginIntermission(CreateTargetChangeLevel(f));
                     } else
-                        PlayerHud.BeginIntermission(CreateTargetChangeLevel(t));
+                        PlayerHud.BeginIntermission(CreateTargetChangeLevel(tk.nextToken()));
                     return;
                 }
-                if (f == null)
-                    f = t;
-                t = tk.nextToken();
             }
-
         }
 
+        //not in the map list
         if (level.nextmap.length() > 0) // go to a specific map
             PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.nextmap));
         else { // search for a changelevel
@@ -533,8 +535,7 @@ public class GameBase {
             if (edit == null) { // the map designer didn't include a
                                 // changelevel,
                 // so create a fake ent that goes back to the same level
-                PlayerHud
-                        .BeginIntermission(CreateTargetChangeLevel(level.mapname));
+                PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
                 return;
             }
             ent = edit.o;
@@ -642,7 +643,7 @@ public class GameBase {
         level.time = level.framenum * Defines.FRAMETIME;
 
         // choose a client for monsters to target this frame
-        GameUtil.AI_SetSightClient();
+        GameAI.AI_SetSightClient();
 
         // exit intermissions
 
