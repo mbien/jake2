@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="patch"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/joal/linux/joal.jar"/>
-	<classpathentry kind="lib" path="lib/joal/windows/joal.jar"/>
+	<classpathentry kind="lib" path="lib/joal/joal.jar"/>
+	<classpathentry kind="lib" path="lib/joal/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="resources"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl_util.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl/lwjgl.jar"/>
