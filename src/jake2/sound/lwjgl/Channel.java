@@ -3,7 +3,7 @@
  * 
  * Copyright (C) 2003
  *
- * $Id: Channel.java,v 1.6.6.1 2005-12-25 18:16:38 cawe Exp $
+ * $Id: Channel.java,v 1.6.6.2 2006-11-19 19:16:05 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -123,7 +123,7 @@ public class Channel {
 			// set default values for AL sources
 			AL10.alSourcef (sourceId, AL10.AL_GAIN, 1.0f);
 			AL10.alSourcef (sourceId, AL10.AL_PITCH, 1.0f);
-			AL10.alSourcei (sourceId, AL10.AL_SOURCE_ABSOLUTE,  AL10.AL_TRUE);
+			AL10.alSourcei (sourceId, AL10.AL_SOURCE_RELATIVE,  AL10.AL_FALSE);
 			AL10.nalSourcefv(sourceId, AL10.AL_VELOCITY, NULLVECTOR, 0);
 			AL10.alSourcei (sourceId, AL10.AL_LOOPING, AL10.AL_FALSE);
 			AL10.alSourcef (sourceId, AL10.AL_REFERENCE_DISTANCE, 200.0f);
