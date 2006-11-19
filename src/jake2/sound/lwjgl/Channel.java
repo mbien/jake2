@@ -3,7 +3,7 @@
  * 
  * Copyright (C) 2003
  *
- * $Id: Channel.java,v 1.6.6.2 2006-11-19 19:16:05 cawe Exp $
+ * $Id: Channel.java,v 1.6.6.3 2006-11-19 19:17:50 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -168,7 +168,7 @@ public class Channel {
         if (!streamingEnabled) return;
         unqueueStreams();
         int source = channels[numChannels].sourceId;
-        AL10.alSourcei (source, AL10.AL_SOURCE_ABSOLUTE,  AL10.AL_TRUE);
+        AL10.alSourcei (source, AL10.AL_SOURCE_RELATIVE,  AL10.AL_FALSE);
 
         // free the last source
         numChannels++;
