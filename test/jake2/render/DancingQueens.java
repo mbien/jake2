@@ -2,7 +2,7 @@
  * DancingQueens.java
  * Copyright (C) 2003
  *
- * $Id: DancingQueens.java,v 1.8 2005-06-11 19:43:48 cawe Exp $
+ * $Id: DancingQueens.java,v 1.8.4.1 2006-11-20 23:16:05 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -27,14 +27,17 @@ package jake2.render;
 
 import jake2.Defines;
 import jake2.Globals;
+import jake2.Jake2;
 import jake2.client.*;
 import jake2.game.Cmd;
+import jake2.game.cvar_t;
 import jake2.qcommon.*;
 import jake2.sys.IN;
 import jake2.sys.KBD;
 import jake2.util.Math3D;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * DancingQueens
@@ -65,15 +68,24 @@ public class DancingQueens {
     
     void init() {
         
+        Globals.dedicated = Cvar.Get("dedicated", "0", Qcommon.CVAR_NOSET);
+        // open the q2dialog, if we are not in dedicated mode.
+        if (Globals.dedicated.value != 1.0f)
+        {
+            Jake2.Q2Dialog = new Q2DataDialog();
+            Locale.setDefault(Locale.US);
+            Jake2.Q2Dialog.setVisible(true);
+        }
+        
         Qcommon.Init(new String[] { "DancingQueens", "+set", "gl_mode", "5",
-                "+set", "vid_fullscreen", "0" });
+                "+set", "vid_fullscreen", "0", "+set", "dedicated", "0" });
         // sehr wichtig !!!
         VID.Shutdown();
         
         String[] names = Renderer.getDriverNames();
         System.out.println("Registered Drivers: " + Arrays.asList(names));
         
-        this.re = Renderer.getDriver("fastjogl");
+        this.re = Renderer.getDriver("jsr231");
         
         System.out.println("Use driver: " + re);
         System.out.println();
