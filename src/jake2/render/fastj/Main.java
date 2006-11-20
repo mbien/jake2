@@ -917,7 +917,7 @@ public abstract class Main extends Base {
 	
 	@@@@@@@@@@@@@@@@@@@@@
 	*/
-	protected void R_RenderFrame(refdef_t fd) {
+	public void R_RenderFrame(refdef_t fd) {
 		R_RenderView(fd);
 		R_SetLightLevel();
 		R_SetGL2D();
@@ -1074,7 +1074,7 @@ public abstract class Main extends Base {
         return R_Init(0, 0);
     }
     
-    protected boolean R_Init(int vid_xpos, int vid_ypos) {
+    public boolean R_Init(int vid_xpos, int vid_ypos) {
 
 		assert(Warp.SIN.length == 256) : "warpsin table bug";
 
@@ -1100,7 +1100,7 @@ public abstract class Main extends Base {
 		return true;
 	}
 
-	protected boolean R_Init2() {
+	public boolean R_Init2() {
 		VID.MenuInit();
 
 		/*
@@ -1300,7 +1300,7 @@ public abstract class Main extends Base {
 	R_Shutdown
 	===============
 	*/
-	protected void R_Shutdown() {
+	public void R_Shutdown() {
 		Cmd.RemoveCommand("modellist");
 		Cmd.RemoveCommand("screenshot");
 		Cmd.RemoveCommand("imagelist");
@@ -1321,7 +1321,7 @@ public abstract class Main extends Base {
 	R_BeginFrame
 	@@@@@@@@@@@@@@@@@@@@@
 	*/
-	protected void R_BeginFrame(float camera_separation) {
+	public void R_BeginFrame(float camera_separation) {
 
 		gl_state.camera_separation = camera_separation;
 
@@ -1436,7 +1436,7 @@ public abstract class Main extends Base {
 	R_SetPalette
 	=============
 	*/
-	protected void R_SetPalette(byte[] palette) {
+	public void R_SetPalette(byte[] palette) {
 		// 256 RGB values (768 bytes)
 		// or null
 		int i;

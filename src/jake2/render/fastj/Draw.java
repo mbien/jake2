@@ -65,7 +65,7 @@ public abstract class Draw extends Image {
 	smoothly scrolled off.
 	================
 	*/
-	protected void Draw_Char(int x, int y, int num) {
+	public void Draw_Char(int x, int y, int num) {
 
 		num &= 255;
 	
@@ -100,7 +100,7 @@ public abstract class Draw extends Image {
 	Draw_FindPic
 	=============
 	*/
-	protected image_t Draw_FindPic(String name) {
+	public image_t Draw_FindPic(String name) {
 		image_t image = null;
 		String fullname;
 
@@ -120,7 +120,7 @@ public abstract class Draw extends Image {
 	Draw_GetPicSize
 	=============
 	*/
-	protected void Draw_GetPicSize(Dimension dim, String pic)	{
+	public void Draw_GetPicSize(Dimension dim, String pic)	{
 
 		image_t image = Draw_FindPic(pic);
 		dim.width = (image != null) ? image.width : -1;
@@ -132,7 +132,7 @@ public abstract class Draw extends Image {
 	Draw_StretchPic
 	=============
 	*/
-	protected void Draw_StretchPic (int x, int y, int w, int h, String pic) {
+	public void Draw_StretchPic (int x, int y, int w, int h, String pic) {
 		
 		image_t image;
 
@@ -171,7 +171,7 @@ public abstract class Draw extends Image {
 	Draw_Pic
 	=============
 	*/
-	protected void Draw_Pic(int x, int y, String pic)
+	public void Draw_Pic(int x, int y, String pic)
 	{
 		image_t image;
 
@@ -212,7 +212,7 @@ public abstract class Draw extends Image {
 	refresh window.
 	=============
 	*/
-	protected void Draw_TileClear(int x, int y, int w, int h, String pic) {
+	public void Draw_TileClear(int x, int y, int w, int h, String pic) {
 		image_t	image;
 
 		image = Draw_FindPic(pic);
@@ -249,7 +249,7 @@ public abstract class Draw extends Image {
 	Fills a box of pixels with a single color
 	=============
 	*/
-	protected void Draw_Fill(int x, int y, int w, int h, int colorIndex)	{
+	public void Draw_Fill(int x, int y, int w, int h, int colorIndex)	{
 
 		if ( colorIndex > 255)
 			Com.Error(Defines.ERR_FATAL, "Draw_Fill: bad color");
@@ -283,7 +283,7 @@ public abstract class Draw extends Image {
 	Draw_FadeScreen
 	================
 	*/
-	protected void Draw_FadeScreen()	{
+	public void Draw_FadeScreen()	{
 		gl.glEnable(GL_BLEND);
 		gl.glDisable(GL_TEXTURE_2D);
 		gl.glColor4f(0, 0, 0, 0.8f);
@@ -310,7 +310,7 @@ public abstract class Draw extends Image {
 	Draw_StretchRaw
 	=============
 	*/
-	protected void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte[] data)
+	public void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte[] data)
 	{
 		int i, j, trows;
 		int sourceIndex;

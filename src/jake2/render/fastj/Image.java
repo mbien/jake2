@@ -1452,7 +1452,7 @@ public abstract class Image extends Main {
     /*
      * R_RegisterSkin
      */
-    protected image_t R_RegisterSkin(String name) {
+    public image_t R_RegisterSkin(String name) {
         return GL_FindImage(name, it_skin);
     }
 

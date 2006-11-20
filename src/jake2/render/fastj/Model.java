@@ -1082,7 +1082,7 @@ public abstract class Model extends Surf {
      * 
      * Specifies the model that will be used as the world @@@@@@@@@@@@@@@@@@@@@
      */
-    protected void R_BeginRegistration(String model) {
+    public void R_BeginRegistration(String model) {
         resetModelArrays();
 //        resetPolygonArrays();
         Polygon.reset();
@@ -1109,7 +1109,7 @@ public abstract class Model extends Surf {
      * 
      * @@@@@@@@@@@@@@@@@@@@@
      */
-    protected model_t R_RegisterModel(String name) {
+    public model_t R_RegisterModel(String name) {
         model_t mod = null;
         int i;
         qfiles.dsprite_t sprout;
@@ -1145,7 +1145,7 @@ public abstract class Model extends Surf {
      * 
      * @@@@@@@@@@@@@@@@@@@@@
      */
-    protected void R_EndRegistration() {
+    public void R_EndRegistration() {
         model_t mod;
 
         for (int i = 0; i < mod_numknown; i++) {

@@ -623,7 +623,7 @@ public abstract class Warp extends Model {
     // 3dstudio environment map names
     String[] suf = { "rt", "bk", "lf", "ft", "up", "dn" };
 
-    protected void R_SetSky(String name, float rotate, float[] axis) {
+    public void R_SetSky(String name, float rotate, float[] axis) {
         assert (axis.length == 3) : "vec3_t bug";
         int i;
         String pathname;
