@@ -2,7 +2,7 @@
  * Base.java
  * Copyright (C) 2003
  *
- * $Id: Base.java,v 1.1.2.1 2005-11-14 23:57:19 cawe Exp $
+ * $Id: Base.java,v 1.1.2.2 2006-11-20 21:26:08 cawe Exp $
  */
 /*
  Copyright (C) 1997-2001 Id Software, Inc.
@@ -38,7 +38,7 @@ import java.awt.Dimension;
  * 
  * @author dsanders/cwei
  */
-public abstract class Base implements QGLConst {
+public abstract class Base implements QGLConst, RenderAPI {
 
     public static final int GL_COLOR_INDEX8_EXT = GL_COLOR_INDEX;
 
@@ -178,7 +178,7 @@ public abstract class Base implements QGLConst {
 
     protected GLDriver glImpl;
 
-    public void setGlImpl(GLDriver driver) {
+    public void setGLDriver(GLDriver driver) {
         glImpl = driver;
         gl = (QGL)driver;
     }
