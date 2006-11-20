@@ -8,7 +8,11 @@ public interface QGL extends QGLConst {
      * a sub set of OpenGL for Jake2
      */
 
+    void glActiveTextureARB(int texture);
+
     void glAlphaFunc(int func, float ref);
+
+    void glArrayElement(int index);
 
     void glBegin(int mode);
 
@@ -19,6 +23,8 @@ public interface QGL extends QGLConst {
     void glClear(int mask);
 
     void glClearColor(float red, float green, float blue, float alpha);
+
+    void glClientActiveTextureARB(int texture);
 
     void glColor3f(float red, float green, float blue);
 
@@ -32,6 +38,9 @@ public interface QGL extends QGLConst {
             ByteBuffer pointer);
 
     void glColorPointer(int size, int stride, FloatBuffer pointer);
+
+    void glColorTable(int target, int internalFormat, int width, int format,
+            int type, ByteBuffer data);
 
     void glCullFace(int mode);
 
@@ -74,16 +83,24 @@ public interface QGL extends QGLConst {
 
     void glInterleavedArrays(int format, int stride, FloatBuffer pointer);
 
+    void glLockArraysEXT(int first, int count);
+
     void glLoadIdentity();
 
     void glLoadMatrix(FloatBuffer m);
 
     void glMatrixMode(int mode);
 
+    void glMultiTexCoord2f(int target, float s, float t);
+
     void glOrtho(double left, double right, double bottom, double top,
             double zNear, double zFar);
 
     void glPixelStorei(int pname, int param);
+
+    void glPointParameterEXT(int pname, FloatBuffer pfParams);
+
+    void glPointParameterfEXT(int pname, float param);
 
     void glPointSize(float size);
 
@@ -125,6 +142,8 @@ public interface QGL extends QGLConst {
 
     void glTranslatef(float x, float y, float z);
 
+    void glUnlockArraysEXT();
+
     void glVertex2f(float x, float y);
 
     void glVertex3f(float x, float y, float z);
@@ -132,24 +151,5 @@ public interface QGL extends QGLConst {
     void glVertexPointer(int size, int stride, FloatBuffer pointer);
 
     void glViewport(int x, int y, int width, int height);
-
-    void glColorTable(int target, int internalFormat, int width, int format,
-            int type, ByteBuffer data);
-
-    void glActiveTextureARB(int texture);
-
-    void glClientActiveTextureARB(int texture);
-
-    void glPointParameterEXT(int pname, FloatBuffer pfParams);
-
-    void glPointParameterfEXT(int pname, float param);
-
-    void glLockArraysEXT(int first, int count);
-
-    void glArrayElement(int index);
-
-    void glUnlockArraysEXT();
-
-    void glMultiTexCoord2f(int target, float s, float t);
 
 }
