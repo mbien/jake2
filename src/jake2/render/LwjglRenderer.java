@@ -2,7 +2,7 @@
  * LwjglRenderer.java
  * Copyright (C) 2004
  *
- * $Id: LwjglRenderer.java,v 1.1.2.3 2006-11-20 21:27:57 cawe Exp $
+ * $Id: LwjglRenderer.java,v 1.1.2.4 2006-11-20 23:15:13 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -41,12 +41,12 @@ import java.awt.DisplayMode;
  */
 final class LwjglRenderer extends LwjglDriver implements refexport_t, Ref {
 	
-    public static final String DRIVER_NAME = "lwjgl";
+    	public static final String DRIVER_NAME = "lwjgl";
     
-    private KBD kbd = new LWJGLKBD();
+    	private KBD kbd = new LWJGLKBD();
     
-    // TODO extract a interface from render code
-    private RenderAPI impl = new jake2.render.fast.Misc(); 
+    	// is set from Renderer factory
+    	private RenderAPI impl;
 
 	static {
 		Renderer.register(new LwjglRenderer());
@@ -237,7 +237,8 @@ final class LwjglRenderer extends LwjglDriver implements refexport_t, Ref {
 		return DRIVER_NAME;
 	}
 
-	public final refexport_t GetRefAPI() {
+	public final refexport_t GetRefAPI(RenderAPI renderer) {
+        	this.impl = renderer;
 		return this;
 	}
 }

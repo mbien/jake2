@@ -2,7 +2,7 @@
  * JoglRenderer.java
  * Copyright (C) 2003
  *
- * $Id: JoglRenderer.java,v 1.6.8.5 2006-11-20 21:27:57 cawe Exp $
+ * $Id: JoglRenderer.java,v 1.6.8.6 2006-11-20 23:15:13 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -44,10 +44,10 @@ final class JoglRenderer extends JoglDriver implements refexport_t, Ref {
 
 	public static final String DRIVER_NAME = "jogl";
     
-    private KBD kbd = new JOGLKBD();
+    	private KBD kbd = new JOGLKBD();
 
-    // TODO extract a interface from render code
-    private RenderAPI impl = new jake2.render.fast.Misc(); 
+    	// is set from Renderer factory
+    	private RenderAPI impl;
 
 	static {
 		Renderer.register(new JoglRenderer());
@@ -334,7 +334,9 @@ final class JoglRenderer extends JoglDriver implements refexport_t, Ref {
 		return DRIVER_NAME;
 	}
 
-	public refexport_t GetRefAPI() {
+	public refexport_t GetRefAPI(RenderAPI renderer) {
+        	this.impl = renderer;
 		return this;
 	}
+    
 }

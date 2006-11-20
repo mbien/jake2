@@ -2,7 +2,7 @@
  * Jsr231Renderer.java
  * Copyright (C) 2004
  *
- * $Id: Jsr231Renderer.java,v 1.1.2.3 2006-11-20 21:27:57 cawe Exp $
+ * $Id: Jsr231Renderer.java,v 1.1.2.4 2006-11-20 23:15:13 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -41,14 +41,14 @@ import java.awt.Dimension;
  */
 final class Jsr231Renderer extends Jsr231Driver implements refexport_t, Ref {
 	
-    public static final String DRIVER_NAME = "jsr231";
+    	public static final String DRIVER_NAME = "jsr231";
     
-    private KBD kbd = new JOGLKBD();
+    	private KBD kbd = new JOGLKBD();
 	
-    // TODO extract a interface from render code
-    private RenderAPI impl = new jake2.render.fast.Misc(); 
+    	// is set from Renderer factory
+    	private RenderAPI impl;
 
-    static {
+    	static {
 		Renderer.register(new Jsr231Renderer());
 	};
 
@@ -241,7 +241,8 @@ final class Jsr231Renderer extends Jsr231Driver implements refexport_t, Ref {
 		return DRIVER_NAME;
 	}
 
-	public final refexport_t GetRefAPI() {
-		return this;
+	public final refexport_t GetRefAPI(RenderAPI renderer) {
+		this.impl = renderer;
+        	return this;
 	}
 }

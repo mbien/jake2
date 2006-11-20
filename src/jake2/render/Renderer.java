@@ -2,7 +2,7 @@
  * Renderer.java
  * Copyright (C) 2003
  *
- * $Id: Renderer.java,v 1.6.6.1 2005-11-14 23:59:00 cawe Exp $
+ * $Id: Renderer.java,v 1.6.6.2 2006-11-20 23:15:13 cawe Exp $
  */
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
@@ -25,9 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render;
 
-import java.util.Vector;
-
 import jake2.client.refexport_t;
+
+import java.util.Vector;
 
 /**
  * Renderer
@@ -35,6 +35,9 @@ import jake2.client.refexport_t;
  * @author cwei
  */
 public class Renderer {
+    
+    static RenderAPI fastRenderer = new jake2.render.fast.Misc();
+    static RenderAPI basicRenderer = new jake2.render.basic.Misc();
 
 	static Vector drivers = new Vector(3);
 
@@ -72,18 +75,26 @@ public class Renderer {
 		}
 	}
 
-	/**
+    /**
+     * Factory method to get the Renderer implementation.
+     * @return refexport_t (Renderer singleton)
+     */
+    public static refexport_t getDriver(String driverName) {
+        return getDriver(driverName, true);
+    }
+
+    /**
 	 * Factory method to get the Renderer implementation.
 	 * @return refexport_t (Renderer singleton)
 	 */
-	public static refexport_t getDriver(String driverName) {
+	public static refexport_t getDriver(String driverName, boolean fast) {
 		// find a driver
 		Ref driver = null;
 		int count = drivers.size();
 		for (int i = 0; i < count; i++) {
 			driver = (Ref) drivers.get(i);
 			if (driver.getName().equals(driverName)) {
-				return driver.GetRefAPI();
+				return driver.GetRefAPI((fast) ? fastRenderer : basicRenderer);
 			}
 		}
 		// null if driver not found
@@ -107,4 +118,5 @@ public class Renderer {
 		}
 		return names;
 	}
+
 }
